@@ -2,7 +2,92 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Linear Clock</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- 🔍 Basic SEO -->
+<title>Minimal 24-Hour Linear Clock | jm5k</title>
+<meta name="description" content="A minimalist 24-hour linear clock that visualizes time as a continuous bar — showing hours, quarter-hour marks, work-hour highlights, and percentage of day elapsed.">
+<meta name="keywords" content="linear clock, 24 hour clock, minimalist clock, day progress bar, time tracker, timeline clock, jm5k">
+<meta name="author" content="jm5k">
+<meta name="robots" content="index, follow">
+
+<!-- 🌐 Open Graph / Facebook -->
+<meta property="og:title" content="24-Hour Linear Clock by jm5k">
+<meta property="og:description" content="Visualize your day in a single continuous line — a minimalist 24-hour linear clock with real-time updates and progress tracking.">
+<meta property="og:url" content="https://jm5k.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://jm5k.github.io/profile.png">
+
+<!-- 🐦 Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="24-Hour Linear Clock by jm5k">
+<meta name="twitter:description" content="A sleek linear clock that tracks time, work hours, and day progress in real time.">
+<meta name="twitter:image" content="https://jm5k.github.io/profile.png">
+
+<!-- 📱 Favicon -->
+<link rel="icon" href="https://jm5k.github.io/profile.png" type="image/png">
+
+<!-- 🧭 Canonical URL -->
+<link rel="canonical" href="https://jm5k.github.io/">
+
+<!-- 🧠 Structured Data: WebSite -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": "https://jm5k.github.io/",
+  "name": "24-Hour Linear Clock",
+  "author": { "@type": "Person", "name": "jm5k" },
+  "description": "A minimalist 24-hour linear clock showing your day's progress, work hours, and remaining time in real-time visualization.",
+  "image": "https://jm5k.github.io/profile.png"
+}
+</script>
+
+<!-- 🧠 Structured Data: WebApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "applicationCategory": "WebApplication",
+  "name": "24-Hour Linear Clock",
+  "url": "https://jm5k.github.io/",
+  "operatingSystem": "Any",
+  "author": { "@type": "Person", "name": "jm5k" },
+  "description": "A minimalist 24-hour linear clock that visualizes your day as a timeline with hour and quarter-hour ticks, live HH:MM, and % elapsed with remaining time.",
+  "softwareVersion": "1.0.0",
+  "featureList": [
+    "24-hour linear timeline",
+    "Quarter-hour tick marks",
+    "Live time marker",
+    "Work-hour highlighting",
+    "Percent of day elapsed",
+    "Time remaining"
+  ],
+  "keywords": "linear clock, 24 hour clock, day progress bar, minimalist clock, time tracker, timeline clock",
+  "isAccessibleForFree": true,
+  "image": "https://jm5k.github.io/profile.png",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "category": "Free"
+  }
+}
+</script>
+
+<!-- 📊 Google Analytics (optional) — replace G-XXXXXXXXXX with your ID -->
+<!--
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+-->
+</head>
+<body>
+
 <style>
   body {
     background:#000;
@@ -37,9 +122,8 @@
   }
   .workhour { color:yellow; }
   #statsBottom { color:#9cf; margin-top:6px; font-size:1.1em; }
+  footer { margin-top:20px;color:#777;font-size:0.9em; }
 </style>
-</head>
-<body>
 
 <div id="currentTimeTop"></div>
 
@@ -109,14 +193,22 @@ createHourLabels();
 updateClock();
 setInterval(updateClock, 1000);
 </script>
-  <div style="margin-top:20px;">
+
+<!-- Donation + Minimal View link -->
+<div style="margin-top:20px;">
   <a href="https://www.buymeacoffee.com/jm5k" target="_blank" style="text-decoration:none;">
-    <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" />
+    <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee"/>
   </a>
-    <p style="margin-top:15px;font-size:0.9em;">
-  <a href="clock.html" style="color:#777;text-decoration:none;">Minimal View (no donation link)</a>
-</p>
+  <p style="margin-top:15px;font-size:0.9em;">
+    <a href="clock.html" style="color:#777;text-decoration:none;">Minimal View (no donation link)</a>
+  </p>
+</div>
+
+<footer>
+  <p>
+    The <strong>24-Hour Linear Clock</strong> is a minimalist time visualization built by <strong>jm5k</strong> — showing real-time progress through the day with work-hour highlights and percentage tracking.
+  </p>
+</footer>
+
 </body>
 </html>
-
-
