@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Linear Clock</title>
+<style>
+  body {
+    background:#000;
+    color:#ccc;
+    font-family:monospace;
+    text-align:center;
+    margin-top:4%;
+  }
+  #currentTimeTop {
+    color:#0ff;
+    font-size:1.8em;
+    margin-bottom:8px;
+  }
+  #bar {
+    position:relative;
+    width:95%;
+    height:60px;
+    margin:8px auto;
+    background:#111;
+    border:2px solid #666;
+    border-radius:6px;
+    overflow:hidden;
+  }
+  #ticks { position:absolute; top:0; left:0; width:100%; height:100%; }
+  .tick { position:absolute; top:0; height:100%; }
+  .tick.qtr { width:1px; background:rgba(255,255,255,0.1); }
+  .tick.hour { width:2px; background:rgba(255,255,255,0.3); }
+  #marker { position:absolute; top:0; width:4px; height:100%; background:red; }
+  .label {
+    display:flex; justify-content:space-between;
+    width:95%; margin:8px auto 6px; font-size:0.9em; color:#888;
+  }
+  .workhour { color:yellow; }
+  #statsBottom { color:#9cf; margin-top:6px; font-size:1.1em; }
+</style>
+</head>
+<body>
+
+<div id="currentTimeTop"></div>
+
+<div id="bar">
+  <div id="ticks"></div>
+  <div id="marker"></div>
+</div>
+
+<div class="label" id="hourLabels"></div>
+<div id="statsBottom"></div>
+
+<script>
+function createTicks(){
+  const t = document.getElementById('ticks');
+  for(let h=0; h<24; h++){
+    for(let q=0; q<4; q++){
+      const pos = (h + q/4) / 24 * 100;
+      const d = document.createElement('div');
+      d.className = 'tick ' + (q===0 ? 'hour' : 'qtr');
+      d.style.left = `calc(${pos}% - 1px)`;
+      t.appendChild(d);
+    }
+  }
+}
+function createHourLabels(){
+  const labels = document.getElementById('hourLabels');
+  for(let h=0; h<=24; h++){
+    const span = document.createElement('span');
+    span.textContent = h.toString().padStart(2,'0');
+    if(h>=8 && h<=17) span.classList.add('workhour');
+    labels.appendChild(span);
+  }
+}
+function fmtHMS(totalSeconds){
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const hh = String(Math.floor(s/3600)).padStart(2,'0');
+  const mm = String(Math.floor((s%3600)/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  return `${hh}:${mm}:${ss}`;
+}
+function updateClock(){
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
+
+  // Marker position
+  const hoursFloat = h + m/60 + s/3600;
+  document.getElementById('marker').style.left = `calc(${hoursFloat}/24*100%)`;
+
+  // Top time (HH:MM)
+  const hh = String(h).padStart(2,'0');
+  const mm = String(m).padStart(2,'0');
+  document.getElementById('currentTimeTop').textContent = `${hh}:${mm}`;
+
+  // Bottom stats: % elapsed | remaining
+  const secondsSinceMidnight = h*3600 + m*60 + s;
+  const secondsPerDay = 24*3600;
+  const pct = (secondsSinceMidnight / secondsPerDay) * 100;
+  const remaining = secondsPerDay - secondsSinceMidnight;
+  document.getElementById('statsBottom').textContent =
+    `${pct.toFixed(2)}% of day elapsed | ${fmtHMS(remaining)} remaining`;
+}
+
+createTicks();
+createHourLabels();
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
