@@ -21,7 +21,7 @@
 <!-- 🐦 Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="About | 24-Hour Linear Clock by jm5k">
-<meta name="twitter:description" content="A minimalist time visualization by jm5k — concept, purpose, and contact info.">
+<meta name="twitter:description" content="A minimalist time visualization by jm5k — concept, purpose, planned updates, and contact info.">
 <meta name="twitter:image" content="https://jm5k.github.io/profile.png">
 
 <!-- 📱 Favicon -->
@@ -34,7 +34,7 @@
   "@type": "AboutPage",
   "url": "https://jm5k.github.io/about.html",
   "name": "About | 24-Hour Linear Clock",
-  "description": "About the minimalist 24-Hour Linear Clock web app by jm5k, including concept details and contact information.",
+  "description": "About the minimalist 24-Hour Linear Clock web app by jm5k, including concept details, contact information, and planned updates.",
   "author": { "@type": "Person", "name": "jm5k" },
   "publisher": { "@type": "Person", "name": "jm5k" },
   "mainEntity": {
@@ -63,10 +63,25 @@
     font-size:1.8em;
     margin-bottom:0.4em;
   }
+  h2 {
+    color:#ff0;
+    margin-top:2em;
+    font-size:1.4em;
+  }
   p {
     color:#aaa;
     line-height:1.6;
     margin:1em 0;
+  }
+  ul {
+    list-style:none;
+    padding-left:0;
+    color:#ccc;
+    line-height:1.6;
+  }
+  li::before {
+    content:"• ";
+    color:#0ff;
   }
   a {
     color:#0ff;
@@ -92,13 +107,26 @@
 </p>
 
 <p>
-  Designed for clarity and simplicity, this project runs entirely in your browser — no data collected,
-  no tracking, and no external dependencies.
+  Designed for clarity and simplicity, this project runs entirely in your browser — no tracking,
+  no servers, no data collection — just pure local time visualization.
 </p>
 
+<h2>Planned Updates</h2>
+
+<ul>
+  <li><strong>12-hour / 24-hour toggle</strong> — Switch seamlessly between 12-hour and 24-hour modes.</li>
+  <li><strong>Multi-timezone clocks</strong> — Display additional clocks side by side for global teams.</li>
+  <li><strong>Vertical layout option</strong> — View the timeline vertically for alternate screen orientations.</li>
+  <li><strong>Reversible time direction</strong> — Flip the time marker to move from right-to-left or bottom-to-top.</li>
+  <li><strong>Workday-specific tracking</strong> — Show <em>% of workday elapsed</em> and <em>workday time remaining</em>.</li>
+  <li><strong>Custom marker zones</strong> — Allow users to define colored regions for breaks, meetings, or focus blocks.</li>
+</ul>
+
 <p>
-  If you’d like to learn more, collaborate, or just say hello:
+  These features will gradually roll out in future updates as the clock evolves into a full time visualization toolkit.
 </p>
+
+<h2>Contact</h2>
 
 <p>
   📧 <a href="mailto:jm5k_dev@protonmail.me">jm5k_dev@protonmail.me</a>
