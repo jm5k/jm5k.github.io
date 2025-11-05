@@ -1,5 +1,6 @@
 # 24-Hour Linear Clock
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Build: Static HTML5](https://img.shields.io/badge/Build-Static%20HTML5-lightgrey.svg)](https://jm5k.github.io/)
 
 A minimalist web-based clock that visualizes the entire day as a single horizontal line.  
 Built by **[jm5k](https://jm5k.github.io/)** using HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
