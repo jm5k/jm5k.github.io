@@ -7,10 +7,6 @@
 A minimalist web-based clock that visualizes the entire day as a single horizontal line.  
 Built by **[jm5k](https://jm5k.github.io/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
 
-
-A minimalist web-based clock that visualizes the entire day as a single horizontal line.  
-Built by **[jm5k](https://jm5k.github.io/)** using HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
-
 ---
 
 ## 🕐 Features
