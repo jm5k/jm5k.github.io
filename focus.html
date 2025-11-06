@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FocusLine Pomodoro — jm5k</title>
+<meta name="description" content="A minimalist, linear Pomodoro timer with auto-advance, local storage, and subtle stats. No accounts, no tracking." />
+
+<style>
+  :root{
+    --bg:#0c0c0c; --fg:#eaeaea; --muted:#a9a9a9; --line:#1f1f1f; --accent:#00e5ff; /* cyan */
+    --work:#00e5ff; --break:#6be675; --long:#7aa0ff;
+    --danger:#ff5a5a;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#ffffff; --fg:#0f0f10; --muted:#5a5a5a; --line:#ececec; --accent:#00a8c6 }
+  }
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0; font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    background:var(--bg); color:var(--fg); display:grid; place-items:start center;
+  }
+  main{ width:min(900px,92vw); margin:40px 0 60px; }
+
+  header{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px;
+  }
+  .brand{ font-weight:600; letter-spacing:.2px;}
+  a{ color:var(--accent); text-decoration:none; border-bottom:1px solid transparent }
+  a:hover{ border-bottom-color:var(--accent) }
+
+  /* Timer card */
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
+    border:1px solid var(--line); border-radius: var(--radius); padding:18px;
+  }
+
+  .phase-row{
+    display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px;
+  }
+  .phase-label{ font-weight:600; letter-spacing:.3px }
+  .time-label{ font-variant-numeric:tabular-nums; font-size:clamp(20px, 4vw, 36px); }
+
+  .bar-wrap{
+    position:relative; width:100%; height:22px; border-radius:999px; background:var(--line); overflow:hidden;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+    margin:10px 0 14px;
+  }
+  .bar{
+    position:absolute; inset:0 auto 0 0; width:0%;
+    background: linear-gradient(90deg, rgba(255,255,255,.2), rgba(255,255,255,0) 30%),
+                var(--work);
+    transition: background-color .25s ease;
+  }
+  .ticks{
+    position:absolute; inset:0; pointer-events:none; background:
+      repeating-linear-gradient(90deg, transparent 0 1px, rgba(0,0,0,.05) 1px, rgba(0,0,0,.05) calc(100%/12), transparent calc(100%/12 + 1px));
+    opacity:.35;
+  }
+
+  .controls{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:6px 0 6px }
+  button, .input{
+    background:#151515; color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:8px 12px;
+  }
+  button{ cursor:pointer; font-weight:600 }
+  button:hover{ border-color:#3a3a3a }
+  button.primary{ background:var(--accent); color:#00141a; border-color:transparent }
+  button.danger{ background:#201414; border-color:#3a1a1a; color:#ffbdbd }
+  button:disabled{ opacity:.6; cursor:not-allowed }
+
+  .grid{
+    display:grid; gap:10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    margin-top:10px;
+  }
+  .field{ border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#0f0f0f }
+  .field label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px }
+  .field input[type="number"]{
+    width:100%; background:transparent; border:none; color:var(--fg);
+    font:600 16px/1.2 inherit; outline:none; -moz-appearance:textfield;
+  }
+  .field input::-webkit-outer-spin-button, .field input::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+  .toggles{ display:flex; gap:16px; align-items:center; margin-top:8px; color:var(--muted) }
+  .toggles label{ display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none }
+  .toggles input{ transform: translateY(1px) }
+
+  .sub{
+    display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px; color:var(--muted); font-size:14px;
+  }
+
+  footer{ margin-top:18px; color:var(--muted); font-size:14px }
+  .kbd{ font-variant-numeric:tabular-nums; background:#151515; border:1px solid var(--line); padding:2px 6px; border-radius:6px }
+  .pill{ padding:2px 8px; border:1px solid var(--line); border-radius:999px; font-size:12px; color:var(--muted) }
+
+  .ok{ color:#70e69f }
+  .warn{ color:#ffd27d }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">FocusLine Pomodoro</div>
+    <nav>
+      <a href="index.html">Linear Clock</a>
+      <span> · </span>
+      <a href="about.html">About</a>
+      <span> · </span>
+      <a href="#" id="notifyLink" title="Enable desktop notifications">Notifications</a>
+    </nav>
+  </header>
+
+  <section class="card" aria-live="polite">
+    <div class="phase-row">
+      <div class="phase-label" id="phaseLabel">Work</div>
+      <div class="time-label" id="timeLabel">25:00</div>
+    </div>
+
+    <div class="bar-wrap" role="progressbar" aria-valuemin="0" aria-valuenow="0" aria-valuemax="100" aria-label="Pomodoro progress">
+      <div class="bar" id="bar"></div>
+      <div class="ticks" aria-hidden="true"></div>
+    </div>
+
+    <div class="controls">
+      <button id="startPause" class="primary">Start</button>
+      <button id="reset">Reset</button>
+      <button id="skip">Skip</button>
+      <span class="pill" id="cyclePill">Cycle 1/4</span>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="workMins">Work (minutes)</label>
+        <input id="workMins" type="number" min="5" max="120" step="1" value="25" />
+      </div>
+      <div class="field">
+        <label for="shortMins">Short Break</label>
+        <input id="shortMins" type="number" min="3" max="60" step="1" value="5" />
+      </div>
+      <div class="field">
+        <label for="longMins">Long Break</label>
+        <input id="longMins" type="number" min="5" max="90" step="1" value="15" />
+      </div>
+      <div class="field">
+        <label for="cycles">Cycles until Long Break</label>
+        <input id="cycles" type="number" min="2" max="12" step="1" value="4" />
+      </div>
+    </div>
+
+    <div class="toggles">
+      <label><input id="autoAdvance" type="checkbox" checked /> Auto-advance</label>
+      <label><input id="soundOn" type="checkbox" /> Chime on complete</label>
+    </div>
+
+    <div class="sub">
+      <div>
+        <span id="statusMsg" class="ok">Ready</span>
+        <span aria-hidden="true"> · </span>
+        <span>Today: <strong id="todayMin">0</strong> min</span>
+      </div>
+      <div class="muted">Shortcuts:
+        <span class="kbd">Space</span> start/pause
+        <span class="kbd">S</span> skip
+        <span class="kbd">R</span> reset
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built by <a href="mailto:jm5k_dev@protonmail.me">jm5k</a>. No accounts. No tracking. Your settings live in your browser.
+  </footer>
+</main>
+
+<!-- Chime: tiny, embedded (440Hz A tone) -->
+<audio id="ding" preload="auto">
+  <source src="data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBIAAAABAAEAESsAACJWAAACABYAaW5mbyBKa2IAAAAAAAAAPwAAAP///wAAAP///wAAAP///wAAAP///wAAAP///wAA" type="audio/wav" />
+</audio>
+
+<script>
+(function(){
+  const els = {
+    bar: document.getElementById('bar'),
+    phaseLabel: document.getElementById('phaseLabel'),
+    timeLabel: document.getElementById('timeLabel'),
+    startPause: document.getElementById('startPause'),
+    reset: document.getElementById('reset'),
+    skip: document.getElementById('skip'),
+    cyclePill: document.getElementById('cyclePill'),
+    work: document.getElementById('workMins'),
+    short: document.getElementById('shortMins'),
+    long: document.getElementById('longMins'),
+    cycles: document.getElementById('cycles'),
+    autoAdvance: document.getElementById('autoAdvance'),
+    soundOn: document.getElementById('soundOn'),
+    status: document.getElementById('statusMsg'),
+    todayMin: document.getElementById('todayMin'),
+    notifyLink: document.getElementById('notifyLink'),
+    ding: document.getElementById('ding'),
+    progressbar: document.querySelector('.bar-wrap')
+  };
+
+  const LS_KEY = 'focusline:v1';
+  const HISTORY_KEY = 'focusline:history';
+  const notif = {enabled:false};
+
+  const Phases = { Work:'Work', Short:'Short Break', Long:'Long Break' };
+
+  let state = {
+    phase: Phases.Work,
+    cycle: 1, // 1..cycles
+    running: false,
+    startEpoch: 0,
+    durationMs: 25*60*1000,
+    elapsedMs: 0
+  };
+
+  function load(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      if(saved.work) els.work.value = saved.work;
+      if(saved.short) els.short.value = saved.short;
+      if(saved.long) els.long.value = saved.long;
+      if(saved.cycles) els.cycles.value = saved.cycles;
+      if(saved.autoAdvance !== undefined) els.autoAdvance.checked = saved.autoAdvance;
+      if(saved.soundOn !== undefined) els.soundOn.checked = saved.soundOn;
+      const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      pruneHistory(hist);
+      els.todayMin.textContent = minutesToday(hist);
+    }catch{}
+    setPhase(Phases.Work, false);
+    updateUI();
+  }
+
+  function save(){
+    const data = {
+      work: +els.work.value, short: +els.short.value, long: +els.long.value,
+      cycles: +els.cycles.value, autoAdvance: els.autoAdvance.checked, soundOn: els.soundOn.checked
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  }
+
+  function pruneHistory(hist){
+    const cutoff = Date.now() - 7*24*60*60*1000;
+    let changed=false;
+    for(let i=hist.length-1;i>=0;i--) if(hist[i].t < cutoff){ hist.splice(i,1); changed=true; }
+    if(changed) localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+  }
+  function minutesToday(hist){
+    const start = new Date(); start.setHours(0,0,0,0);
+    const t0 = +start;
+    return Math.round(hist.filter(x=>x.t>=t0).reduce((a,b)=>a+b.m,0));
+  }
+  function addHistory(minutes){
+    if(!minutes || minutes<0) return;
+    const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    hist.push({ t: Date.now(), m: minutes });
+    pruneHistory(hist);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+    els.todayMin.textContent = minutesToday(hist);
+  }
+
+  function msForPhase(phase){
+    if(phase===Phases.Work) return +els.work.value * 60_000;
+    if(phase===Phases.Short) return +els.short.value * 60_000;
+    return +els.long.value * 60_000;
+  }
+
+  function setPhase(phase, announce=true){
+    state.phase = phase;
+    state.durationMs = msForPhase(phase);
+    state.elapsedMs = 0;
+    state.startEpoch = 0;
+    const color = phase===Phases.Work ? 'var(--work)' : (phase===Phases.Short ? 'var(--break)' : 'var(--long)');
+    els.bar.style.background = `linear-gradient(90deg, rgba(255,255,255,.2), rgba(255,255,255,0) 30%), ${color}`;
+    els.phaseLabel.textContent = phase;
+    if(announce) speak(`${phase} started`);
+    updateUI();
+  }
+
+  function speak(msg){
+    els.status.textContent = msg;
+    if(notif.enabled && ('Notification' in window) && Notification.permission==='granted'){
+      try{ new Notification('FocusLine', { body: msg }); }catch{}
+    }
+  }
+
+  function format(ms){
+    const t = Math.max(0, Math.round(ms/1000));
+    const m = Math.floor(t/60), s = t%60;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  let rafId=0;
+  function tick(){
+    if(!state.running){ rafId = requestAnimationFrame(tick); return; }
+    const now = performance.now();
+    state.elapsedMs = now - state.startEpoch;
+    if(state.elapsedMs >= state.durationMs){
+      finishPhase();
+    }
+    updateUI();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function start(){
+    if(state.running) return;
+    state.running = true;
+    // anchor startEpoch so elapsed = prior elapsed (if any)
+    const now = performance.now();
+    if(state.startEpoch===0) state.startEpoch = now;
+    else state.startEpoch = now - state.elapsedMs;
+    els.startPause.textContent = 'Pause';
+    els.startPause.classList.add('primary');
+    speak('Timer started');
+  }
+
+  function pause(){
+    if(!state.running) return;
+    state.running = false;
+    els.startPause.textContent = 'Start';
+    speak('Paused');
+  }
+
+  function reset(){
+    const wasRunning = state.running;
+    state.running = false;
+    const prevPhase = state.phase;
+    setPhase(prevPhase, false);
+    els.startPause.textContent = 'Start';
+    if(wasRunning) speak('Reset');
+    updateUI();
+  }
+
+  function skip(){
+    if(state.running){
+      // count partial work time if in Work
+      if(state.phase===Phases.Work){
+        const mins = Math.floor(state.elapsedMs/60000);
+        if(mins>0) addHistory(mins);
+      }
+    }
+    state.running=false;
+    nextPhase();
+  }
+
+  function finishPhase(){
+    state.running=false;
+    if(els.soundOn.checked){
+      try{ els.ding.currentTime = 0; els.ding.play().catch(()=>{}); }catch{}
+    }
+    if(state.phase===Phases.Work){
+      addHistory(Math.round(state.durationMs/60000)); // full block
+    }
+    speak(`${state.phase} complete`);
+    if(els.autoAdvance.checked) nextPhase();
+    else {
+      els.startPause.textContent = 'Start';
+      els.status.textContent = 'Complete · Ready for next';
+    }
+  }
+
+  function nextPhase(){
+    const totalCycles = +els.cycles.value;
+    if(state.phase===Phases.Work){
+      // if finishing a work block, pick short or long
+      if(state.cycle >= totalCycles){
+        setPhase(Phases.Long);
+        state.cycle = 1; // after long break, next work is cycle 1
+      }else{
+        setPhase(Phases.Short);
+        state.cycle++;
+      }
+    } else {
+      // from any break -> Work
+      setPhase(Phases.Work);
+    }
+    els.startPause.textContent = 'Start';
+    updateUI();
+  }
+
+  function updateUI(){
+    // progress
+    const p = Math.max(0, Math.min(1, state.elapsedMs / state.durationMs));
+    const pct = (p*100).toFixed(4)+'%';
+    els.bar.style.width = pct;
+    els.progressbar.setAttribute('aria-valuenow', Math.round(p*100));
+    els.timeLabel.textContent = format(state.durationMs - state.elapsedMs);
+    // cycle pill
+    els.cyclePill.textContent = `${state.phase===Phases.Work?'Cycle':'Break'} ${state.phase===Phases.Work?state.cycle:'·'} / ${els.cycles.value}`;
+    // save settings
+    save();
+  }
+
+  // Event wiring
+  els.startPause.addEventListener('click', ()=> state.running ? pause() : start());
+  els.reset.addEventListener('click', reset);
+  els.skip.addEventListener('click', skip);
+
+  [els.work, els.short, els.long, els.cycles].forEach(inp=>{
+    inp.addEventListener('change', ()=>{
+      // if phase matches changed input, resize duration preserving % progress
+      if((state.phase===Phases.Work && inp===els.work) ||
+         (state.phase===Phases.Short && inp===els.short) ||
+         (state.phase===Phases.Long && inp===els.long)){
+        const pct = state.durationMs ? (state.elapsedMs/state.durationMs) : 0;
+        state.durationMs = msForPhase(state.phase);
+        state.elapsedMs = Math.min(state.durationMs, Math.max(0, state.durationMs * pct));
+      }
+      save(); updateUI();
+    });
+  });
+
+  // Keyboard shortcuts
+  window.addEventListener('keydown', (e)=>{
+    if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+    const k = e.key.toLowerCase();
+    if(k===' ' || k==='spacebar'){ e.preventDefault(); state.running ? pause() : start(); }
+    else if(k==='s'){ e.preventDefault(); skip(); }
+    else if(k==='r'){ e.preventDefault(); reset(); }
+  });
+
+  // Notifications link
+  els.notifyLink.addEventListener('click', async (e)=>{
+    e.preventDefault();
+    if(!('Notification' in window)){ speak('Notifications not supported'); return; }
+    if(Notification.permission==='granted'){ notif.enabled=true; speak('Notifications enabled'); return; }
+    if(Notification.permission!=='denied'){
+      try{
+        const perm = await Notification.requestPermission();
+        notif.enabled = (perm==='granted');
+        speak(notif.enabled?'Notifications enabled':'Permission denied');
+      }catch{ speak('Permission request failed'); }
+    } else {
+      speak('Notifications blocked in browser settings');
+    }
+  });
+
+  // Accessibility: prevent text selection on spacebar spam
+  document.addEventListener('selectstart', e=>{
+    if(e.detail>1) e.preventDefault();
+  });
+
+  // Kickoff
+  load();
+  rafId = requestAnimationFrame(tick);
+
+  // Visibility pause (optional strictness: don’t auto-pause; just keep running)
+  document.addEventListener('visibilitychange', ()=>{ /* intentionally no-op */ });
+
+})();
+</script>
+</body>
+</html>
