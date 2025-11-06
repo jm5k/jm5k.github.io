@@ -88,6 +88,7 @@
     text-decoration:none;
   }
   a:hover { text-decoration:underline; }
+  .muted { color:#777; font-size:0.95em; }
   footer {
     margin-top:40px;
     color:#777;
@@ -101,48 +102,49 @@
 
 <p>
   The <strong>24-Hour Linear Clock</strong> is a minimalist time visualization built by <strong>jm5k</strong>.
-  It presents the entire day as a single horizontal line — each hour and quarter-hour marked, with
-  a live red indicator showing the current time, a highlighted workday band (08:00–17:00),
-  and real-time stats for percent of day elapsed and time remaining.
+  It presents the entire day as a single horizontal line — each hour and quarter-hour marked — with
+  a live red indicator for the current time, a highlighted workday band (08:00–17:00), and real-time
+  stats for percent of day elapsed and time remaining. Runs fully in your browser. No tracking. No servers.
 </p>
 
-<p>
-  Designed for clarity and simplicity, this project runs entirely in your browser — no tracking,
-  no servers, no data collection — just pure local time visualization.
-</p>
-
-<h2>Planned Updates</h2>
-
+<h2>Completed</h2>
 <ul>
-  <li><strong>12-hour / 24-hour toggle</strong> — Switch seamlessly between 12-hour and 24-hour modes.</li>
-  <li><strong>Multi-timezone clocks</strong> — Display additional clocks side by side for global teams.</li>
-  <li><strong>Vertical layout option</strong> — View the timeline vertically for alternate screen orientations.</li>
-  <li><strong>Reversible time direction</strong> — Flip the time marker to move from right-to-left or bottom-to-top.</li>
-  <li><strong>Workday-specific tracking</strong> — Show <em>% of workday elapsed</em> and <em>workday time remaining</em>.</li>
-  <li><strong>Custom marker zones</strong> — Allow users to define colored regions for breaks, meetings, or focus blocks.</li>
+  <li>
+    <strong>12-hour / 24-hour toggle</strong> — Applies to both the top time readout and the hour labels.
+    Remembers your preference using <code>localStorage</code>. The toggle control is placed directly under
+    the “elapsed | remaining” line for clarity.
+  </li>
 </ul>
 
-<p>
-  These features will gradually roll out in future updates as the clock evolves into a full time visualization toolkit.
+<h2>Planned Updates</h2>
+<ul>
+  <li><strong>Multi-timezone clocks</strong> — Display additional clocks side by side for global teams.</li>
+  <li><strong>Vertical layout option</strong> — View the timeline vertically for alternate screen orientations.</li>
+  <li><strong>Reversible time direction</strong> — Flip the time marker to move right→left (or bottom→top).</li>
+  <li><strong>Workday-specific tracking</strong> — Show <em>% of workday elapsed</em> and <em>workday time remaining</em>.</li>
+  <li><strong>Custom marker zones</strong> — Define colored regions for breaks, meetings, or focus blocks (saved locally).</li>
+</ul>
+
+<p class="muted">
+  Roadmap is iterative: the goal is to remain simple, fast, and readable while adding power features thoughtfully.
 </p>
 
 <h2>Contact</h2>
-
 <p>
   📧 <a href="mailto:jm5k_dev@pm.me">jm5k_dev@pm.me</a>
 </p>
 
-<!-- Donation + Minimal View link -->
+<!-- Donation -->
 <div style="margin-top:20px;">
   <a href="https://www.buymeacoffee.com/jm5k" target="_blank" style="text-decoration:none;">
     <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee"/>
   </a>
-  </div>
+</div>
 
 <p>
-  ⏱ Return to the clock:  
-  <a href="index.html">Linear Clock Home</a>  
+  ⏱ Return to the clock: <a href="index.html">Linear Clock Home</a>
 </p>
+
 <footer>
   <p>Minimal time, maximum clarity.</p>
 </footer>
@@ -155,8 +157,6 @@
     <a href="https://github.com/jm5k/jm5k.github.io" target="_blank" style="color:#999; text-decoration:none;">View source on GitHub</a>
   </p>
 </footer>
+
 </body>
 </html>
-
-
-
