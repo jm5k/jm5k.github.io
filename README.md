@@ -77,7 +77,7 @@ If you enjoy the project and want to support future development:
 ---
 
 ## 📬 Contact
-📧 [jm5k_dev@protonmail.me](mailto:jm5k_dev@protonmail.me)
+📧 [jm5k_dev@protonmail.me](mailto:jm5k_dev@pm.me)
 
 ---
 
