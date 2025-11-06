@@ -47,7 +47,7 @@ Or the minimalist version (no donation link):
 
 ### 🕒 FocusLine Pomodoro
 
-**FocusLine** is a minimalist [Pomodoro timer](./focus.html) designed to complement the [24-Hour Linear Clock](./index.html).  
+**FocusLine** is a minimalist [Pomodoro timer](https://jm5k.github.io/focus.html) designed to complement the [24-Hour Linear Clock](https://jm5k.github.io).  
 It turns your work sessions into a calm, cyan progress bar — no clutter, no accounts, no tracking.
 
 #### ✨ Features
@@ -66,7 +66,7 @@ A frictionless focus tool that pairs beautifully with the Linear Clock’s aesth
 Every detail is intentional — minimalist visuals, zero distractions, and smooth local persistence.
 
 #### 🔗 Try it
-➡️ [FocusLine Pomodoro](./focus.html) — stay in rhythm, stay in flow.
+➡️ [FocusLine Pomodoro](https://jm5k.github.io/focus.html) — stay in rhythm, stay in flow.
 
 ---
 
