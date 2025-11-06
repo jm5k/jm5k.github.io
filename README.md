@@ -19,12 +19,17 @@ Built by **[jm5k](https://jm5k.github.io/)** using pure HTML, CSS, and JavaScrip
 ---
 
 ## 🧭 Planned Updates
-- 12-hour / 24-hour mode toggle  
 - Multiple timezone clocks  
 - Vertical layout option  
 - Reversible marker direction  
 - Workday progress tracking  
 - Custom marker zones (breaks, focus blocks, etc.)
+- Color Customization
+
+---
+
+## ✅ Completed Updates
+- 12-hour / 24-hour toggle
 
 ---
 
