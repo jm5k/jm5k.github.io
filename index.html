@@ -74,24 +74,13 @@
   }
 }
 </script>
-
-<!-- 📊 Google Analytics (optional) — replace G-XXXXXXXXXX with your ID -->
-<!--
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
--->
 </head>
 <body>
 <nav style="margin-bottom:25px;">
   <a href="clock.html" style="color:#0ff;text-decoration:none;margin:0 12px;">Minimal View</a> |
   <a href="about.html" style="color:#0ff;text-decoration:none;margin:0 12px;">About</a>
 </nav>
-  
+
 <style>
   body {
     background:#000;
@@ -127,6 +116,30 @@
   .workhour { color:yellow; }
   #statsBottom { color:#9cf; margin-top:6px; font-size:1.1em; }
   footer { margin-top:20px;color:#777;font-size:0.9em; }
+
+  /* 🔘 Slider switch styling */
+  #controls { margin:10px 0 6px; }
+  .switch {
+    display:inline-flex; align-items:center; gap:.6rem; cursor:pointer; color:#9cf; user-select:none;
+  }
+  .switch input { position:absolute; opacity:0; width:0; height:0; }
+  .slider {
+    position:relative; width:44px; height:24px; background:#333; border:1px solid #555; border-radius:999px;
+    transition:background .2s ease, border-color .2s ease; box-shadow: inset 0 0 0 2px rgba(0,0,0,.2);
+  }
+  .slider::before {
+    content:""; position:absolute; height:18px; width:18px; left:3px; top:50%; transform:translateY(-50%);
+    background:#bbb; border-radius:50%; transition:left .18s ease, background .2s ease, box-shadow .2s ease;
+    box-shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  .switch input:checked + .slider { background:#0b3a3a; border-color:#0aa; }
+  .switch input:checked + .slider::before { left:23px; background:#0ff; }
+  .switch input:focus-visible + .slider { outline:2px solid #0ff; outline-offset:3px; }
+  .switch-label { font-size:.95em; color:#9cf; letter-spacing:.2px; }
+  a, a:visited, a:hover, a:active {
+  color:#0ff;
+}
+
 </style>
 
 <div id="currentTimeTop"></div>
@@ -139,7 +152,19 @@
 <div class="label" id="hourLabels"></div>
 <div id="statsBottom"></div>
 
+<!-- ✅ Slider toggle placed under the stats line -->
+<div id="controls">
+  <label class="switch" title="Switch between 12h and 24h">
+    <input id="formatToggle" type="checkbox" aria-label="Toggle 24-hour time">
+    <span class="slider"></span>
+    <span id="formatLabel" class="switch-label">24-hour</span>
+  </label>
+</div>
+
 <script>
+/* ================================
+   Ticks (static)
+================================ */
 function createTicks(){
   const t = document.getElementById('ticks');
   for(let h=0; h<24; h++){
@@ -152,15 +177,54 @@ function createTicks(){
     }
   }
 }
-function createHourLabels(){
+
+/* ================================
+   Hour Labels (toggle-aware)
+================================ */
+let use24h = JSON.parse(localStorage.getItem('use24h') ?? 'true'); // default 24h
+
+function formatHourLabel(h24) {
+  if (use24h) {
+    return String(h24).padStart(2, '0'); // 00..24
+  } else {
+    const h = h24 % 24;
+    const base = (h % 12) || 12; // 0->12, 13->1, etc.
+    return String(base).padStart(2, '0'); // 12,01..11,12,...
+  }
+}
+
+function renderHourLabels() {
   const labels = document.getElementById('hourLabels');
-  for(let h=0; h<=24; h++){
+  labels.innerHTML = '';
+  for (let h = 0; h <= 24; h++) {
     const span = document.createElement('span');
-    span.textContent = h.toString().padStart(2,'0');
-    if(h>=8 && h<=17) span.classList.add('workhour');
+    span.textContent = formatHourLabel(h);
+    if (h >= 8 && h <= 17) span.classList.add('workhour');
     labels.appendChild(span);
   }
 }
+
+/* ================================
+   Time Formatting (toggle-aware)
+================================ */
+function formatClockTime(hours, minutes) {
+  if (use24h) {
+    const hh = String(hours).padStart(2, '0');
+    const mm = String(minutes).padStart(2, '0');
+    return `${hh}:${mm}`;
+  } else {
+    let h = hours % 12;
+    if (h === 0) h = 12;
+    const hh = String(h).padStart(2, '0');
+    const mm = String(minutes).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    return `${hh}:${mm} ${ampm}`;
+  }
+}
+
+/* ================================
+   Clock Update
+================================ */
 function fmtHMS(totalSeconds){
   const s = Math.max(0, Math.floor(totalSeconds));
   const hh = String(Math.floor(s/3600)).padStart(2,'0');
@@ -168,6 +232,7 @@ function fmtHMS(totalSeconds){
   const ss = String(s%60).padStart(2,'0');
   return `${hh}:${mm}:${ss}`;
 }
+
 function updateClock(){
   const now = new Date();
   const h = now.getHours();
@@ -178,10 +243,8 @@ function updateClock(){
   const hoursFloat = h + m/60 + s/3600;
   document.getElementById('marker').style.left = `calc(${hoursFloat}/24*100%)`;
 
-  // Top time (HH:MM)
-  const hh = String(h).padStart(2,'0');
-  const mm = String(m).padStart(2,'0');
-  document.getElementById('currentTimeTop').textContent = `${hh}:${mm}`;
+  // Top time (toggle-aware)
+  document.getElementById('currentTimeTop').textContent = formatClockTime(h, m);
 
   // Bottom stats: % elapsed | remaining
   const secondsSinceMidnight = h*3600 + m*60 + s;
@@ -192,39 +255,43 @@ function updateClock(){
     `${pct.toFixed(2)}% of day elapsed | ${fmtHMS(remaining)} remaining`;
 }
 
+/* ================================
+   Boot
+================================ */
 createTicks();
-createHourLabels();
+renderHourLabels();
 updateClock();
 setInterval(updateClock, 1000);
+
+// Wire up the slider toggle
+const formatToggleEl = document.getElementById('formatToggle');
+const formatLabelEl = document.getElementById('formatLabel');
+if (formatToggleEl && formatLabelEl) {
+  formatToggleEl.checked = use24h; // reflect saved state
+  formatLabelEl.textContent = use24h ? '24-hour' : '12-hour';
+  formatToggleEl.addEventListener('change', () => {
+    use24h = formatToggleEl.checked;
+    localStorage.setItem('use24h', JSON.stringify(use24h));
+    formatLabelEl.textContent = use24h ? '24-hour' : '12-hour';
+    renderHourLabels();   // re-render labels
+    updateClock();        // re-render time immediately
+  });
+}
 </script>
 
 <!-- Donation + Minimal View link -->
 <p>
-  ☕ Support the project:  
+  ☕ Support the project:
   <a href="https://www.buymeacoffee.com/jm5k" target="_blank">Buy me a coffee</a>
 </p>
-  
+
 <p style="color:#888;max-width:720px;margin:18px auto 0;line-height:1.5;font-size:0.95em;">
   This <strong>24-hour linear clock</strong> is a minimalist <em>time visualization</em> that shows the
   entire day as a single horizontal timeline with hour and quarter-hour ticks, a live time marker,
   highlighted work hours (08:00–17:00), and <em>percentage of day elapsed</em> plus time remaining.
   Built by <strong>jm5k</strong> as a clean, browser-based <em>web app</em> on GitHub Pages.
 </p>
-<footer style="margin-top:40px; font-size:0.9em; color:#777;">
-  <hr style="width:60%; margin:20px auto; border:0; border-top:1px solid #333;">
-  <p style="color:#00ffff;">
-    © 2025 <strong>jm5k</strong> | <a href="https://github.com/jm5k/jm5k.github.io/blob/main/LICENSE" target="_blank" style="color:#00ffff; text-decoration:none;">MIT License</a>
-  </p>
-  <p style="color:#555; margin-top:6px;">
-    <a href="https://github.com/jm5k/jm5k.github.io" target="_blank" style="color:#999; text-decoration:none;">View source on GitHub</a>
-  </p>
-</footer>
+<footer></footer>
 
 </body>
 </html>
-
-
-
-
-
-
