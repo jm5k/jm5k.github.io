@@ -1,0 +1,26 @@
+name: IndexNow Ping
+on:
+  push:
+    branches: [ main ]
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Submit URLs to IndexNow
+        run: |
+          JSON=$(cat <<'EOF'
+          {
+            "host": "jm5k.github.io",
+            "key": "8e3f2c9db1f44a7ab6ac2f8f4f2b7f91",
+            "urlList": [
+              "https://jm5k.github.io/",
+              "https://jm5k.github.io/clock.html",
+              "https://jm5k.github.io/about.html",
+              "https://jm5k.github.io/focus.html"
+            ]
+          }
+          EOF
+          )
+          curl -sS -H "Content-Type: application/json; charset=utf-8" \
+            -d "$JSON" https://api.indexnow.org/indexnow
