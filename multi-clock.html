@@ -4,367 +4,454 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>24-Hour Linear Clock | Multi-Timezone</title>
-<meta name="description" content="Multi-timezone 24-hour linear clock by jm5k — add world clocks and see each day’s progress at a glance." />
-<meta name="keywords" content="linear clock, multi timezone, jm5k, minimalist clock, 24-hour timeline, time visualization" />
-<meta name="author" content="jm5k" />
+<title>Multi-Clock | 24-Hour Linear Clock by jm5k</title>
+<meta name="description" content="Multi-timezone 24-hour linear clocks with UTC-offset sorting, pinned favorites, custom labels, gradient progress line, drag & drop reordering, edit-in-place labels, and localStorage persistence." />
 <link rel="icon" href="https://jm5k.github.io/profile.png" type="image/png" />
 
 <style>
-  :root {
-    --fg:#ccc;
-    --muted:#888;
-    --accent:#0ff;
-    --rail:#222;
-    --marker:#0ff;
-    --tick:#333;
-    --yellow:#cc9; /* toned down */
+  :root{
+    --bg:#000; --fg:#ccc; --muted:#888; --soft:#aaa;
+    --cyan:#0ff; --yellow:#cc9; --rail:#222; --tick:#333; --marker:#0ff;
   }
-  * { box-sizing:border-box; }
-  html, body { height:100%; }
-  body {
-    background:#000;
-    color:var(--fg);
-    font-family:monospace;
-    margin:0;
-    padding:32px 16px 64px;
+  *{box-sizing:border-box}
+  body{ background:var(--bg); color:var(--fg); font-family:monospace; margin:0; padding:32px 16px 64px; }
+  a{color:var(--cyan); text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .wrap{max-width:960px; margin:0 auto}
+  h1{margin:0 0 10px; font-weight:600; font-size:1.25rem; color:var(--yellow)}
+  .sub{margin:0 0 18px; color:var(--muted)}
+  hr.nav{border:none; border-top:1px solid rgba(255,255,255,0.1); margin:24px 0}
+
+  .nav{margin-bottom:18px}
+  .nav a{margin-right:12px}
+
+  .controls{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0 20px; }
+  .controls select,.controls input[type="text"],.controls button{
+    background:#111; color:var(--fg); border:1px solid #222; padding:8px 10px; font-family:inherit; border-radius:6px;
   }
-  a, a:visited, a:hover, a:active { color:var(--accent); }
+  .controls select{min-width:340px}
+  .controls input[type="text"]{min-width:240px}
+  .controls button{cursor:pointer}
+  .controls .hint{color:var(--muted); font-size:0.9rem}
 
-  .wrap { max-width:960px; margin:0 auto; }
-
-  h1 { margin:0 0 10px; font-weight:600; font-size:1.25rem; color:var(--yellow); }
-  p.sub { margin:0 0 18px; color:var(--muted); }
-
-  /* Controls */
-  .controls {
-    display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0 20px;
-  }
-  .controls select, .controls button, .controls input[type="text"] {
-    background:#111; color:var(--fg); border:1px solid #222; padding:8px 10px;
-    font-family:inherit; border-radius:6px;
-  }
-  .controls button { cursor:pointer; }
-  .controls .always-links a { margin-right:12px; text-decoration:none; }
-
-  /* Thin nav line (your preferred style) */
-  hr.nav { border:none; border-top:1px solid rgba(255,255,255,0.1); margin:24px 0; }
-
-  /* Clock block */
-  .clock {
+  .clock{
     border:1px solid #111; border-radius:10px; padding:14px 14px 18px; margin:18px 0;
     background:#070707; box-shadow:0 0 0 1px #0a0a0a inset;
   }
-  .clock .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px; }
-  .clock .title { color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px; }
-  .clock .title small { color:var(--muted); font-weight:400; }
-  .clock .now { color:var(--accent); }
-  .clock .pct { color:var(--yellow); }
-  .clock .subline { color:var(--muted); font-size:0.9rem; display:flex; align-items:center; gap:10px; }
+  .clock.dragging{opacity:0.6; outline:1px dashed #444}
+  .drop-target{outline:1px dashed rgba(0,255,255,0.45)}
+  .head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px; cursor:grab; user-select:none; }
+  .head:active{cursor:grabbing}
+  .title{color:var(--cyan); font-weight:600; display:flex; align-items:center; gap:8px}
+  .title small{color:var(--muted); font-weight:400}
+  .now{color:var(--cyan)}
+  .pct{color:var(--yellow)}
+  .subline{color:var(--muted); font-size:0.9rem; display:flex; align-items:center; gap:10px}
 
-  .remove-btn {
+  .btns{display:flex; gap:6px; align-items:center}
+  .btn{
     background:#111; color:#999; border:1px solid #222; padding:2px 6px; border-radius:6px; cursor:pointer;
   }
-  .remove-btn:hover { color:#fff; border-color:#333; }
+  .btn:hover{color:#fff; border-color:#333}
 
-  /* Linear rail */
-  .rail {
-    position:relative; height:8px; background:var(--rail); border-radius:999px; margin:12px 0 6px;
-    outline:1px solid #0a0a0a;
-  }
-  .fill {
+  .rail{ position:relative; height:8px; background:var(--rail); border-radius:999px; margin:12px 0 6px; outline:1px solid #0a0a0a; }
+  .fill{
     position:absolute; left:0; top:0; bottom:0; width:0%;
     background:linear-gradient(to right, rgba(0,255,255,0.25), rgba(0,255,255,0.9));
     border-radius:999px;
   }
-  .marker {
+  .marker{
     position:absolute; top:50%; transform:translate(-50%,-50%); height:16px; width:2px; background:var(--marker);
     box-shadow:0 0 6px rgba(0,255,255,0.75);
   }
-  .ticks {
-    position:relative; display:flex; justify-content:space-between; font-size:0.8rem;
-  }
-  .ticks span { color:#555; }
+  .ticks{position:relative; display:flex; justify-content:space-between; font-size:0.8rem}
+  .ticks span{color:#555}
 
-  #extraClocks { margin-top:10px; }
+  .offset{color:var(--yellow)}
+  .label-edit{
+    background:#0b0b0b; color:var(--fg); border:1px solid #222; padding:2px 6px; border-radius:6px;
+    font-family:inherit; font-size:0.95rem; width:220px;
+  }
+  .label-actions{display:flex; gap:6px}
 </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="nav">
+      <a href="clock.html">Minimal View</a> |
+      <a href="multi-clock.html">Multi-Clock</a> |
+      <a href="focus.html">FocusLine</a> |
+      <a href="about.html">About</a>
+    </div>
+
     <h1>24-Hour Linear Clock — Multi-Timezone</h1>
-    <p class="sub">Live progress through the day. Add world clocks below. Middle-click a clock to remove, or use its ✕ button.</p>
+    <p class="sub">
+      Add clocks below. The list shows <span class="offset">UTC offsets</span> and is sorted by offset. Pinned favorites appear first.
+      Middle-click a clock to remove, or use ✕. Drag the header to reorder, nudge with ▲/▼, and edit labels inline. (Saved locally.)
+    </p>
 
     <div class="controls">
-      <!-- Always-cyan links -->
-      <div class="always-links">
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-      </div>
-
-      <!-- Add-timezone controls -->
       <select id="tzSelect" title="Choose a timezone"></select>
-      <button id="addBtn" aria-label="Add timezone clock">Add</button>
-
-      <!-- Optional label override -->
       <input id="labelInput" type="text" placeholder="Optional label (e.g., London HQ)" />
+      <button id="addBtn" aria-label="Add timezone clock">Add</button>
+      <span class="hint">Pinned: UTC, Phoenix (AZ), NY, Chicago, Denver, LA, London, Berlin, Tokyo, Singapore, Sydney.</span>
     </div>
 
     <hr class="nav" />
-
-    <!-- Default/local clock -->
-    <section id="defaultClock" class="clock" data-tz="local">
-      <div class="head">
-        <div class="title">Local Time <small>(system)</small></div>
-        <div class="now" id="currentTimeTop">--:--:--</div>
-      </div>
-      <div class="rail">
-        <div class="fill" id="fill-default"></div>
-        <div class="marker" id="marker-default" style="left:0%;"></div>
-      </div>
-      <div class="ticks">
-        <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
-      </div>
-      <div class="subline">
-        <span class="pct" id="pct-default">0.00%</span> of day elapsed
-      </div>
-    </section>
-
-    <!-- Extra clocks appear here -->
     <div id="extraClocks"></div>
   </div>
 
 <script>
-/* ===================== Utilities ===================== */
+/* ---------- Constants & DOM ---------- */
+const LS_KEY = 'jm5k_multi_clocks_v2'; // version bump for edit-label feature
+const tzSelect   = document.getElementById('tzSelect');
+const addBtn     = document.getElementById('addBtn');
+const labelInput = document.getElementById('labelInput');
+const extraClocks= document.getElementById('extraClocks');
+
+/* ---------- Utilities ---------- */
 const pad = (n)=> String(n).padStart(2,'0');
+const idSafe = (t)=> t.replace(/[^a-z0-9]/gi,'-').toLowerCase();
 
 function getNowInTZ(tz) {
-  if (tz === 'local') return new Date();
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit',
     hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
   }).formatToParts(new Date());
   const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
-  // Construct a local Date from components — good enough for display/progress math
   return new Date(`${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}:${map.second}`);
 }
+function dayPercent(dateObj){ const s=dateObj.getHours()*3600+dateObj.getMinutes()*60+dateObj.getSeconds(); return (s/86400)*100; }
+function fmtTime(d){ return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
 
-function dayPercent(dateObj) {
-  const h = dateObj.getHours(), m = dateObj.getMinutes(), s = dateObj.getSeconds();
-  const secs = h*3600 + m*60 + s;
-  return (secs / 86400) * 100;
+function getOffsetMinutes(tz, when = new Date()){
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName:'shortOffset' }).formatToParts(when);
+  const name = (parts.find(p => p.type === 'timeZoneName') || {}).value || '';
+  const m = name.match(/(?:UTC|GMT)([+\-]\d{1,2})(?::?(\d{2}))?/i);
+  if (!m){
+    const utc = Date.UTC(when.getUTCFullYear(), when.getUTCMonth(), when.getUTCDate(),
+                         when.getUTCHours(), when.getUTCMilliseconds());
+    const zoned = new Date(when.toLocaleString('en-US', { timeZone: tz })).getTime();
+    return Math.round((zoned - utc)/60000);
+  }
+  const h = parseInt(m[1],10);
+  const mm = m[2] ? parseInt(m[2],10) : 0;
+  return Math.sign(h) * (Math.abs(h)*60 + mm);
+}
+function fmtOffset(mins){ const sign = mins>=0?'+':'-'; const absm=Math.abs(mins); const h=String(Math.floor(absm/60)).padStart(2,'0'); const m=String(absm%60).padStart(2,'0'); return `UTC${sign}${h}:${m}`; }
+function zonePrettyName(tz){ const p = tz.split('/'); return p.length===1 ? tz : `${p[0]} — ${p.slice(1).join(' / ').replace(/_/g,' ')}`; }
+
+/* ---------- Lists ---------- */
+const pinnedZones = ['UTC','America/Phoenix','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','Europe/London','Europe/Berlin','Asia/Tokyo','Asia/Singapore','Australia/Sydney'];
+const majorCityKeepList = new Set(['UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Phoenix','Europe/London','Europe/Paris','Europe/Berlin','Asia/Tokyo','Asia/Shanghai','Asia/Singapore','Asia/Kolkata','Australia/Sydney','Pacific/Auckland']);
+
+function getAllTimeZones(){
+  if (typeof Intl.supportedValuesOf === 'function'){
+    try { const list = Intl.supportedValuesOf('timeZone'); if (Array.isArray(list) && list.length) return list; } catch {}
+  }
+  return [
+    "UTC","America/New_York","America/Chicago","America/Denver","America/Los_Angeles","America/Phoenix",
+    "America/Toronto","America/Vancouver","America/Winnipeg","America/Regina","America/Edmonton",
+    "Europe/London","Europe/Paris","Europe/Berlin","Europe/Madrid","Europe/Rome","Europe/Amsterdam",
+    "Europe/Zurich","Europe/Stockholm","Europe/Athens","Europe/Helsinki",
+    "Asia/Tokyo","Asia/Seoul","Asia/Shanghai","Asia/Taipei","Asia/Hong_Kong","Asia/Singapore","Asia/Bangkok","Asia/Kolkata",
+    "Australia/Sydney","Australia/Melbourne","Australia/Perth","Pacific/Auckland","Pacific/Honolulu",
+    "Africa/Cairo","Africa/Johannesburg","Africa/Nairobi","America/Bogota","America/Lima","America/Mexico_City",
+    "America/Sao_Paulo","America/Argentina/Buenos_Aires","America/Santiago","Asia/Dubai","Asia/Riyadh","Asia/Jerusalem"
+  ];
+}
+function dedupeZones(sortedTzList, now = new Date()){
+  const seenOffset = new Map(); const result = [];
+  for (const tz of sortedTzList){
+    const off = getOffsetMinutes(tz, now);
+    const keep = majorCityKeepList.has(tz) || pinnedZones.includes(tz);
+    if (!seenOffset.has(off)){ seenOffset.set(off, tz); result.push(tz); }
+    else if (keep){ result.push(tz); }
+  }
+  return result;
 }
 
-function fmtTime(dateObj) {
-  return `${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}:${pad(dateObj.getSeconds())}`;
+/* ---------- Dropdown ---------- */
+function buildDropdown(){
+  const all = getAllTimeZones();
+  const now = new Date();
+  const rows = all.map(tz => ({ tz, offset:getOffsetMinutes(tz, now), isPinned:pinnedZones.includes(tz) }))
+                  .map(r => ({...r, label:`${fmtOffset(r.offset)} — ${zonePrettyName(r.tz)}`}));
+  rows.sort((a,b) => (a.offset - b.offset) || a.tz.localeCompare(b.tz));
+
+  const deduped = new Set(dedupeZones(rows.map(r=>r.tz), now));
+  const pinned = rows.filter(r => r.isPinned);
+  const others = rows.filter(r => !r.isPinned && deduped.has(r.tz));
+
+  tzSelect.innerHTML = '';
+  if (pinned.length){
+    const grp = document.createElement('optgroup'); grp.label = '★ Pinned';
+    for (const r of pinned){ const o=document.createElement('option'); o.value=r.tz; o.textContent=r.label; o.dataset.pinned='true'; grp.appendChild(o); }
+    tzSelect.appendChild(grp);
+  }
+  const grp2 = document.createElement('optgroup'); grp2.label = 'Time Zones';
+  for (const r of others){ const o=document.createElement('option'); o.value=r.tz; o.textContent=r.label; grp2.appendChild(o); }
+  tzSelect.appendChild(grp2);
+
+  if (tzSelect.options.length > 0) tzSelect.selectedIndex = 0;
 }
 
-function tick(clockEl, tz) {
-  const now = getNowInTZ(tz);
-  const pct = dayPercent(now);
-  const pctStr = pct.toFixed(2);
-
-  const fill = clockEl.querySelector('.fill');
-  const marker = clockEl.querySelector('.marker');
-  const pctEl = clockEl.querySelector('.pct');
-  const nowEl = clockEl.querySelector('.now');
-
-  if (fill)   fill.style.width = pct + '%';
-  if (marker) marker.style.left = pct + '%';
-  if (pctEl)  pctEl.textContent = `${pctStr}%`;
-  if (nowEl)  nowEl.textContent = fmtTime(now);
+/* ---------- Persistence ---------- */
+function saveClocks(){
+  try { localStorage.setItem(LS_KEY, JSON.stringify(clocks)); } catch {}
+}
+function loadClocks(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) {
+      return arr.map(x => ({ tz: String(x.tz || ''), label: String(x.label || '') })).filter(x => x.tz);
+    }
+  } catch {}
+  return [];
 }
 
-/* ===================== Default clock loop ===================== */
-const defaultClockEl = document.getElementById('defaultClock');
-function loopDefault() { tick(defaultClockEl, 'local'); }
-loopDefault();
-setInterval(loopDefault, 1000);
+/* ---------- Clocks & Reorder ---------- */
+let clocks = []; // ordered { tz, label }
 
-/* ===================== Dynamic clocks ===================== */
-const extraClocks = document.getElementById('extraClocks');
-const addBtn = document.getElementById('addBtn');
-const tzSelect = document.getElementById('tzSelect');
-const labelInput = document.getElementById('labelInput');
+function createClockCard(entry){
+  const { tz, label } = entry;
+  const id = `clock-${idSafe(tz)}`;
+  if (document.getElementById(id)) return null;
 
-// Keep active TZs to prevent duplicates (allow label changes)
-const activeZones = new Set();
-
-function idSafeFrom(text) {
-  return text.replace(/[^a-z0-9]/gi,'-').toLowerCase();
-}
-
-function createClock(tz, label) {
-  if (activeZones.has(tz)) return null;
-  activeZones.add(tz);
-
-  const idSafe = idSafeFrom(tz);
   const el = document.createElement('section');
-  el.className = 'clock';
-  el.dataset.tz = tz;
-  el.id = `clock-${idSafe}`;
+  el.className = 'clock'; el.id = id; el.dataset.tz = tz; el.draggable = true;
 
-  const titleLabel = label ? `${label} · ${tz}` : tz;
+  const off = fmtOffset(getOffsetMinutes(tz));
+  const pretty = zonePrettyName(tz);
+  const titleHtml = label ? `${pretty} · <small class="label-view">${escapeHtml(label)}</small>` : `${pretty} <small class="label-view" style="display:none"></small>`;
 
   el.innerHTML = `
-    <div class="head">
-      <div class="title">${titleLabel}</div>
-      <div style="display:flex; align-items:center; gap:8px;">
+    <div class="head" title="Drag to reorder">
+      <div class="title">
+        <span class="offset">${off}</span> — 
+        <span class="pretty">${pretty}</span>
+        <span class="sep" style="margin:0 2px;">·</span>
+        <small class="label-view">${label ? escapeHtml(label) : ''}</small>
+        <span class="label-editor" style="display:none;">
+          <input class="label-edit" type="text" value="${escapeAttr(label || '')}" placeholder="Label (optional)" />
+          <span class="label-actions">
+            <button class="btn btn-save"  title="Save label">Save</button>
+            <button class="btn btn-cancel" title="Cancel">Cancel</button>
+          </span>
+        </span>
+      </div>
+      <div class="btns">
+        <button class="btn btn-edit"    title="Edit label">Edit</button>
+        <button class="btn move-btn" data-dir="-1" title="Move up">▲</button>
+        <button class="btn move-btn" data-dir="1"  title="Move down">▼</button>
         <div class="now">--:--:--</div>
-        <button class="remove-btn" title="Remove this clock" aria-label="Remove">✕</button>
+        <button class="btn remove-btn" title="Remove this clock" aria-label="Remove">✕</button>
       </div>
     </div>
-    <div class="rail">
-      <div class="fill"></div>
-      <div class="marker" style="left:0%;"></div>
-    </div>
-    <div class="ticks">
-      <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
-    </div>
+
+    <div class="rail"><div class="fill"></div><div class="marker" style="left:0%"></div></div>
+    <div class="ticks"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
     <div class="subline"><span class="pct">0.00%</span> of day elapsed</div>
   `;
 
-  // Remove on middle-click (keeps UI minimal)
-  el.addEventListener('auxclick', (e) => {
-    if (e.button === 1) { removeClock(tz); }
+  // remove
+  el.querySelector('.remove-btn').addEventListener('click', () => { removeClock(tz); saveClocks(); });
+  el.addEventListener('auxclick', (e) => { if (e.button === 1) { removeClock(tz); saveClocks(); }});
+
+  // arrows
+  el.querySelectorAll('.move-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dir = parseInt(btn.dataset.dir, 10);
+      nudgeClock(tz, dir);
+      saveClocks();
+    });
   });
 
-  // Remove on ✕ click
-  el.querySelector('.remove-btn').addEventListener('click', () => removeClock(tz));
+  // drag & drop
+  el.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', tz); el.classList.add('dragging'); });
+  el.addEventListener('dragend', () => { el.classList.remove('dragging'); document.querySelectorAll('.drop-target').forEach(dt => dt.classList.remove('drop-target')); });
+  el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drop-target'); });
+  el.addEventListener('dragleave', () => { el.classList.remove('drop-target'); });
+  el.addEventListener('drop', (e) => {
+    e.preventDefault(); el.classList.remove('drop-target');
+    const draggedTz = e.dataTransfer.getData('text/plain'); if (draggedTz && draggedTz !== tz) { reorderByDrop(draggedTz, tz); saveClocks(); }
+  });
+
+  // label editing
+  const btnEdit  = el.querySelector('.btn-edit');
+  const editor   = el.querySelector('.label-editor');
+  const view     = el.querySelector('.label-view');
+  const sep      = el.querySelector('.sep');
+  const input    = el.querySelector('.label-edit');
+  const btnSave  = el.querySelector('.btn-save');
+  const btnCancel= el.querySelector('.btn-cancel');
+
+  function openEditor(){
+    editor.style.display = 'inline-flex';
+    view.style.display   = 'none';
+    sep.style.display    = 'none';
+    input.focus();
+    input.select();
+  }
+  function closeEditor(){
+    editor.style.display = 'none';
+    const has = (view.textContent || '').trim().length > 0;
+    view.style.display   = has ? 'inline' : 'none';
+    sep.style.display    = has ? 'inline' : 'none';
+  }
+  function commitLabel(){
+    const val = input.value.trim();
+    // update model
+    const idx = clocks.findIndex(c => c.tz === tz);
+    if (idx >= 0){
+      clocks[idx].label = val;
+      // update UI
+      view.textContent = val;
+      // show/hide separator based on content
+      view.style.display = val ? 'inline' : 'none';
+      sep.style.display  = val ? 'inline' : 'none';
+      saveClocks();
+      closeEditor();
+    }
+  }
+
+  btnEdit.addEventListener('click', openEditor);
+  btnSave.addEventListener('click', commitLabel);
+  btnCancel.addEventListener('click', () => { input.value = view.textContent || ''; closeEditor(); });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') commitLabel();
+    else if (e.key === 'Escape') { input.value = view.textContent || ''; closeEditor(); }
+  });
 
   extraClocks.appendChild(el);
   return el;
 }
 
-function removeClock(tz) {
-  const idSafe = idSafeFrom(tz);
-  const el = document.getElementById(`clock-${idSafe}`);
-  if (el && el._interval) clearInterval(el._interval);
-  if (el && el.parentNode) el.parentNode.removeChild(el);
-  activeZones.delete(tz);
+// simple escaping helpers
+function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+function tickClock(el, tz){
+  const now = getNowInTZ(tz);
+  const pct = dayPercent(now);
+  el.querySelector('.fill').style.width = pct + '%';
+  el.querySelector('.marker').style.left = pct + '%';
+  el.querySelector('.pct').textContent = `${pct.toFixed(2)}%`;
+  el.querySelector('.now').textContent = fmtTime(now);
+}
+function startClock(entry){
+  const el = createClockCard(entry);
+  if (!el) return;
+  const loop = () => tickClock(el, entry.tz);
+  loop(); el._timer = setInterval(loop, 1000);
+}
+function stopAll(){
+  document.querySelectorAll('.clock').forEach(el => { if (el._timer) clearInterval(el._timer); });
+}
+function removeClock(tz){
+  clocks = clocks.filter(c => c.tz !== tz);
+  const el = document.getElementById(`clock-${idSafe(tz)}`);
+  if (el && el._timer) clearInterval(el._timer);
+  if (el) el.remove();
+  renderEmptyState();
+}
+function nudgeClock(tz, dir){
+  const i = clocks.findIndex(c => c.tz === tz);
+  if (i < 0) return;
+  const j = i + dir;
+  if (j < 0 || j >= clocks.length) return;
+  [clocks[i], clocks[j]] = [clocks[j], clocks[i]];
+  rerender();
+}
+function reorderByDrop(draggedTz, targetTz){
+  const from = clocks.findIndex(c => c.tz === draggedTz);
+  const to   = clocks.findIndex(c => c.tz === targetTz);
+  if (from < 0 || to < 0 || from === to) return;
+  const [moved] = clocks.splice(from, 1);
+  clocks.splice(to, 0, moved);
+  rerender();
+}
+function rerender(){
+  stopAll();
+  extraClocks.innerHTML = '';
+  clocks.forEach(startClock);
+  renderEmptyState();
 }
 
-addBtn.addEventListener('click', () => {
-  const tz = tzSelect.value.trim();
-  const label = labelInput.value.trim();
-  if (!tz) return;
-
+/* ---------- Persistence & Init ---------- */
+function saveClocks(){ try { localStorage.setItem(LS_KEY, JSON.stringify(clocks)); } catch {} }
+function loadClocks(){
   try {
-    new Intl.DateTimeFormat('en-US', { timeZone: tz });
-  } catch {
-    alert('Invalid timezone.');
-    return;
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) return arr.map(x => ({ tz: String(x.tz||''), label: String(x.label||'') })).filter(x => x.tz);
+  } catch {}
+  return [];
+}
+
+function renderEmptyState(){
+  if (clocks.length === 0 && !document.getElementById('empty-note')){
+    const p = document.createElement('p'); p.id='empty-note'; p.className='sub'; p.textContent='No clocks added yet. Use the dropdown and Add button.'; extraClocks.appendChild(p);
+  } else if (clocks.length > 0){
+    const n = document.getElementById('empty-note'); if (n) n.remove();
   }
-  const el = createClock(tz, label);
-  if (!el) return;
+}
 
-  function loop() { tick(el, tz); }
-  loop();
-  el._interval = setInterval(loop, 1000);
+/* ---------- Dropdown build ---------- */
+function buildDropdown(){
+  const all = getAllTimeZones();
+  const now = new Date();
+  const rows = all.map(tz => ({ tz, offset:getOffsetMinutes(tz, now), isPinned:pinnedZones.includes(tz) }))
+                  .map(r => ({...r, label:`${fmtOffset(r.offset)} — ${zonePrettyName(r.tz)}`}));
+  rows.sort((a,b) => (a.offset - b.offset) || a.tz.localeCompare(b.tz));
+
+  const deduped = new Set(dedupeZones(rows.map(r=>r.tz), now));
+  const pinned = rows.filter(r => r.isPinned);
+  const others = rows.filter(r => !r.isPinned && deduped.has(r.tz));
+
+  tzSelect.innerHTML = '';
+  if (pinned.length){
+    const grp = document.createElement('optgroup'); grp.label = '★ Pinned';
+    for (const r of pinned){ const o=document.createElement('option'); o.value=r.tz; o.textContent=r.label; o.dataset.pinned='true'; grp.appendChild(o); }
+    tzSelect.appendChild(grp);
+  }
+  const grp2 = document.createElement('optgroup'); grp2.label = 'Time Zones';
+  for (const r of others){ const o=document.createElement('option'); o.value=r.tz; o.textContent=r.label; grp2.appendChild(o); }
+  tzSelect.appendChild(grp2);
+
+  if (tzSelect.options.length > 0) tzSelect.selectedIndex = 0;
+}
+
+/* ---------- Add / Init ---------- */
+addBtn.addEventListener('click', () => {
+  const tz = tzSelect.value;
+  if (!tz) return;
+  const label = (labelInput.value || '').trim();
+  if (clocks.some(c => c.tz === tz)) return;
+  clocks.push({ tz, label });
+  const empty = document.getElementById('empty-note'); if (empty) empty.remove();
+  startClock({ tz, label });
   labelInput.value = '';
+  saveClocks();
 });
-
-/* Allow Enter on select or label to add quickly */
 tzSelect.addEventListener('keydown', (e) => { if (e.key === 'Enter') addBtn.click(); });
 labelInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addBtn.click(); });
 
-/* ===================== Populate full IANA tz list ===================== */
-(function populateTimezones() {
-  let zones = [];
-  if (typeof Intl.supportedValuesOf === 'function') {
-    try { zones = Intl.supportedValuesOf('timeZone'); } catch {}
-  }
-  if (!zones || zones.length === 0) {
-    zones = [
-      "Africa/Abidjan","Africa/Accra","Africa/Cairo","Africa/Johannesburg","Africa/Lagos","Africa/Nairobi",
-      "America/Adak","America/Anchorage","America/Araguaina","America/Argentina/Buenos_Aires",
-      "America/Asuncion","America/Bahia","America/Bahia_Banderas","America/Barbados","America/Belem",
-      "America/Belize","America/Boa_Vista","America/Bogota","America/Boise","America/Cambridge_Bay",
-      "America/Campo_Grande","America/Cancun","America/Caracas","America/Cayenne","America/Chicago",
-      "America/Chihuahua","America/Costa_Rica","America/Cuiaba","America/Curacao","America/Danmarkshavn",
-      "America/Dawson","America/Dawson_Creek","America/Denver","America/Detroit","America/Edmonton",
-      "America/El_Salvador","America/Fort_Nelson","America/Fortaleza","America/Glace_Bay","America/Goose_Bay",
-      "America/Grand_Turk","America/Guatemala","America/Guayaquil","America/Guyana","America/Halifax",
-      "America/Havana","America/Hermosillo","America/Indiana/Indianapolis","America/Indiana/Knox",
-      "America/Indiana/Marengo","America/Indiana/Petersburg","America/Indiana/Tell_City",
-      "America/Indiana/Vevay","America/Indiana/Vincennes","America/Indiana/Winamac","America/Inuvik",
-      "America/Iqaluit","America/Jamaica","America/Juneau","America/Kentucky/Louisville",
-      "America/Kentucky/Monticello","America/La_Paz","America/Lima","America/Los_Angeles","America/Maceio",
-      "America/Managua","America/Manaus","America/Martinique","America/Matamoros","America/Mazatlan",
-      "America/Merida","America/Metlakatla","America/Mexico_City","America/Miquelon","America/Moncton",
-      "America/Monterrey","America/Montevideo","America/New_York","America/Nome","America/Noronha",
-      "America/North_Dakota/Beulah","America/North_Dakota/Center","America/North_Dakota/New_Salem",
-      "America/Nuuk","America/Ojinaga","America/Panama","America/Paramaribo","America/Phoenix",
-      "America/Port-au-Prince","America/Port_of_Spain","America/Porto_Velho","America/Puerto_Rico",
-      "America/Punta_Arenas","America/Recife","America/Regina","America/Resolute","America/Rio_Branco",
-      "America/Santarem","America/Santiago","America/Santo_Domingo","America/Sao_Paulo","America/Scoresbysund",
-      "America/Sitka","America/St_Johns","America/Swift_Current","America/Tegucigalpa","America/Thule",
-      "America/Tijuana","America/Toronto","America/Vancouver","America/Whitehorse","America/Winnipeg",
-      "America/Yakutat","Antarctica/Casey","Antarctica/Davis","Antarctica/DumontDUrville","Antarctica/Macquarie",
-      "Antarctica/Mawson","Antarctica/Palmer","Antarctica/Rothera","Antarctica/Syowa","Antarctica/Troll",
-      "Antarctica/Vostok","Arctic/Longyearbyen","Asia/Almaty","Asia/Amman","Asia/Anadyr","Asia/Aqtau",
-      "Asia/Aqtobe","Asia/Ashgabat","Asia/Atyrau","Asia/Baghdad","Asia/Baku","Asia/Bangkok","Asia/Barnaul",
-      "Asia/Beirut","Asia/Bishkek","Asia/Brunei","Asia/Chita","Asia/Choibalsan","Asia/Colombo","Asia/Damascus",
-      "Asia/Dhaka","Asia/Dili","Asia/Dubai","Asia/Dushanbe","Asia/Famagusta","Asia/Gaza","Asia/Hebron",
-      "Asia/Ho_Chi_Minh","Asia/Hong_Kong","Asia/Hovd","Asia/Irkutsk","Asia/Jakarta","Asia/Jayapura","Asia/Jerusalem",
-      "Asia/Kabul","Asia/Kamchatka","Asia/Karachi","Asia/Kathmandu","Asia/Khandyga","Asia/Kolkata","Asia/Krasnoyarsk",
-      "Asia/Kuching","Asia/Macau","Asia/Magadan","Asia/Makassar","Asia/Manila","Asia/Nicosia","Asia/Novokuznetsk",
-      "Asia/Novosibirsk","Asia/Omsk","Asia/Oral","Asia/Pontianak","Asia/Pyongyang","Asia/Qatar","Asia/Qostanay",
-      "Asia/Qyzylorda","Asia/Riyadh","Asia/Sakhalin","Asia/Samarkand","Asia/Seoul","Asia/Shanghai","Asia/Singapore",
-      "Asia/Srednekolymsk","Asia/Taipei","Asia/Tashkent","Asia/Tbilisi","Asia/Tehran","Asia/Thimphu",
-      "Asia/Tokyo","Asia/Tomsk","Asia/Ulaanbaatar","Asia/Urumqi","Asia/Ust-Nera","Asia/Vladivostok",
-      "Asia/Yakutsk","Asia/Yangon","Asia/Yekaterinburg","Asia/Yerevan","Atlantic/Azores","Atlantic/Bermuda",
-      "Atlantic/Canary","Atlantic/Cape_Verde","Atlantic/Faroe","Atlantic/Madeira","Atlantic/Reykjavik",
-      "Australia/Adelaide","Australia/Brisbane","Australia/Broken_Hill","Australia/Darwin","Australia/Eucla",
-      "Australia/Hobart","Australia/Lindeman","Australia/Lord_Howe","Australia/Melbourne","Australia/Perth",
-      "Australia/Sydney","Europe/Amsterdam","Europe/Andorra","Europe/Athens","Europe/Belgrade","Europe/Berlin",
-      "Europe/Bratislava","Europe/Brussels","Europe/Bucharest","Europe/Budapest","Europe/Chisinau","Europe/Copenhagen",
-      "Europe/Dublin","Europe/Gibraltar","Europe/Guernsey","Europe/Helsinki","Europe/Isle_of_Man","Europe/Istanbul",
-      "Europe/Jersey","Europe/Kaliningrad","Europe/Kiev","Europe/Kirov","Europe/Lisbon","Europe/Ljubljana",
-      "Europe/London","Europe/Luxembourg","Europe/Madrid","Europe/Malta","Europe/Mariehamn","Europe/Minsk",
-      "Europe/Monaco","Europe/Moscow","Europe/Oslo","Europe/Paris","Europe/Podgorica","Europe/Prague","Europe/Riga",
-      "Europe/Rome","Europe/Samara","Europe/San_Marino","Europe/Sarajevo","Europe/Skopje","Europe/Sofia","Europe/Stockholm",
-      "Europe/Tallinn","Europe/Tirane","Europe/Uzhgorod","Europe/Vaduz","Europe/Vatican","Europe/Vienna","Europe/Vilnius",
-      "Europe/Volgograd","Europe/Warsaw","Europe/Zagreb","Europe/Zaporozhye","Europe/Zurich","Indian/Chagos",
-      "Indian/Christmas","Indian/Cocos","Indian/Kerguelen","Indian/Mahe","Indian/Maldives","Indian/Mauritius",
-      "Indian/Reunion","Pacific/Apia","Pacific/Auckland","Pacific/Bougainville","Pacific/Chatham","Pacific/Chuuk",
-      "Pacific/Easter","Pacific/Efate","Pacific/Enderbury","Pacific/Fakaofo","Pacific/Fiji","Pacific/Funafuti",
-      "Pacific/Galapagos","Pacific/Gambier","Pacific/Guadalcanal","Pacific/Guam","Pacific/Honolulu","Pacific/Kanton",
-      "Pacific/Kiritimati","Pacific/Kosrae","Pacific/Kwajalein","Pacific/Majuro","Pacific/Marquesas","Pacific/Midway",
-      "Pacific/Nauru","Pacific/Niue","Pacific/Norfolk","Pacific/Noumea","Pacific/Pago_Pago","Pacific/Palau",
-      "Pacific/Pitcairn","Pacific/Pohnpei","Pacific/Port_Moresby","Pacific/Rarotonga","Pacific/Saipan","Pacific/Tahiti",
-      "Pacific/Tarawa","Pacific/Tongatapu","Pacific/Wake","UTC"
-    ];
-  }
-
-  // Favorites at top
-  const favorites = [
-    "America/New_York","America/Chicago","America/Denver","America/Los_Angeles",
-    "UTC","Europe/London","Europe/Paris","Asia/Tokyo","Asia/Kolkata","Australia/Sydney"
-  ];
-  const setFav = new Set(favorites);
-  const sorted = [...zones].sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
-  const finalList = [...favorites, ...sorted.filter(z=>!setFav.has(z))];
-
-  const frag = document.createDocumentFragment();
-  finalList.forEach(z => {
-    const opt = document.createElement('option');
-    opt.value = z;
-    opt.textContent = z;
-    frag.appendChild(opt);
-  });
-  tzSelect.appendChild(frag);
-
-  // Preselect system tz if available
-  try {
-    const sys = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (sys && finalList.includes(sys)) tzSelect.value = sys;
-  } catch {}
-})();
-
+function init(){
+  buildDropdown();
+  clocks = loadClocks();
+  if (clocks.length) clocks.forEach(startClock);
+  renderEmptyState();
+}
+init();
 </script>
+
 <footer style="text-align:center; color:#666; font-size:0.85rem; margin-top:40px;">
   © 2025 jm5k
 </footer>
-
 </body>
 </html>
