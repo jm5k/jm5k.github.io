@@ -18,6 +18,7 @@ jobs:
               "https://jm5k.github.io/clock.html",
               "https://jm5k.github.io/about.html",
               "https://jm5k.github.io/focus.html"
+              "https://jm5k.github.io/multi-clock.html"
             ]
           }
           EOF
