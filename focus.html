@@ -4,112 +4,162 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>FocusLine Pomodoro — jm5k</title>
-<meta name="description" content="A minimalist, linear Pomodoro timer with auto-advance, local storage, and subtle stats. No accounts, no tracking." />
+<meta name="description" content="A minimalist, linear Pomodoro timer with local time bar, note capture, and subtle progress visualization. Built by jm5k.">
 
 <style>
   :root{
-    --bg:#0c0c0c; --fg:#eaeaea; --muted:#a9a9a9; --line:#1f1f1f; --accent:#00e5ff; /* cyan */
-    --work:#00e5ff; --break:#6be675; --long:#7aa0ff;
-    --danger:#ff5a5a;
-    --radius:14px;
+    --bg:#0c0c0c; --fg:#eaeaea; --muted:#a9a9a9; --line:#1f1f1f; --accent:#00e5ff;
+    --work:#00e5ff; --break:#6be675; --long:#7aa0ff; --danger:#ff5a5a;
+    --radius:14px; --chip:#151515; --chip-brd:#222; --ok:#70e69f; --warn:#ffd27d;
   }
   @media (prefers-color-scheme: light){
-    :root{ --bg:#ffffff; --fg:#0f0f10; --muted:#5a5a5a; --line:#ececec; --accent:#00a8c6 }
+    :root{ --bg:#ffffff; --fg:#0f0f10; --muted:#5a5a5a; --line:#ececec;
+      --accent:#00a8c6; --chip:#f6f6f6; --chip-brd:#e6e6e6 }
   }
-  *{ box-sizing: border-box; }
-  html,body{ height:100%; }
+  *{ box-sizing:border-box }
+  html,body{ height:100% }
   body{
-    margin:0; font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    background:var(--bg); color:var(--fg); display:grid; place-items:start center;
+    margin:0;
+    font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+    background:var(--bg); color:var(--fg);
+    display:grid; place-items:start center;
   }
-  main{ width:min(900px,92vw); margin:40px 0 60px; }
+  main{ width:min(980px,94vw); margin:40px 0 60px }
 
-  header{
-    display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px;
+  header{ margin-bottom:10px; }
+  .brand{ font-weight:600; font-size:1.2em; letter-spacing:.2px; margin-bottom:4px }
+
+  /* Top nav */
+  .topnav{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-size:14px;
   }
-  .brand{ font-weight:600; letter-spacing:.2px;}
-  a{ color:var(--accent); text-decoration:none; border-bottom:1px solid transparent }
-  a:hover{ border-bottom-color:var(--accent) }
+  .topnav a{
+    color:var(--fg); text-decoration:none; padding:6px 8px;
+    border-radius:8px; border:1px solid transparent;
+    transition:color .2s ease, background .2s ease, border-color .2s ease;
+  }
+  .topnav a:hover{ border-color:var(--line); color:var(--accent); }
+  .topnav a[href="multi-clock.html"]{ color:var(--accent); } /* subtle cyan tie-in */
+  .topnav a[aria-current="page"]{
+    color:#00141a; background:var(--accent); border-color:transparent; font-weight:600;
+  }
+  .nav-pill{
+    background:var(--chip); color:var(--fg);
+    border:1px solid var(--chip-brd); border-radius:999px;
+    padding:6px 10px; cursor:pointer; font:inherit; line-height:1;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .nav-pill:hover{ border-color:#3a3a3a; color:var(--accent); }
+  .navline{
+    margin:10px 0 16px; height:1px; width:100%;
+    background:linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.1));
+    opacity:.6;
+  }
+  @media (prefers-color-scheme: light){
+    .navline{ background:linear-gradient(to right, rgba(0,0,0,0.08), rgba(0,0,0,0.04) 40%, rgba(0,0,0,0.08)) }
+  }
 
-  /* Timer card */
+  /* Cards */
   .card{
     background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
-    border:1px solid var(--line); border-radius: var(--radius); padding:18px;
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding:18px;
   }
 
-  .phase-row{
-    display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px;
-  }
+  /* FocusLine */
+  .phase-row{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px }
   .phase-label{ font-weight:600; letter-spacing:.3px }
-  .time-label{ font-variant-numeric:tabular-nums; font-size:clamp(20px, 4vw, 36px); }
-
+  .time-label{ font-variant-numeric:tabular-nums; font-size:clamp(20px, 4vw, 36px) }
   .bar-wrap{
-    position:relative; width:100%; height:22px; border-radius:999px; background:var(--line); overflow:hidden;
+    position:relative; width:100%; height:22px; border-radius:999px;
+    background:var(--line); overflow:hidden;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
     margin:10px 0 14px;
   }
-  .bar{
-    position:absolute; inset:0 auto 0 0; width:0%;
-    background: linear-gradient(90deg, rgba(255,255,255,.2), rgba(255,255,255,0) 30%),
-                var(--work);
+  .bar{ position:absolute; inset:0 auto 0 0; width:0%;
+    background: linear-gradient(90deg, rgba(255,255,255,.2), rgba(255,255,255,0) 30%), var(--work);
     transition: background-color .25s ease;
   }
-  .ticks{
-    position:absolute; inset:0; pointer-events:none; background:
-      repeating-linear-gradient(90deg, transparent 0 1px, rgba(0,0,0,.05) 1px, rgba(0,0,0,.05) calc(100%/12), transparent calc(100%/12 + 1px));
-    opacity:.35;
-  }
-
   .controls{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:6px 0 6px }
-  button, .input{
-    background:#151515; color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:8px 12px;
-  }
-  button{ cursor:pointer; font-weight:600 }
+  button{ cursor:pointer; font-weight:600; border-radius:10px; padding:8px 12px; border:1px solid var(--line); background:#151515; color:var(--fg); }
   button:hover{ border-color:#3a3a3a }
   button.primary{ background:var(--accent); color:#00141a; border-color:transparent }
   button.danger{ background:#201414; border-color:#3a1a1a; color:#ffbdbd }
-  button:disabled{ opacity:.6; cursor:not-allowed }
-
-  .grid{
-    display:grid; gap:10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    margin-top:10px;
-  }
+  .grid{ display:grid; gap:10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top:10px }
   .field{ border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#0f0f0f }
   .field label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px }
-  .field input[type="number"]{
-    width:100%; background:transparent; border:none; color:var(--fg);
-    font:600 16px/1.2 inherit; outline:none; -moz-appearance:textfield;
-  }
-  .field input::-webkit-outer-spin-button, .field input::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+  .field input[type="number"]{ width:100%; background:transparent; border:none; color:var(--fg); font:600 16px/1.2 inherit; outline:none; -moz-appearance:textfield; }
+  .field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0 }
   .toggles{ display:flex; gap:16px; align-items:center; margin-top:8px; color:var(--muted) }
   .toggles label{ display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none }
-  .toggles input{ transform: translateY(1px) }
-
-  .sub{
-    display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px; color:var(--muted); font-size:14px;
-  }
-
-  footer{ margin-top:18px; color:var(--muted); font-size:14px }
+  .sub{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px; color:var(--muted); font-size:14px }
   .kbd{ font-variant-numeric:tabular-nums; background:#151515; border:1px solid var(--line); padding:2px 6px; border-radius:6px }
   .pill{ padding:2px 8px; border:1px solid var(--line); border-radius:999px; font-size:12px; color:var(--muted) }
+  .ok{ color:var(--ok) }
 
-  .ok{ color:#70e69f }
-  .warn{ color:#ffd27d }
+  /* Local linear clock */
+  .clock-bar{
+    margin:18px 0;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:10px 14px;
+    text-align:center;
+  }
+  .clock-labels{
+    display:flex; justify-content:space-between; font-size:14px; color:var(--muted);
+    margin-bottom:6px; font-variant-numeric:tabular-nums;
+  }
+  .clock-rail{ position:relative; height:10px; background:var(--line); border-radius:999px; overflow:hidden; }
+  .clock-progress{
+    position:absolute; left:0; top:0; bottom:0; width:0%;
+    background:linear-gradient(90deg, var(--accent), transparent);
+    transition:width 1s linear;
+  }
+
+  /* Notes */
+  .notes-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px }
+  .notes-title{ font-weight:600 }
+  .notes-help{ color:var(--muted); font-size:12px }
+  .note-in{ display:flex; gap:8px; align-items:flex-start; margin:8px 0 12px }
+  .note-in textarea{
+    flex:1; min-height:80px; max-height:240px; resize:vertical; background:var(--chip); color:var(--fg);
+    border:1px solid var(--chip-brd); border-radius:10px; padding:10px 12px; outline:none;
+  }
+  .note-actions{ display:flex; gap:8px; flex-wrap:wrap }
+  .tools{ display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+  .tools input[type="search"]{
+    background:var(--chip); color:var(--fg); border:1px solid var(--chip-brd); border-radius:10px; padding:8px 12px; width:180px;
+  }
+  .note-list{ display:flex; flex-direction:column; gap:8px; margin-top:10px }
+  .note{ display:flex; gap:10px; align-items:flex-start; padding:10px 12px; background:#0f0f0f; border:1px solid var(--line); border-radius:10px }
+  .note[draggable="true"]{ cursor:grab }
+  .note.dragging{ opacity:.5 }
+  .note .meta{ color:var(--muted); font-size:12px }
+  .note .txt{ white-space:pre-wrap; line-height:1.35 }
+  .note .grow{ flex:1 }
+  .note .btns{ display:flex; gap:6px }
+  .done{ text-decoration:line-through; opacity:.7 }
+  .empty{ color:var(--muted); text-align:center; border:1px dashed var(--line); border-radius:10px; padding:20px }
+  footer{ margin-top:18px; color:var(--muted); font-size:14px }
 </style>
 </head>
 <body>
 <main>
   <header>
     <div class="brand">FocusLine Pomodoro</div>
-    <nav>
+    <nav class="topnav" aria-label="Primary">
       <a href="index.html">Linear Clock</a>
-      <span> · </span>
+      <a href="multi-clock.html">Multi-Clock</a>
+      <a href="focus.html" aria-current="page">FocusLine</a>
       <a href="about.html">About</a>
-      <span> · </span>
-      <a href="#" id="notifyLink" title="Enable desktop notifications">Notifications</a>
+      <button id="notifyLink" class="nav-pill" title="Enable desktop notifications">Notifications</button>
     </nav>
+    <div class="navline" aria-hidden="true"></div>
   </header>
 
+  <!-- TIMER -->
   <section class="card" aria-live="polite">
     <div class="phase-row">
       <div class="phase-label" id="phaseLabel">Work</div>
@@ -118,7 +168,6 @@
 
     <div class="bar-wrap" role="progressbar" aria-valuemin="0" aria-valuenow="0" aria-valuemax="100" aria-label="Pomodoro progress">
       <div class="bar" id="bar"></div>
-      <div class="ticks" aria-hidden="true"></div>
     </div>
 
     <div class="controls">
@@ -129,114 +178,116 @@
     </div>
 
     <div class="grid">
-      <div class="field">
-        <label for="workMins">Work (minutes)</label>
-        <input id="workMins" type="number" min="5" max="120" step="1" value="25" />
-      </div>
-      <div class="field">
-        <label for="shortMins">Short Break</label>
-        <input id="shortMins" type="number" min="3" max="60" step="1" value="5" />
-      </div>
-      <div class="field">
-        <label for="longMins">Long Break</label>
-        <input id="longMins" type="number" min="5" max="90" step="1" value="15" />
-      </div>
-      <div class="field">
-        <label for="cycles">Cycles until Long Break</label>
-        <input id="cycles" type="number" min="2" max="12" step="1" value="4" />
-      </div>
+      <div class="field"><label for="workMins">Work (minutes)</label><input id="workMins" type="number" min="5" max="120" value="25"></div>
+      <div class="field"><label for="shortMins">Short Break</label><input id="shortMins" type="number" min="3" max="60" value="5"></div>
+      <div class="field"><label for="longMins">Long Break</label><input id="longMins" type="number" min="5" max="90" value="15"></div>
+      <div class="field"><label for="cycles">Cycles until Long Break</label><input id="cycles" type="number" min="2" max="12" value="4"></div>
     </div>
 
     <div class="toggles">
-      <label><input id="autoAdvance" type="checkbox" checked /> Auto-advance</label>
-      <label><input id="soundOn" type="checkbox" /> Chime on complete</label>
+      <label><input id="autoAdvance" type="checkbox" checked> Auto-advance</label>
+      <label><input id="soundOn" type="checkbox"> Chime on complete</label>
     </div>
 
     <div class="sub">
-      <div>
-        <span id="statusMsg" class="ok">Ready</span>
-        <span aria-hidden="true"> · </span>
-        <span>Today: <strong id="todayMin">0</strong> min</span>
-      </div>
-      <div class="muted">Shortcuts:
-        <span class="kbd">Space</span> start/pause
-        <span class="kbd">S</span> skip
-        <span class="kbd">R</span> reset
+      <div><span id="statusMsg" class="ok">Ready</span> · Today: <strong id="todayMin">0</strong> min</div>
+      <div class="muted">
+        Shortcuts: <span class="kbd">Space</span> start/pause <span class="kbd">S</span> skip <span class="kbd">R</span> reset <span class="kbd">N</span> note
       </div>
     </div>
   </section>
 
-  <footer>
-    Built by <a href="mailto:jm5k_dev@pm.me">jm5k</a>. No accounts. No tracking. Your settings live in your browser.
-  </footer>
+  <!-- LOCAL TIME LINEAR CLOCK -->
+  <section class="clock-bar" aria-label="Local time progress">
+    <div class="clock-labels">
+      <span id="clockTimeLabel">00:00</span>
+      <span>Local Time</span>
+      <span id="clockPercent">0%</span>
+    </div>
+    <div class="clock-rail"><div class="clock-progress" id="clockProgress"></div></div>
+  </section>
+
+  <!-- NOTES -->
+  <aside class="card" aria-label="Capture Notes">
+    <div class="notes-head">
+      <div class="notes-title">Capture Notes</div>
+      <div class="notes-help">Saved locally — no accounts</div>
+    </div>
+    <div class="note-in"><textarea id="noteBox" placeholder="Dump it here so your brain can get back to work..."></textarea></div>
+    <div class="note-actions">
+      <button id="addNote" class="primary">Add Note</button>
+      <button id="addTimestamp" class="nav-pill">Insert Timestamp</button>
+      <div class="tools">
+        <input id="noteSearch" type="search" placeholder="Search…">
+        <button id="exportTxt" class="nav-pill" title="Export as .txt">Export .txt</button>
+        <button id="exportJson" class="nav-pill" title="Export as .json">Export .json</button>
+        <button id="clearDone" class="nav-pill" title="Remove all done notes">Clear Done</button>
+        <button id="clearAll" class="danger" title="Remove all notes">Clear All</button>
+      </div>
+    </div>
+    <div id="noteList" class="note-list"></div>
+    <div id="noteEmpty" class="empty" hidden>Nothing yet. Press <span class="kbd">N</span> to jot a thought.</div>
+  </aside>
+
+  <footer>© 2025 <strong>jm5k</strong> — No tracking. Your data stays in your browser.</footer>
 </main>
 
-<!-- Chime: tiny, embedded (440Hz A tone) -->
-<audio id="ding" preload="auto">
-  <source src="data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBIAAAABAAEAESsAACJWAAACABYAaW5mbyBKa2IAAAAAAAAAPwAAAP///wAAAP///wAAAP///wAAAP///wAAAP///wAA" type="audio/wav" />
-</audio>
+<!-- Chime -->
+<audio id="ding" preload="auto"><source src="data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBIAAAABAAEAESsAACJWAAACABYAaW5mbyBKa2IAAAAAAAAAPwAAAP///wAAAP///wAAAP///wAAAP///wAAAP///wAA" type="audio/wav"></audio>
 
 <script>
 (function(){
+  // ------- Elements
+  const $ = (q)=>document.querySelector(q);
   const els = {
-    bar: document.getElementById('bar'),
-    phaseLabel: document.getElementById('phaseLabel'),
-    timeLabel: document.getElementById('timeLabel'),
-    startPause: document.getElementById('startPause'),
-    reset: document.getElementById('reset'),
-    skip: document.getElementById('skip'),
-    cyclePill: document.getElementById('cyclePill'),
-    work: document.getElementById('workMins'),
-    short: document.getElementById('shortMins'),
-    long: document.getElementById('longMins'),
-    cycles: document.getElementById('cycles'),
-    autoAdvance: document.getElementById('autoAdvance'),
-    soundOn: document.getElementById('soundOn'),
-    status: document.getElementById('statusMsg'),
-    todayMin: document.getElementById('todayMin'),
-    notifyLink: document.getElementById('notifyLink'),
-    ding: document.getElementById('ding'),
-    progressbar: document.querySelector('.bar-wrap')
+    bar: $('#bar'), timeLabel: $('#timeLabel'), phaseLabel: $('#phaseLabel'),
+    startPause: $('#startPause'), reset: $('#reset'), skip: $('#skip'),
+    work: $('#workMins'), short: $('#shortMins'), long: $('#longMins'), cycles: $('#cycles'),
+    autoAdvance: $('#autoAdvance'), soundOn: $('#soundOn'), status: $('#statusMsg'),
+    todayMin: $('#todayMin'), ding: $('#ding'), cyclePill: $('#cyclePill'),
+    progressbar: document.querySelector('.bar-wrap'),
+    // local clock
+    clockProgress: $('#clockProgress'), clockTimeLabel: $('#clockTimeLabel'), clockPercent: $('#clockPercent'),
+    // notes
+    noteBox: $('#noteBox'), addNote: $('#addNote'), addTimestamp: $('#addTimestamp'),
+    noteList: $('#noteList'), noteEmpty: $('#noteEmpty'), noteSearch: $('#noteSearch'),
+    exportTxt: $('#exportTxt'), exportJson: $('#exportJson'), clearAll: $('#clearAll'), clearDone: $('#clearDone'),
+    notifyLink: $('#notifyLink')
   };
 
-  const LS_KEY = 'focusline:v1';
-  const HISTORY_KEY = 'focusline:history';
-  const notif = {enabled:false};
-
+  // ------- Timer state
   const Phases = { Work:'Work', Short:'Short Break', Long:'Long Break' };
+  const LS_TIMER = 'focusline:v1';
+  const HISTORY_KEY = 'focusline:history';
+  let state = { phase:Phases.Work, cycle:1, running:false, startEpoch:0, durationMs:25*60*1000, elapsedMs:0 };
 
-  let state = {
-    phase: Phases.Work,
-    cycle: 1, // 1..cycles
-    running: false,
-    startEpoch: 0,
-    durationMs: 25*60*1000,
-    elapsedMs: 0
-  };
+  function msForPhase(p){
+    if(p===Phases.Work) return +els.work.value*60000;
+    if(p===Phases.Short) return +els.short.value*60000;
+    return +els.long.value*60000;
+  }
 
-  function load(){
+  function loadTimer(){
     try{
-      const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      const saved = JSON.parse(localStorage.getItem(LS_TIMER) || '{}');
       if(saved.work) els.work.value = saved.work;
       if(saved.short) els.short.value = saved.short;
       if(saved.long) els.long.value = saved.long;
       if(saved.cycles) els.cycles.value = saved.cycles;
       if(saved.autoAdvance !== undefined) els.autoAdvance.checked = saved.autoAdvance;
       if(saved.soundOn !== undefined) els.soundOn.checked = saved.soundOn;
-      const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-      pruneHistory(hist);
+      const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); pruneHistory(hist);
       els.todayMin.textContent = minutesToday(hist);
     }catch{}
     setPhase(Phases.Work, false);
     updateUI();
   }
 
-  function save(){
-    const data = {
-      work: +els.work.value, short: +els.short.value, long: +els.long.value,
-      cycles: +els.cycles.value, autoAdvance: els.autoAdvance.checked, soundOn: els.soundOn.checked
-    };
-    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  function saveTimer(){
+    localStorage.setItem(LS_TIMER, JSON.stringify({
+      work:+els.work.value, short:+els.short.value, long:+els.long.value,
+      cycles:+els.cycles.value, autoAdvance:els.autoAdvance.checked, soundOn:els.soundOn.checked
+    }));
   }
 
   function pruneHistory(hist){
@@ -259,17 +310,9 @@
     els.todayMin.textContent = minutesToday(hist);
   }
 
-  function msForPhase(phase){
-    if(phase===Phases.Work) return +els.work.value * 60_000;
-    if(phase===Phases.Short) return +els.short.value * 60_000;
-    return +els.long.value * 60_000;
-  }
-
   function setPhase(phase, announce=true){
-    state.phase = phase;
-    state.durationMs = msForPhase(phase);
-    state.elapsedMs = 0;
-    state.startEpoch = 0;
+    state.phase = phase; state.durationMs = msForPhase(phase);
+    state.elapsedMs = 0; state.startEpoch = 0;
     const color = phase===Phases.Work ? 'var(--work)' : (phase===Phases.Short ? 'var(--break)' : 'var(--long)');
     els.bar.style.background = `linear-gradient(90deg, rgba(255,255,255,.2), rgba(255,255,255,0) 30%), ${color}`;
     els.phaseLabel.textContent = phase;
@@ -279,7 +322,7 @@
 
   function speak(msg){
     els.status.textContent = msg;
-    if(notif.enabled && ('Notification' in window) && Notification.permission==='granted'){
+    if ('Notification' in window && Notification.permission==='granted'){
       try{ new Notification('FocusLine', { body: msg }); }catch{}
     }
   }
@@ -292,25 +335,21 @@
 
   let rafId=0;
   function tick(){
-    if(!state.running){ rafId = requestAnimationFrame(tick); return; }
-    const now = performance.now();
-    state.elapsedMs = now - state.startEpoch;
-    if(state.elapsedMs >= state.durationMs){
-      finishPhase();
+    if(state.running){
+      const now = performance.now();
+      state.elapsedMs = now - state.startEpoch;
+      if(state.elapsedMs >= state.durationMs){ finishPhase(); }
+      updateUI();
     }
-    updateUI();
     rafId = requestAnimationFrame(tick);
   }
 
   function start(){
     if(state.running) return;
     state.running = true;
-    // anchor startEpoch so elapsed = prior elapsed (if any)
     const now = performance.now();
-    if(state.startEpoch===0) state.startEpoch = now;
-    else state.startEpoch = now - state.elapsedMs;
-    els.startPause.textContent = 'Pause';
-    els.startPause.classList.add('primary');
+    state.startEpoch = state.startEpoch===0 ? now : (now - state.elapsedMs);
+    els.startPause.textContent = 'Pause'; els.startPause.classList.add('primary');
     speak('Timer started');
   }
 
@@ -324,20 +363,17 @@
   function reset(){
     const wasRunning = state.running;
     state.running = false;
-    const prevPhase = state.phase;
-    setPhase(prevPhase, false);
+    const prev = state.phase;
+    setPhase(prev, false);
     els.startPause.textContent = 'Start';
     if(wasRunning) speak('Reset');
     updateUI();
   }
 
   function skip(){
-    if(state.running){
-      // count partial work time if in Work
-      if(state.phase===Phases.Work){
-        const mins = Math.floor(state.elapsedMs/60000);
-        if(mins>0) addHistory(mins);
-      }
+    if(state.running && state.phase===Phases.Work){
+      const mins = Math.floor(state.elapsedMs/60000);
+      if(mins>0) addHistory(mins);
     }
     state.running=false;
     nextPhase();
@@ -346,10 +382,10 @@
   function finishPhase(){
     state.running=false;
     if(els.soundOn.checked){
-      try{ els.ding.currentTime = 0; els.ding.play().catch(()=>{}); }catch{}
+      try{ els.ding.currentTime=0; els.ding.play().catch(()=>{}); }catch{}
     }
     if(state.phase===Phases.Work){
-      addHistory(Math.round(state.durationMs/60000)); // full block
+      addHistory(Math.round(state.durationMs/60000));
     }
     speak(`${state.phase} complete`);
     if(els.autoAdvance.checked) nextPhase();
@@ -362,16 +398,9 @@
   function nextPhase(){
     const totalCycles = +els.cycles.value;
     if(state.phase===Phases.Work){
-      // if finishing a work block, pick short or long
-      if(state.cycle >= totalCycles){
-        setPhase(Phases.Long);
-        state.cycle = 1; // after long break, next work is cycle 1
-      }else{
-        setPhase(Phases.Short);
-        state.cycle++;
-      }
+      if(state.cycle >= totalCycles){ setPhase(Phases.Long); state.cycle = 1; }
+      else { setPhase(Phases.Short); state.cycle++; }
     } else {
-      // from any break -> Work
       setPhase(Phases.Work);
     }
     els.startPause.textContent = 'Start';
@@ -379,26 +408,21 @@
   }
 
   function updateUI(){
-    // progress
     const p = Math.max(0, Math.min(1, state.elapsedMs / state.durationMs));
-    const pct = (p*100).toFixed(4)+'%';
-    els.bar.style.width = pct;
+    els.bar.style.width = (p*100).toFixed(4)+'%';
     els.progressbar.setAttribute('aria-valuenow', Math.round(p*100));
     els.timeLabel.textContent = format(state.durationMs - state.elapsedMs);
-    // cycle pill
     els.cyclePill.textContent = `${state.phase===Phases.Work?'Cycle':'Break'} ${state.phase===Phases.Work?state.cycle:'·'} / ${els.cycles.value}`;
-    // save settings
-    save();
+    saveTimer();
   }
 
-  // Event wiring
+  // Inputs
   els.startPause.addEventListener('click', ()=> state.running ? pause() : start());
   els.reset.addEventListener('click', reset);
   els.skip.addEventListener('click', skip);
 
   [els.work, els.short, els.long, els.cycles].forEach(inp=>{
     inp.addEventListener('change', ()=>{
-      // if phase matches changed input, resize duration preserving % progress
       if((state.phase===Phases.Work && inp===els.work) ||
          (state.phase===Phases.Short && inp===els.short) ||
          (state.phase===Phases.Long && inp===els.long)){
@@ -406,53 +430,174 @@
         state.durationMs = msForPhase(state.phase);
         state.elapsedMs = Math.min(state.durationMs, Math.max(0, state.durationMs * pct));
       }
-      save(); updateUI();
+      saveTimer(); updateUI();
     });
   });
 
   // Keyboard shortcuts
   window.addEventListener('keydown', (e)=>{
-    if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+    const tag = document.activeElement.tagName;
+    const inField = tag==='INPUT' || tag==='TEXTAREA';
     const k = e.key.toLowerCase();
+    if(k==='n' && !inField){ e.preventDefault(); els.noteBox.focus(); return; }
+    if((e.key==='Enter') && (e.ctrlKey || e.metaKey)){ if(document.activeElement===els.noteBox){ e.preventDefault(); addNote(); } return; }
+    if(inField) return;
     if(k===' ' || k==='spacebar'){ e.preventDefault(); state.running ? pause() : start(); }
     else if(k==='s'){ e.preventDefault(); skip(); }
     else if(k==='r'){ e.preventDefault(); reset(); }
   });
 
-  // Notifications link
+  // Notifications button
   els.notifyLink.addEventListener('click', async (e)=>{
-    e.preventDefault();
+    e.preventDefault?.();
     if(!('Notification' in window)){ speak('Notifications not supported'); return; }
-    if(Notification.permission==='granted'){ notif.enabled=true; speak('Notifications enabled'); return; }
+    if(Notification.permission==='granted'){ speak('Notifications enabled'); return; }
     if(Notification.permission!=='denied'){
       try{
         const perm = await Notification.requestPermission();
-        notif.enabled = (perm==='granted');
-        speak(notif.enabled?'Notifications enabled':'Permission denied');
+        speak(perm==='granted'?'Notifications enabled':'Permission denied');
       }catch{ speak('Permission request failed'); }
-    } else {
-      speak('Notifications blocked in browser settings');
-    }
+    } else { speak('Notifications blocked in browser settings'); }
   });
 
-  // Accessibility: prevent text selection on spacebar spam
-  document.addEventListener('selectstart', e=>{
-    if(e.detail>1) e.preventDefault();
+  // ------- Local Time Linear Clock
+  function updateLocalClock(){
+    const now = new Date();
+    const hours = now.getHours(), mins = now.getMinutes(), secs = now.getSeconds();
+    const pct = ((hours*3600 + mins*60 + secs) / 86400) * 100;
+    els.clockProgress.style.width = pct.toFixed(3) + '%';
+    els.clockTimeLabel.textContent = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+    els.clockPercent.textContent = Math.round(pct) + '%';
+  }
+  setInterval(updateLocalClock, 1000);
+  updateLocalClock();
+
+  // ------- Notes
+  const NOTES_KEY = 'focusline:notes:v1';
+  const DRAFT_KEY = 'focusline:note:draft';
+  let notes = []; // {id, txt, ts, done, order}
+
+  function loadNotes(){
+    try{ notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]'); }catch{ notes=[]; }
+    notes.forEach((n,i)=>{ if(typeof n.order!=='number') n.order=i; });
+    els.noteBox.value = localStorage.getItem(DRAFT_KEY) || '';
+    renderNotes();
+  }
+  function saveNotes(){ localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); }
+
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+  function formatTs(ts){
+    const d = new Date(ts), pad = (x)=>String(x).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function renderNotes(){
+    const q = (els.noteSearch.value||'').toLowerCase().trim();
+    const filtered = q ? notes.filter(n=>n.txt.toLowerCase().includes(q)) : notes;
+    filtered.sort((a,b)=>a.order-b.order);
+
+    els.noteList.innerHTML='';
+    if(filtered.length===0){ els.noteEmpty.hidden=false; return; }
+    els.noteEmpty.hidden=true;
+
+    filtered.forEach(n=>{
+      const li = document.createElement('div');
+      li.className='note'; li.setAttribute('draggable','true'); li.dataset.id=n.id;
+      li.innerHTML = `
+        <input type="checkbox" ${n.done?'checked':''} aria-label="Mark done" />
+        <div class="grow">
+          <div class="txt ${n.done?'done':''}">${escapeHtml(n.txt)}</div>
+          <div class="meta">${formatTs(n.ts)}${n.done?' · done':''}</div>
+        </div>
+        <div class="btns">
+          <button class="nav-pill" data-act="copy" title="Copy">Copy</button>
+          <button class="nav-pill" data-act="edit" title="Edit">Edit</button>
+          <button class="nav-pill" data-act="up" title="↑">↑</button>
+          <button class="nav-pill" data-act="down" title="↓">↓</button>
+          <button class="danger" data-act="del" title="Delete">Delete</button>
+        </div>`;
+
+      li.querySelector('input[type=checkbox]').addEventListener('change',(e)=>{ n.done=e.target.checked; saveNotes(); renderNotes(); });
+      li.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{
+        const act=b.dataset.act;
+        if(act==='copy'){ navigator.clipboard?.writeText(n.txt); }
+        if(act==='edit'){ const t=prompt('Edit note:', n.txt); if(t!==null){ n.txt=t.trim(); saveNotes(); renderNotes(); } }
+        if(act==='del'){ notes=notes.filter(x=>x.id!==n.id); saveNotes(); renderNotes(); }
+        if(act==='up'){ bump(n.id,-1); }
+        if(act==='down'){ bump(n.id,1); }
+      }));
+
+      // drag-and-drop swap
+      li.addEventListener('dragstart', ()=> li.classList.add('dragging'));
+      li.addEventListener('dragend', ()=> li.classList.remove('dragging'));
+      li.addEventListener('dragover', (e)=> e.preventDefault());
+      li.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        const dragged=document.querySelector('.note.dragging'); if(!dragged||dragged===li) return;
+        swapOrder(dragged.dataset.id, li.dataset.id); saveNotes(); renderNotes();
+      });
+
+      els.noteList.appendChild(li);
+    });
+  }
+
+  function bump(id, dir){
+    const sorted=[...notes].sort((a,b)=>a.order-b.order);
+    const pos=sorted.findIndex(n=>n.id===id); const swapPos=pos+dir;
+    if(pos<0 || swapPos<0 || swapPos>=sorted.length) return;
+    const a=sorted[pos], b=sorted[swapPos]; const tmp=a.order; a.order=b.order; b.order=tmp;
+    saveNotes(); renderNotes();
+  }
+  function swapOrder(aId,bId){
+    const a=notes.find(n=>n.id===aId), b=notes.find(n=>n.id===bId);
+    if(!a||!b) return; const t=a.order; a.order=b.order; b.order=t;
+  }
+
+  function addNote(){
+    const txt=(els.noteBox.value||'').trim(); if(!txt) return;
+    const id = crypto?.randomUUID ? crypto.randomUUID() : (Date.now()+Math.random()).toString(36);
+    const maxOrder = notes.reduce((m,n)=>Math.max(m,n.order||0), -1);
+    notes.push({ id, txt, ts:Date.now(), done:false, order:maxOrder+1 });
+    saveNotes(); renderNotes(); els.noteBox.value=''; localStorage.removeItem(DRAFT_KEY);
+  }
+
+  els.addNote.addEventListener('click', addNote);
+  els.addTimestamp.addEventListener('click', ()=>{
+    const stamp=`[${formatTs(Date.now())} · ${state.phase}] `;
+    const el=els.noteBox; const s=el.selectionStart||0, e=el.selectionEnd||0, v=el.value;
+    el.value = v.slice(0,s) + stamp + v.slice(e);
+    el.focus(); el.selectionStart = el.selectionEnd = s + stamp.length;
+    localStorage.setItem(DRAFT_KEY, el.value);
+  });
+  els.noteBox.addEventListener('input', ()=> localStorage.setItem(DRAFT_KEY, els.noteBox.value));
+  els.noteSearch.addEventListener('input', renderNotes);
+  els.clearAll.addEventListener('click', ()=>{ if(confirm('Delete ALL notes?')){ notes=[]; saveNotes(); renderNotes(); } });
+  els.clearDone.addEventListener('click', ()=>{ const before=notes.length; notes=notes.filter(n=>!n.done); if(notes.length!==before){ saveNotes(); renderNotes(); } });
+
+  // Exports
+  function download(name, text, mime='text/plain'){
+    const blob=new Blob([text],{type:mime}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  $('#exportTxt')?.addEventListener('click', ()=>{
+    const lines = notes.sort((a,b)=>a.order-b.order).map(n=>{
+      const mark=n.done?'[x]':'[ ]'; return `${mark} ${formatTs(n.ts)} — ${n.txt}`;
+    }).join('\n');
+    download(`FocusLine_Notes_${new Date().toISOString().slice(0,10)}.txt`, lines);
+  });
+  $('#exportJson')?.addEventListener('click', ()=>{
+    download(`FocusLine_Notes_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(notes,null,2), 'application/json');
   });
 
-  // Kickoff
-  load();
-  rafId = requestAnimationFrame(tick);
+  // Init
+  loadTimer();
+  loadNotes();
+  requestAnimationFrame(tick);
 
-  // Visibility pause (optional strictness: don’t auto-pause; just keep running)
+  // Keep timer running even when tab hidden (no auto-pause)
   document.addEventListener('visibilitychange', ()=>{ /* intentionally no-op */ });
 
 })();
 </script>
-  <footer style="margin-top:12px;font-size:0.9em;color:#777;">
-  <p>© 2025 <strong>jm5k</strong></p>
-</footer>
 </body>
 </html>
-
-
