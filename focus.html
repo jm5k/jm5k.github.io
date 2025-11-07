@@ -142,6 +142,13 @@
   .note .btns{ display:flex; gap:6px }
   .done{ text-decoration:line-through; opacity:.7 }
   .empty{ color:var(--muted); text-align:center; border:1px dashed var(--line); border-radius:10px; padding:20px }
+
+  /* Instructions */
+  .instructions h3{ margin:0 0 8px 0; font-size:1.05rem }
+  .instructions .muted{ color:var(--muted) }
+  .instructions ul{ margin:10px 0 0 18px; padding:0 }
+  .instructions li{ margin:6px 0 }
+
   footer{ margin-top:18px; color:var(--muted); font-size:14px }
 </style>
 </head>
@@ -228,6 +235,24 @@
     <div id="noteList" class="note-list"></div>
     <div id="noteEmpty" class="empty" hidden>Nothing yet. Press <span class="kbd">N</span> to jot a thought.</div>
   </aside>
+
+  <!-- INSTRUCTIONS -->
+  <section class="card instructions" aria-label="How to use FocusLine and Notes">
+    <h3>How to Use FocusLine & Notes</h3>
+    <p class="muted"><strong>Note philosophy:</strong> Ideas are welcomed—but not right now. During a work block, capture the thought in seconds and return to the task. You protect deep focus today and gain an actionable list to execute later.</p>
+	
+    <ul>
+      <li><strong>Pick your lengths:</strong> Set <em>Work</em>, <em>Short Break</em>, <em>Long Break</em>, and cycles. Your choices auto-save.</li>
+      <li><strong>Start the timer:</strong> Press <span class="kbd">Space</span> or click <em>Start</em>. Pause with <span class="kbd">Space</span>, <em>Reset</em> if you need a clean slate.</li>
+      <li><strong>Auto-advance:</strong> When a block completes, it moves on automatically (toggle under settings). Enable chime if you want an audio cue.</li>
+      <li><strong>Today’s totals:</strong> Completed work minutes are tallied under “Today.” Skipping mid-block still credits full minutes worked so far.</li>
+      <li><strong>Local time bar:</strong> The thin bar shows how far through the day you are, in real time. It’s there to keep perspective, not pressure.</li>
+      <li><strong>Capture Notes fast:</strong> Hit <span class="kbd">N</span> to jump to the box. <span class="kbd">Ctrl/Cmd+Enter</span> to save. Insert a timestamp to anchor context.</li>
+      <li><strong>Manage notes:</strong> Mark done, edit, drag to reorder, or use ↑/↓. Search filters live. <em>Clear Done</em> cleans completed noise.</li>
+      <li><strong>Export anytime:</strong> Save a .txt for reading or a .json for backup/import. Everything (settings + notes) is stored locally in your browser.</li>
+      <li><strong>Privacy:</strong> No accounts, no tracking, no sync. If you want cross-device later, export/import or we can add an opt-in backend.</li>
+    </ul>
+  </section>
 
   <footer>© 2025 <strong>jm5k</strong> — No tracking. Your data stays in your browser.</footer>
 </main>
@@ -593,6 +618,10 @@
   loadTimer();
   loadNotes();
   requestAnimationFrame(tick);
+
+  // ------- Local time tick
+  setInterval(updateLocalClock, 1000);
+  updateLocalClock();
 
   // Keep timer running even when tab hidden (no auto-pause)
   document.addEventListener('visibilitychange', ()=>{ /* intentionally no-op */ });
