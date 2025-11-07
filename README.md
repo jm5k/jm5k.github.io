@@ -19,29 +19,34 @@ Built by **[jm5k](https://jm5k.github.io/)** using pure HTML, CSS, and JavaScrip
 ---
 
 ## 🧭 Planned Updates
-- Multiple timezone clocks  
 - Vertical layout option  
 - Reversible marker direction  
 - Workday progress tracking  
-- Custom marker zones (breaks, focus blocks, etc.)
-- Color Customization
+- Custom marker zones (breaks, focus blocks, etc.)  
+- Color customization (accent and background themes)
 
 ---
 
 ## ✅ Completed Updates
-- 12-hour / 24-hour toggle
+- 12-hour / 24-hour toggle  
+- Multi-Timezone Linear Clocks  
 
 ---
 
-## 🧩 How It Works
-The page runs entirely client-side, using your system’s local time.  
-No data is stored or transmitted — everything updates dynamically in the browser.
+## 🌍 Multi-Clock View
 
-You can view the clock here:  
-👉 [**https://jm5k.github.io/**](https://jm5k.github.io/)
+**Multi-Clock** lets you display multiple 24-hour timelines for different time zones — perfect for global teams or travel coordination.  
+Each additional clock renders directly below your local line with synchronized live updates.
 
-Or the minimalist version (no donation link):  
-👉 [**https://jm5k.github.io/clock.html**](https://jm5k.github.io/clock.html)
+### ✨ Highlights
+- **Full IANA timezone list** with auto-detection and pinned favorites  
+- **Custom labels** per clock (e.g., “London HQ · Europe/London”)  
+- **Minimalist design:** thin nav line, subtle `#cc9` yellow for percentages, cyan accents for markers  
+- **Lightweight:** runs locally with 1-second updates, no external libraries  
+- **Quick actions:** add via dropdown, remove with ✕ or middle-click  
+
+#### 🔗 Try it
+➡️ [Multi-Clock View](https://jm5k.github.io/multi-clock.html) — stay in sync, anywhere.
 
 ---
 
