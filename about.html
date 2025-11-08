@@ -49,152 +49,162 @@
 </script>
 
 <style>
+  :root{
+    --fg:#eaeaea; --line:#1f1f1f; --accent:#00e5ff;
+    --chip:#151515; --chip-brd:#222;
+  }
   body {
-    background:#000;
-    color:#ccc;
-    font-family:monospace;
-    text-align:center;
-    padding:4%;
-    max-width:800px;
-    margin:auto;
+    background:#000; color:#ccc; font-family:monospace;
+    margin:0; padding:32px 16px 64px;
   }
-  h1 {
-    color:#0ff;
-    font-size:1.8em;
-    margin-bottom:0.4em;
+  .wrap{ max-width:880px; margin:0 auto; text-align:center; }
+
+  /* —— Global Nav ——————————————————— */
+  .brand{ font-weight:600; margin-bottom:6px; }
+  .topnav{
+    display:flex; align-items:center; justify-content:center;
+    gap:14px; flex-wrap:wrap; font-size:14px; margin-bottom:8px;
   }
-  h2 {
-    color:#e6e600;
-    margin-top:2em;
-    font-size:1.4em;
+  .topnav a{
+    color:var(--fg); text-decoration:none; padding:6px 8px;
+    border-radius:8px; border:1px solid transparent;
+    transition:color .2s ease, background .2s ease, border-color .2s ease;
   }
-  p {
-    color:#aaa;
-    line-height:1.6;
-    margin:1em 0;
+  .topnav a:hover{ border-color:var(--line); color:var(--accent); }
+  .topnav a[aria-current="page"]{
+    color:#00141a; background:var(--accent); border-color:transparent; font-weight:600;
   }
-  ul {
-    list-style:none;
-    padding-left:0;
-    color:#ccc;
-    line-height:1.6;
+  .navline{
+    margin:10px 0 18px; height:1px; width:100%;
+    background:linear-gradient(to right, rgba(255,255,255,0.1),
+      rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.1));
+    opacity:.6;
   }
-  li::before {
-    content:"• ";
-    color:#0ff;
-  }
-  a {
-    color:#0ff;
-    text-decoration:none;
-  }
+
+  h1 { color:#0ff; font-size:1.8em; margin:8px 0 0.4em; }
+  h2 { color:#e6e600; margin-top:2em; font-size:1.4em; }
+  p  { color:#aaa; line-height:1.6; margin:1em 0; }
+  ul { list-style:none; padding-left:0; color:#ccc; line-height:1.6; margin:0.8em 0; }
+  li::before { content:"• "; color:#0ff; }
+  a  { color:#0ff; text-decoration:none; }
   a:hover { text-decoration:underline; }
   .muted { color:#777; font-size:0.95em; }
-  footer {
-    margin-top:40px;
-    color:#777;
-    font-size:0.9em;
-  }
+  footer { margin-top:40px; color:#777; font-size:0.9em; }
 </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div class="brand">24-Hour Linear Suite</div>
+      <nav class="topnav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="clock.html">Minimal Clock</a>
+        <a href="multi-clock.html">Multi-Clock</a>
+        <a href="focus.html">FocusLine</a>
+        <a href="about.html" aria-current="page">About</a>
+      </nav>
+      <div class="navline" aria-hidden="true"></div>
+    </header>
 
-<h1>About the 24-Hour Linear Clock</h1>
+    <h1>About the 24-Hour Linear Clock</h1>
 
-<p>
-  The <strong>24-Hour Linear Clock</strong> is a minimalist time visualization built by <strong>jm5k</strong>.
-  It presents the entire day as a single horizontal line — each hour and quarter-hour marked — with
-  a live red indicator for the current time, a highlighted workday band (08:00–17:00), and real-time
-  stats for percent of day elapsed and time remaining. Runs fully in your browser. No tracking. No servers.
-</p>
+    <p>
+      The <strong>24-Hour Linear Clock</strong> is a minimalist time visualization built by <strong>jm5k</strong>.
+      It presents the entire day as a single horizontal line — each hour and quarter-hour marked — with
+      a live red indicator for the current time, a highlighted workday band (08:00–17:00), and real-time
+      stats for percent of day elapsed and time remaining. Runs fully in your browser. No tracking. No servers.
+    </p>
 
-<h2>Completed</h2>
-<ul>
-  <li>
-    <strong>12-hour / 24-hour toggle</strong> — Applies to both the top time readout and the hour labels.
-    Remembers your preference using <code>localStorage</code>. The toggle control is placed directly under
-    the “elapsed | remaining” line for clarity.
-	<li><strong>Multi-timezone clocks</strong> — Display additional clocks for global times.</li>
-  </li>
-</ul>
+    <h2>Completed</h2>
+    <ul>
+      <li>
+        <strong>12-hour / 24-hour toggle</strong> — Applies to both the top time readout and the hour labels.
+        Remembers your preference using <code>localStorage</code>. The toggle control is placed directly under
+        the “elapsed | remaining” line for clarity.
+      </li>
+      <li><strong>Multi-timezone clocks</strong> — Display additional clocks for global times.</li>
+    </ul>
 
-<h2>Planned Updates</h2>
-<ul>
-  <li><strong>Vertical layout option</strong> — View the timeline vertically for alternate screen orientations.</li>
-  <li><strong>Reversible time direction</strong> — Flip the time marker to move right→left (or bottom→top).</li>
-  <li><strong>Workday-specific tracking</strong> — Show <em>% of workday elapsed</em> and <em>workday time remaining</em>.</li>
-  <li><strong>Custom marker zones</strong> — Define colored regions for breaks, meetings, or focus blocks (saved locally).</li>
-</ul>
+    <h2>Planned Updates</h2>
+    <ul>
+      <li><strong>Vertical layout option</strong> — View the timeline vertically for alternate screen orientations.</li>
+      <li><strong>Reversible time direction</strong> — Flip the time marker to move right→left (or bottom→top).</li>
+      <li><strong>Workday-specific tracking</strong> — Show <em>% of workday elapsed</em> and <em>workday time remaining</em>.</li>
+      <li><strong>Custom marker zones</strong> — Define colored regions for breaks, meetings, or focus blocks (saved locally).</li>
+    </ul>
 
-<p class="muted">
-  Roadmap is iterative: the goal is to remain simple, fast, and readable while adding power features thoughtfully.
-</p>
-<hr style="border:none; border-top:1px solid rgba(255,255,255,0.1); margin:32px 0;">
+    <p class="muted">
+      Roadmap is iterative: the goal is to remain simple, fast, and readable while adding power features thoughtfully.
+    </p>
 
-<section id="focus">
-  <h2 style="font-size:1.4em; margin-bottom:8px;">FocusLine Pomodoro</h2>
-  <p>
-    <strong>FocusLine</strong> is a minimalist <a href="./focus.html">Pomodoro timer</a> built to complement the 
-    <a href="./index.html">24-Hour Linear Clock</a>. It visualizes your work sessions as a clean, 
-    horizontal progress bar — free of distractions, accounts, or analytics. 
-  </p>
-  <p>
-    You can adjust work and break durations, enable auto-advance, and track total focus minutes for the day — all stored locally in your browser. 
-    Optional chime and desktop notifications help mark each phase without breaking your flow.
-  </p>
-  <p>
-    <em>Shortcuts:</em> <kbd>Space</kbd> start/pause, <kbd>S</kbd> skip, <kbd>R</kbd> reset.  
-    It’s privacy-friendly, fast, and built for everyday focus.
-  </p>
-</section>
-<section id="update-multi-clock" style="margin-top:32px;">
-  <h2 style="color:#e6e600; font-size:1.1rem; margin:0 0 8px;">Multi-Timezone Minimal Linear Clocks</h2>
-  <p style="color:#888; margin:0 0 12px;">
-    You can now add additional world clocks to the Linear Clock view. Use the <em>Add</em> button with the
-    timezone dropdown (full IANA list, with favorites pinned) to render extra 24-hour lines under your local clock.
-    Each clock shows live time, a progress fill, and a cyan marker. Remove a clock via the small ✕ or a middle-click.
-  </p>
+    <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1); margin:32px 0;">
 
-  <ul style="color:#aaa; margin:0 0 10px 18px; line-height:1.6;">
-    <li>Full IANA timezone list (auto-detected where supported; falls back gracefully).</li>
-    <li>Optional custom label per clock (e.g., “London HQ · Europe/London”).</li>
-    <li>Minimal UI: thin nav line, subtle <span style="color:#e6e600;">yellow</span> for percent, cyan accents.</li>
-    <li>Lightweight: no external libraries, 1-second updates.</li>
-  </ul>
+    <section id="focus">
+      <h2 style="font-size:1.4em; margin-bottom:8px;">FocusLine Pomodoro</h2>
+      <p>
+        <strong>FocusLine</strong> is a minimalist <a href="./focus.html">Pomodoro timer</a> built to complement the 
+        <a href="./index.html">24-Hour Linear Clock</a>. It visualizes your work sessions as a clean, 
+        horizontal progress bar — free of distractions, accounts, or analytics. 
+      </p>
+      <p>
+        You can adjust work and break durations, enable auto-advance, and track total focus minutes for the day — all stored locally in your browser. 
+        Optional chime and desktop notifications help mark each phase without breaking your flow.
+      </p>
+      <p>
+        <em>Shortcuts:</em> <kbd>Space</kbd> start/pause, <kbd>S</kbd> skip, <kbd>R</kbd> reset.  
+        It’s privacy-friendly, fast, and built for everyday focus.
+      </p>
+    </section>
 
-  <p style="color:#888; margin:0;">
-    <a href="multi-clock.html">multi-clock</a>
-  </p>
-</section>
+    <section id="update-multi-clock" style="margin-top:32px;">
+      <h2 style="color:#e6e600; font-size:1.1rem; margin:0 0 8px;">Multi-Timezone Minimal Linear Clocks</h2>
+      <p style="color:#888; margin:0 0 12px;">
+        You can now add additional world clocks to the Linear Clock view. Use the <em>Add</em> button with the
+        timezone dropdown (full IANA list, with favorites pinned) to render extra 24-hour lines under your local clock.
+        Each clock shows live time, a progress fill, and a cyan marker. Remove a clock via the small ✕ or a middle-click.
+      </p>
 
-<hr style="border:none; border-top:1px solid rgba(255,255,255,0.1); margin:32px 0;">
-<h2>Contact</h2>
-<p>
-  📧 <a href="mailto:jm5k_dev@pm.me">jm5k_dev@pm.me</a>
-</p>
+      <ul style="color:#aaa; margin:0 0 10px 18px; line-height:1.6;">
+        <li>Full IANA timezone list (auto-detected where supported; falls back gracefully).</li>
+        <li>Optional custom label per clock (e.g., “London HQ · Europe/London”).</li>
+        <li>Minimal UI: thin nav line, subtle <span style="color:#e6e600;">yellow</span> for percent, cyan accents.</li>
+        <li>Lightweight: no external libraries, 1-second updates.</li>
+      </ul>
 
-<!-- Donation -->
-<div style="margin-top:20px;">
-  <a href="https://www.buymeacoffee.com/jm5k" target="_blank" style="text-decoration:none;">
-    <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=e6e600&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee"/>
-  </a>
-</div>
+      <p style="color:#888; margin:0;">
+        🔗 <a href="multi-clock.html">Multi-Clock</a>
+      </p>
+    </section>
 
-<p>
-  ⏱ Return to the clock: <a href="index.html">Linear Clock Home</a>
-</p>
+    <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1); margin:32px 0;">
 
-<footer>
-  <p>Minimal time, maximum clarity.</p>
-</footer>
-<footer style="margin-top:40px; font-size:0.9em; color:#777;">
-  <hr style="width:60%; margin:20px auto; border:0; border-top:1px solid #333;">
-  <p style="color:#00ffff;">
-    © 2025 <strong>jm5k</strong> | <a href="https://github.com/jm5k/jm5k.github.io/blob/main/LICENSE" target="_blank" style="color:#00ffff; text-decoration:none;">MIT License</a>
-  </p>
-  <p style="color:#555; margin-top:6px;">
-    <a href="https://github.com/jm5k/jm5k.github.io" target="_blank" style="color:#999; text-decoration:none;">View source on GitHub</a>
-  </p>
-</footer>
+    <h2>Contact</h2>
+    <p>📧 <a href="mailto:jm5k_dev@pm.me">jm5k_dev@pm.me</a></p>
 
+    <!-- Donation -->
+    <div style="margin-top:20px;">
+      <a href="https://www.buymeacoffee.com/jm5k" target="_blank" style="text-decoration:none;">
+        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=e6e600&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee"/>
+      </a>
+    </div>
+
+    <p style="margin-top:16px;">
+      ⏱ Return to the clock: <a href="index.html">Linear Clock Home</a>
+    </p>
+
+    <footer>
+      <p>Minimal time, maximum clarity.</p>
+    </footer>
+
+    <footer style="margin-top:40px; font-size:0.9em; color:#777;">
+      <hr style="width:60%; margin:20px auto; border:0; border-top:1px solid #333;">
+      <p style="color:#00ffff;">
+        © 2025 <strong>jm5k</strong> | <a href="https://github.com/jm5k/jm5k.github.io/blob/main/LICENSE" target="_blank" style="color:#00ffff; text-decoration:none;">MIT License</a>
+      </p>
+      <p style="color:#555; margin-top:6px;">
+        <a href="https://github.com/jm5k/jm5k.github.io" target="_blank" style="color:#999; text-decoration:none;">View source on GitHub</a>
+      </p>
+    </footer>
+  </div>
 </body>
 </html>
