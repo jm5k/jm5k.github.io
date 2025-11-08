@@ -12,6 +12,9 @@
   :root{
     --bg:#000; --fg:#ccc; --muted:#888; --soft:#aaa;
     --cyan:#0ff; --yellow:#cc9; --rail:#222; --tick:#333; --marker:#0ff;
+
+    /* nav vars */
+    --accent:#00e5ff; --line:#1f1f1f; --chip:#151515; --chip-brd:#222;
   }
   *{box-sizing:border-box}
   body{ background:var(--bg); color:var(--fg); font-family:monospace; margin:0; padding:32px 16px 64px; }
@@ -19,12 +22,32 @@
   a:hover{text-decoration:underline}
 
   .wrap{max-width:960px; margin:0 auto}
+
+  /* —— Global Nav ——————————————————— */
+  .brand{ font-weight:600; margin-bottom:6px; text-align:center; }
+  .topnav{
+    display:flex; align-items:center; justify-content:center;
+    gap:14px; flex-wrap:wrap; font-size:14px; margin:0 auto 8px;
+  }
+  .topnav a{
+    color:var(--fg); text-decoration:none; padding:6px 8px;
+    border-radius:8px; border:1px solid transparent;
+    transition:color .2s ease, background .2s ease, border-color .2s ease;
+  }
+  .topnav a:hover{ border-color:var(--line); color:var(--accent); }
+  .topnav a[aria-current="page"]{
+    color:#00141a; background:var(--accent); border-color:transparent; font-weight:600;
+  }
+  .navline{
+    margin:10px 0 18px; height:1px; width:100%;
+    background:linear-gradient(to right, rgba(255,255,255,0.1),
+      rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.1));
+    opacity:.6;
+  }
+
   h1{margin:0 0 10px; font-weight:600; font-size:1.25rem; color:var(--yellow)}
   .sub{margin:0 0 18px; color:var(--muted)}
   hr.nav{border:none; border-top:1px solid rgba(255,255,255,0.1); margin:24px 0}
-
-  .nav{margin-bottom:18px}
-  .nav a{margin-right:12px}
 
   .controls{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0 20px; }
   .controls select,.controls input[type="text"],.controls button{
@@ -78,12 +101,18 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="nav">
-      <a href="clock.html">Minimal View</a> |
-      <a href="multi-clock.html">Multi-Clock</a> |
-      <a href="focus.html">FocusLine</a> |
-      <a href="about.html">About</a>
-    </div>
+    <!-- Unified Header/Nav -->
+    <header>
+      <div class="brand">24-Hour Linear Suite</div>
+      <nav class="topnav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="clock.html">Minimal Clock</a>
+        <a href="multi-clock.html" aria-current="page">Multi-Clock</a>
+        <a href="focus.html">FocusLine</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div class="navline" aria-hidden="true"></div>
+    </header>
 
     <h1>24-Hour Linear Clock — Multi-Timezone</h1>
     <p class="sub">
@@ -225,7 +254,6 @@ function createClockCard(entry){
 
   const off = fmtOffset(getOffsetMinutes(tz));
   const pretty = zonePrettyName(tz);
-  const titleHtml = label ? `${pretty} · <small class="label-view">${escapeHtml(label)}</small>` : `${pretty} <small class="label-view" style="display:none"></small>`;
 
   el.innerHTML = `
     <div class="head" title="Drag to reorder">
@@ -303,13 +331,10 @@ function createClockCard(entry){
   }
   function commitLabel(){
     const val = input.value.trim();
-    // update model
     const idx = clocks.findIndex(c => c.tz === tz);
     if (idx >= 0){
       clocks[idx].label = val;
-      // update UI
       view.textContent = val;
-      // show/hide separator based on content
       view.style.display = val ? 'inline' : 'none';
       sep.style.display  = val ? 'inline' : 'none';
       saveClocks();
@@ -381,48 +406,12 @@ function rerender(){
 }
 
 /* ---------- Persistence & Init ---------- */
-function saveClocks(){ try { localStorage.setItem(LS_KEY, JSON.stringify(clocks)); } catch {} }
-function loadClocks(){
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw);
-    if (Array.isArray(arr)) return arr.map(x => ({ tz: String(x.tz||''), label: String(x.label||'') })).filter(x => x.tz);
-  } catch {}
-  return [];
-}
-
 function renderEmptyState(){
   if (clocks.length === 0 && !document.getElementById('empty-note')){
     const p = document.createElement('p'); p.id='empty-note'; p.className='sub'; p.textContent='No clocks added yet. Use the dropdown and Add button.'; extraClocks.appendChild(p);
   } else if (clocks.length > 0){
     const n = document.getElementById('empty-note'); if (n) n.remove();
   }
-}
-
-/* ---------- Dropdown build ---------- */
-function buildDropdown(){
-  const all = getAllTimeZones();
-  const now = new Date();
-  const rows = all.map(tz => ({ tz, offset:getOffsetMinutes(tz, now), isPinned:pinnedZones.includes(tz) }))
-                  .map(r => ({...r, label:`${fmtOffset(r.offset)} — ${zonePrettyName(r.tz)}`}));
-  rows.sort((a,b) => (a.offset - b.offset) || a.tz.localeCompare(b.tz));
-
-  const deduped = new Set(dedupeZones(rows.map(r=>r.tz), now));
-  const pinned = rows.filter(r => r.isPinned);
-  const others = rows.filter(r => !r.isPinned && deduped.has(r.tz));
-
-  tzSelect.innerHTML = '';
-  if (pinned.length){
-    const grp = document.createElement('optgroup'); grp.label = '★ Pinned';
-    for (const r of pinned){ const o=document.createElement('option'); o.value=r.tz; o.textContent=r.label; o.dataset.pinned='true'; grp.appendChild(o); }
-    tzSelect.appendChild(grp);
-  }
-  const grp2 = document.createElement('optgroup'); grp2.label = 'Time Zones';
-  for (const r of others){ const o=document.createElement('option'); o.value=r.tz; o.textContent=r.label; grp2.appendChild(o); }
-  tzSelect.appendChild(grp2);
-
-  if (tzSelect.options.length > 0) tzSelect.selectedIndex = 0;
 }
 
 /* ---------- Add / Init ---------- */
