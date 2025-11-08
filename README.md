@@ -3,8 +3,14 @@
 [![Build: Static HTML5](https://img.shields.io/badge/Build-Static%20HTML5-lightgrey.svg)](https://jm5k.github.io/)
 [![Made by jm5k](https://img.shields.io/badge/Made%20by-jm5k-00ffff.svg)](https://jm5k.github.io/)
 
-A minimalist web-based clock that visualizes the entire day as a single horizontal line.  
-Built by **[jm5k](https://jm5k.github.io/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
+A minimalist web-based clock suite that visualizes time as a single continuous line — extended with multi-timezone and focus-tracking tools.  
+Built by **[jm5k](https://jm5k.github.io/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, no tracking.
+
+---
+
+### 🔗 Live Demo
+➡️ **Linear Clock:** https://jm5k.github.io/  
+Visualize your day as one line — see progress, work hours, and time remaining at a glance.
 
 ---
 
@@ -19,16 +25,17 @@ Built by **[jm5k](https://jm5k.github.io/)** using pure HTML, CSS, and JavaScrip
 ---
 
 ## ✅ Completed Updates
-- 12-hour / 24-hour toggle  
+- **12-hour / 24-hour toggle**  
 - **Multi-Timezone Linear Clocks**  
 - **FocusLine Pomodoro**  
-  - Adjustable Work / Short Break / Long Break  
+  - Adjustable Work / Short Break / Long Break durations  
   - Auto-advance, optional chime, desktop notifications  
   - Daily focus minutes (local history)  
-  - Keyboard shortcuts: `Space` (Start/Pause), `S` (Skip), `R` (Reset), `N` (Focus notes)  
-  - **Local Time Bar** between timer and notes (day progress at a glance)  
+  - Keyboard shortcuts: `Space` (Start/Pause), `S` (Skip), `R` (Reset), `N` (Focus Notes)  
+  - **Local Time Bar** between timer and notes (real-time day progress)  
   - **Capture Notes** module (local-only, searchable, reorderable, exportable)  
-  - **Instructions** card clarifying Pomodoro usage & note-taking philosophy
+  - **Instructions Card** explaining Pomodoro usage and note-taking flow philosophy  
+- **Unified Navigation Bar** across suite pages (active-page highlighting)
 
 ---
 
@@ -38,83 +45,82 @@ Built by **[jm5k](https://jm5k.github.io/)** using pure HTML, CSS, and JavaScrip
 - Workday progress tracking  
 - Custom marker zones (breaks, focus blocks, etc.)  
 - Color customization (accent and background themes)  
-- (Optional) “Move to Tasks” export for checked notes at session end
+- (Optional) “Move to Tasks” export for completed notes at session end  
 
 ---
 
 ## 🌍 Multi-Clock View
-
-**Multi-Clock** shows multiple 24-hour timelines for different time zones — perfect for global teams or travel coordination.  
-Each added clock renders directly below your local line with synchronized live updates.
+**Multi-Clock** displays multiple 24-hour timelines for different time zones — ideal for distributed teams, travel planning, or global collaboration.  
+Each added clock updates in real time and can be labeled, reordered, or removed.
 
 ### ✨ Highlights
-- Full IANA timezone list with auto-detection and pinned favorites  
+- Full IANA timezone list with pinned favorites  
 - Custom labels per clock (e.g., “London HQ · Europe/London”)  
-- Minimalist design: thin nav line, subtle percentage labels, cyan accents  
-- Lightweight: runs locally with 1-second updates, no libraries  
+- Minimal design: thin nav line, subtle yellow percentages, cyan accents  
+- Lightweight: runs locally, 1-second refresh rate  
 - Quick actions: add via dropdown, remove with ✕ or middle-click  
+- Drag-and-drop or ▲ / ▼ buttons for reordering  
+- Labels editable inline with persistent localStorage saves  
 
 #### 🔗 Try it
-➡️ **Multi-Clock View:** https://jm5k.github.io/multi-clock.html
+➡️ **Multi-Clock View:** https://jm5k.github.io/multi-clock.html  
 
 ---
 
 ## 🕒 FocusLine Pomodoro
-
-**FocusLine** is a minimalist Pomodoro timer designed to complement the Linear Clock.  
-It turns your work sessions into a calm, cyan progress bar — no accounts, no tracking.
+**FocusLine** is a minimalist Pomodoro timer designed to complement the Linear Clock’s visual rhythm.  
+Your focus sessions appear as a calm cyan bar — free from noise, accounts, or distractions.
 
 ### ✨ Features
-- Adjustable **Work**, **Short Break**, **Long Break**, and **Cycles**  
-- Auto-advance on completion (toggleable)  
-- Optional chime and desktop notifications  
-- **Keyboard shortcuts:**  
-  - `Space` — Start / Pause  
-  - `S` — Skip  
-  - `R` — Reset  
-  - `N` — Jump to notes  
-- Daily focus minutes stored locally (rolling 7-day pruning)  
-- Fully offline, privacy-friendly design
+- Adjustable **Work**, **Short Break**, **Long Break**, and **Cycle** durations  
+- Auto-advance option and session chime  
+- **Keyboard Shortcuts:**  
+  - `Space` → Start / Pause  
+  - `S` → Skip  
+  - `R` → Reset  
+  - `N` → Jump to Notes  
+- Local focus time history for daily tracking  
+- Privacy-first: runs offline, no telemetry  
 
 ### 🧩 Local Time Bar
-A thin linear clock placed between the timer and notes that shows **how far through the day you are**.  
-It updates every second — perspective without pressure.
+A miniature linear clock between the timer and notes showing **day progression in real time**.  
+It subtly reinforces awareness without pressure.
 
-### 📝 Capture Notes (during focus)
-When an idea pops up mid-focus, **don’t context-switch**. Jot it down fast, then get back to the task.  
-This preserves flow now and gives you a clean queue for later.
+### 📝 Capture Notes (During Focus)
+When ideas strike mid-session — **write, don’t switch**.  
+Capture the thought instantly, then return to your focus. Process later.
 
-**Notes tools:**
-- Add via button or **Ctrl/Cmd+Enter** from the textarea  
-- Insert timestamp (includes current phase)  
-- Mark done, edit inline, **drag to reorder** or use ↑/↓  
-- **Search** live filter  
-- **Export** as `.txt` or `.json`  
-- **Clear Done** or **Clear All**  
-- Everything is saved **locally** in your browser (no sync/no tracking)
+**Tools:**
+- Add notes via button or `Ctrl/Cmd+Enter`  
+- Timestamped entries with phase markers  
+- Mark done, edit inline, **drag to reorder**  
+- Live search filter  
+- Export as `.txt` or `.json`  
+- Clear Done / Clear All  
+- Saved locally — no cloud sync, no tracking  
 
-### 📖 Instructions (built-in)
-A short, skimmable card under the Notes explains:
-- How the timer works (durations, cycles, auto-advance, notifications)  
-- How minutes are tallied for “Today”  
-- The **note-taking philosophy** above, in plain English
+### 📖 Instructions (Built-In)
+Concise card at the bottom covers:
+- Timer flow and controls  
+- Minute-tracking logic  
+- The “write-now, act-later” note philosophy  
 
 #### 🔗 Try it
-➡️ **FocusLine Pomodoro:** https://jm5k.github.io/focus.html
+➡️ **FocusLine Pomodoro:** https://jm5k.github.io/focus.html  
 
 ---
 
-## 🗺️ Project Structure (static)
+## 🗺️ Project Structure (Static)
 - `index.html` — Single 24-hour Linear Clock  
 - `multi-clock.html` — Multi-timezone Linear Clocks  
-- `focus.html` — FocusLine Pomodoro with Local Time Bar & Notes  
-- `about.html` — Project overview, credits, and roadmap
+- `focus.html` — FocusLine Pomodoro (with Local Time Bar & Notes)  
+- `about.html` — Project overview, credits, and roadmap  
 
 ---
 
 ## ☕ Support
-If you enjoy the project and want to support future development:  
-**Buy Me a Coffee:** https://www.buymeacoffee.com/jm5k
+If you enjoy the project and want to support development:  
+**Buy Me a Coffee →** https://www.buymeacoffee.com/jm5k  
 
 ---
 
@@ -123,4 +129,4 @@ If you enjoy the project and want to support future development:
 
 ---
 
-© 2025 **jm5k** — Minimal time, maximum clarity.
+© 2025 **jm5k** — *Minimal time, maximum clarity.*
