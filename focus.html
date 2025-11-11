@@ -494,7 +494,7 @@
 
     filtered.forEach(n=>{
       const li = document.createElement('div');
-      li.className='note'; li.setAttribute('draggable','true'); li.dataset.id=n.id;
+      li.className='note'; li.dataset.id=n.id;
       li.innerHTML = `
         <input type="checkbox" ${n.done?'checked':''} aria-label="Mark done" />
         <div class="grow">
@@ -518,16 +518,6 @@
         if(act==='up'){ bump(n.id,-1); }
         if(act==='down'){ bump(n.id,1); }
       }));
-
-      // drag-and-drop swap
-      li.addEventListener('dragstart', ()=> li.classList.add('dragging'));
-      li.addEventListener('dragend', ()=> li.classList.remove('dragging'));
-      li.addEventListener('dragover', (e)=> e.preventDefault());
-      li.addEventListener('drop', (e)=>{
-        e.preventDefault();
-        const dragged=document.querySelector('.note.dragging'); if(!dragged||dragged===li) return;
-        swapOrder(dragged.dataset.id, li.dataset.id); saveNotes(); renderNotes();
-      });
 
       document.getElementById('noteList').appendChild(li);
     });
@@ -594,3 +584,4 @@
 </script>
 </body>
 </html>
+
