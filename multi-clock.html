@@ -13,39 +13,37 @@
     --bg:#000; --fg:#ccc; --muted:#888; --soft:#aaa;
     --cyan:#0ff; --yellow:#cc9; --rail:#222; --tick:#333; --marker:#0ff;
 
-    /* nav vars */
+    /* link/back vars */
     --accent:#00e5ff; --line:#1f1f1f; --chip:#151515; --chip-brd:#222;
   }
   *{box-sizing:border-box}
-  body{ background:var(--bg); color:var(--fg); font-family:monospace; margin:0; padding:32px 16px 64px; }
+  body{ background:var(--bg); color:var(--fg); font-family:monospace; margin:0; padding:24px 16px 64px; }
   a{color:var(--cyan); text-decoration:none}
   a:hover{text-decoration:underline}
 
   .wrap{max-width:960px; margin:0 auto}
 
-  /* —— Global Nav ——————————————————— */
-  .brand{ font-weight:600; margin-bottom:6px; text-align:center; }
-  .topnav{
-    display:flex; align-items:center; justify-content:center;
-    gap:14px; flex-wrap:wrap; font-size:14px; margin:0 auto 8px;
+  /* ← Back link (top-left) */
+  .returnnav {
+    max-width:960px; margin:0 auto 10px;
   }
-  .topnav a{
-    color:var(--fg); text-decoration:none; padding:6px 8px;
-    border-radius:8px; border:1px solid transparent;
-    transition:color .2s ease, background .2s ease, border-color .2s ease;
+  .returnnav a{
+    display:inline-block;
+    color:var(--accent);
+    text-decoration:none;
+    font-size:0.95rem;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;
+    padding:6px 12px;
+    transition:all .2s ease;
   }
-  .topnav a:hover{ border-color:var(--line); color:var(--accent); }
-  .topnav a[aria-current="page"]{
-    color:#00141a; background:var(--accent); border-color:transparent; font-weight:600;
-  }
-  .navline{
-    margin:10px 0 18px; height:1px; width:100%;
-    background:linear-gradient(to right, rgba(255,255,255,0.1),
-      rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.1));
-    opacity:.6;
+  .returnnav a:hover{
+    background:rgba(255,255,255,0.04);
+    border-color:var(--accent);
+    text-shadow:0 0 6px var(--accent);
   }
 
-  h1{margin:0 0 10px; font-weight:600; font-size:1.25rem; color:var(--yellow)}
+  h1{margin:6px 0 10px; font-weight:600; font-size:1.25rem; color:var(--yellow)}
   .sub{margin:0 0 18px; color:var(--muted)}
   hr.nav{border:none; border-top:1px solid rgba(255,255,255,0.1); margin:24px 0}
 
@@ -100,20 +98,13 @@
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <!-- Unified Header/Nav -->
-    <header>
-      <div class="brand">24-Hour Linear Suite</div>
-      <nav class="topnav" aria-label="Primary">
-        <a href="index.html">Home</a>
-        <a href="clock.html">Minimal Clock</a>
-        <a href="multi-clock.html" aria-current="page">Multi-Clock</a>
-        <a href="focus.html">FocusLine</a>
-        <a href="about.html">About</a>
-      </nav>
-      <div class="navline" aria-hidden="true"></div>
-    </header>
 
+  <!-- Top-left return link -->
+  <nav class="returnnav" aria-label="Return">
+    <a href="index.html">← Back to Linear Clock Lab</a>
+  </nav>
+
+  <div class="wrap">
     <h1>24-Hour Linear Clock — Multi-Timezone</h1>
     <p class="sub">
       Add clocks below. The list shows <span class="offset">UTC offsets</span> and is sorted by offset. Pinned favorites appear first.
@@ -174,6 +165,7 @@ function zonePrettyName(tz){ const p = tz.split('/'); return p.length===1 ? tz :
 const pinnedZones = ['UTC','America/Phoenix','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','Europe/London','Europe/Berlin','Asia/Tokyo','Asia/Singapore','Australia/Sydney'];
 const majorCityKeepList = new Set(['UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Phoenix','Europe/London','Europe/Paris','Europe/Berlin','Asia/Tokyo','Asia/Shanghai','Asia/Singapore','Asia/Kolkata','Australia/Sydney','Pacific/Auckland']);
 
+/* Fallback zone list if supportedValuesOf isn't available */
 function getAllTimeZones(){
   if (typeof Intl.supportedValuesOf === 'function'){
     try { const list = Intl.supportedValuesOf('timeZone'); if (Array.isArray(list) && list.length) return list; } catch {}
