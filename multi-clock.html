@@ -115,6 +115,9 @@
       <select id="tzSelect" title="Choose a timezone"></select>
       <input id="labelInput" type="text" placeholder="Optional label (e.g., London HQ)" />
       <button id="addBtn" aria-label="Add timezone clock">Add</button>
+
+      <!-- NEW: Clear All button -->
+      <button id="clearAllBtn" title="Remove all clocks" style="margin-left:auto;">Clear All</button>
     </div>
 
     <hr class="nav" />
@@ -127,6 +130,7 @@ const LS_KEY = 'jm5k_multi_clocks_v2'; // version bump for edit-label feature
 const tzSelect   = document.getElementById('tzSelect');
 const addBtn     = document.getElementById('addBtn');
 const labelInput = document.getElementById('labelInput');
+const clearAllBtn= document.getElementById('clearAllBtn');
 const extraClocks= document.getElementById('extraClocks');
 
 /* ---------- Utilities ---------- */
@@ -406,7 +410,7 @@ function renderEmptyState(){
   }
 }
 
-/* ---------- Add / Init ---------- */
+/* ---------- Add ---------- */
 addBtn.addEventListener('click', () => {
   const tz = tzSelect.value;
   if (!tz) return;
@@ -421,11 +425,39 @@ addBtn.addEventListener('click', () => {
 tzSelect.addEventListener('keydown', (e) => { if (e.key === 'Enter') addBtn.click(); });
 labelInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addBtn.click(); });
 
+/* ---------- NEW: Clear All ---------- */
+function setClearButtonState(){
+  clearAllBtn.disabled = clocks.length === 0;
+  clearAllBtn.style.opacity = clearAllBtn.disabled ? 0.5 : 1;
+}
+clearAllBtn.addEventListener('click', () => {
+  if (clocks.length === 0) return;
+  const ok = confirm('Remove all clocks? This clears your saved list.');
+  if (!ok) return;
+
+  // stop timers and wipe DOM
+  stopAll();
+  extraClocks.innerHTML = '';
+
+  // reset state & storage
+  clocks = [];
+  saveClocks();
+
+  // show empty message & disable button
+  renderEmptyState();
+  setClearButtonState();
+});
+
 function init(){
   buildDropdown();
   clocks = loadClocks();
   if (clocks.length) clocks.forEach(startClock);
   renderEmptyState();
+  setClearButtonState();
+
+  // watch add/remove to keep the clear button state accurate
+  const mo = new MutationObserver(setClearButtonState);
+  mo.observe(extraClocks, { childList:true, subtree:false });
 }
 init();
 </script>
