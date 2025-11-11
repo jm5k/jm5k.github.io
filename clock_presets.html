@@ -93,6 +93,48 @@
     --accent:#b0ffff; --accent2:#90a0ff; --accent3:#ffffff;
     --tick:#222; --railA:#0a0a0a; --railB:#111111; --marker:#b0ffff;
   }
+/* IONSTORM — Electric cyan & plasma yellow over deep indigo */
+html[data-theme="ionstorm"]{
+  --bg:#00051a;
+  --fg:#d4f8ff;
+  --muted:#7ea1c4;
+  --accent:#00f6ff;      /* lightning cyan */
+  --accent2:#ffea00;     /* plasma yellow */
+  --accent3:#0095ff;     /* ion blue */
+  --tick:#07102a;
+  --railA:#000b20;
+  --railB:#03123a;
+  --marker:#00f6ff;
+}
+
+/* ZENMINT — Soft teal-gray calmness for focus mode */
+html[data-theme="zenmint"]{
+  --bg:#0a1112;
+  --fg:#e6f4f3;
+  --muted:#99b1ae;
+  --accent:#6ef7c9;      /* mint green */
+  --accent2:#60d2ff;     /* soft blue */
+  --accent3:#91ffd8;     /* pale jade */
+  --tick:#122021;
+  --railA:#0e191a;
+  --railB:#142223;
+  --marker:#6ef7c9;
+}
+
+/* VOIDLUX — Cosmic indigo & violet with icy highlights */
+html[data-theme="voidlux"]{
+  --bg:#040011;
+  --fg:#d9daff;
+  --muted:#8a8fc9;
+  --accent:#9966ff;      /* neon violet */
+  --accent2:#00ccff;     /* icy blue */
+  --accent3:#6a00ff;     /* deep indigo */
+  --tick:#12002a;
+  --railA:#0a0018;
+  --railB:#13002a;
+  --marker:#9966ff;
+}
+
 
   /* ---------- BASE LAYOUT ---------- */
   html,body{height:100%}
@@ -208,6 +250,9 @@
           <option value="deepcircuit">DeepCircuit</option>
           <option value="infravoid">InfraVoid</option>
           <option value="ghostline">Ghostline</option>
+		  <option value="ionstorm">IonStorm</option>
+		  <option value="zenmint">ZenMint</option>
+		  <option value="voidlux">VoidLux</option>
         </select>
 
         <label for="glow">Glow</label>
