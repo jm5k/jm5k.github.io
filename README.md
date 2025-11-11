@@ -1,6 +1,6 @@
 # 🧭 Linear Clock Lab
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build: Static HTML5](https://img.shields.io/badge/Build-Static%20HTML5-lightgrey.svg)](https://jm5k.github.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)  
+[![Build: Static HTML5](https://img.shields.io/badge/Build-Static%20HTML5-lightgrey.svg)](https://jm5k.github.io/)  
 [![Made by jm5k](https://img.shields.io/badge/Made%20by-jm5k-00ffff.svg)](https://jm5k.github.io/)
 
 A suite of minimalist, client-side time tools that visualize your day as a single continuous line — extended with multi-timezone, theme, and focus-tracking utilities.  
@@ -18,7 +18,7 @@ View and explore the entire suite — all pages load locally, with instant switc
 - **24-Hour Linear Clock** — your full day on one line  
 - **Minimal View** — compact version of the main clock  
 - **Multi Clocks** — world-time tracking with drag/drop reordering  
-- **Color Theme Clocks** — experimental gradient and theme modes  
+- **Color Theme Clocks** — fully customizable theme and glow presets  
 - **FocusLine Pomodoro** — timeboxing with live local-day awareness  
 
 All components share the same **unified navigation bar**, **visual style**, and **privacy-first design**.
@@ -36,6 +36,8 @@ All components share the same **unified navigation bar**, **visual style**, and 
   - Inline label editing  
   - Full IANA timezone dropdown  
   - Drag-and-drop and ▲ / ▼ ordering  
+  - JSON Export / Import for clock sets  
+  - Clear-All option for quick reset  
 - **FocusLine Pomodoro**
   - Adjustable Work / Short / Long Break durations  
   - Auto-advance, optional chime, and desktop notifications  
@@ -43,6 +45,16 @@ All components share the same **unified navigation bar**, **visual style**, and 
   - Built-in **Local Time Bar** showing day progress  
   - Notes capture system with export and search  
   - Clear Done / Clear All / local persistence  
+- **Color Theme Clocks**
+  - Collapsible Customization Panel (🎨 section)  
+  - Real-time color pickers for all major UI elements  
+  - Live preview while editing  
+  - Custom glow slider  
+  - Local save of all color and glow settings  
+  - One-click Export / Import of theme JSON  
+  - Automatic theme switching without residual overrides  
+  - Full preset reset and reseed behavior  
+  - Persistent panel open/closed state  
 
 ---
 
@@ -50,9 +62,9 @@ All components share the same **unified navigation bar**, **visual style**, and 
 - Vertical layout and reversible marker direction  
 - Workday-only mode (% of workday elapsed / remaining)  
 - Custom marker zones for breaks, events, or focus blocks  
-- Color theme customization (light, dark, and accent presets)  
 - Optional export integration (e.g., “Move to Tasks” for FocusLine)  
 - Saved multi-clock groups (Engineering / Family / Travel, etc.)  
+- Global theme sync across all clock views  
 
 ---
 
@@ -88,6 +100,26 @@ Visualize time across the world in a clean, single-line view.
 - Lightweight, 1s update rate  
 - Minimal design: subtle yellow percentages, cyan accents  
 - Local-only persistence — no cookies, no sync  
+- Export / Import for saved clock setups  
+
+---
+
+## 🎨 Theme Editor Overview
+The **Color Theme Clock** brings full visual customization to the suite.  
+Every accent, background, and glow element can be tuned and saved locally.
+
+### ✨ Features
+- Collapsible customization section for a clean interface  
+- Interactive color pickers (no hex code knowledge needed)  
+- Real-time preview for all color attributes and glow strength  
+- Preset themes: TechnoLust, Midnight, Vaporwave, Terminal, Amber, and more  
+- Automatic preset switching without lingering overrides  
+- Reset button to restore the original preset instantly  
+- Local persistence across sessions  
+- One-click **Export / Import** of your entire theme setup  
+- Compatible with future preset updates  
+
+This system uses a hybrid model of CSS variable updates and localStorage persistence — ensuring that every change is instant, reversible, and private.
 
 ---
 
