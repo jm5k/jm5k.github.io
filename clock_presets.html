@@ -54,7 +54,7 @@
     --tick:#073642; --railA:#01303a; --railB:#023b47; --marker:#2aa198;
   }
 
-  /* ---------- NEW PRESETS ---------- */
+  /* ---------- EXTRA PRESETS ---------- */
   html[data-theme="cybercrimson"]{
     --bg:#070000; --fg:#ffdddd; --muted:#b55;
     --accent:#ff0033; --accent2:#ff7700; --accent3:#ff2200;
@@ -76,65 +76,30 @@
     --tick:#0e1b2a; --railA:#05101a; --railB:#0a1825; --marker:#00baff;
   }
   html[data-theme="infravoid"]{
-  --bg:#050006;
-  --fg:#ffdadf;
-  --muted:#b86d7c;
-  --accent:#ff0040;     /* deep magenta red */
-  --accent2:#ff6a00;    /* glowing ember orange */
-  --accent3:#ff006e;    /* electric magenta */
-  --tick:#220010;
-  --railA:#10000c;
-  --railB:#1a0013;
-  --marker:#ff0040;
-}
-
+    --bg:#050006; --fg:#ffdadf; --muted:#b86d7c;
+    --accent:#ff0040; --accent2:#ff6a00; --accent3:#ff006e;
+    --tick:#220010; --railA:#10000c; --railB:#1a0013; --marker:#ff0040;
+  }
   html[data-theme="ghostline"]{
     --bg:#000; --fg:#d0d0d0; --muted:#808080;
     --accent:#b0ffff; --accent2:#90a0ff; --accent3:#ffffff;
     --tick:#222; --railA:#0a0a0a; --railB:#111111; --marker:#b0ffff;
   }
-/* IONSTORM — Electric cyan & plasma yellow over deep indigo */
-html[data-theme="ionstorm"]{
-  --bg:#00051a;
-  --fg:#d4f8ff;
-  --muted:#7ea1c4;
-  --accent:#00f6ff;      /* lightning cyan */
-  --accent2:#ffea00;     /* plasma yellow */
-  --accent3:#0095ff;     /* ion blue */
-  --tick:#07102a;
-  --railA:#000b20;
-  --railB:#03123a;
-  --marker:#00f6ff;
-}
-
-/* ZENMINT — Soft teal-gray calmness for focus mode */
-html[data-theme="zenmint"]{
-  --bg:#0a1112;
-  --fg:#e6f4f3;
-  --muted:#99b1ae;
-  --accent:#6ef7c9;      /* mint green */
-  --accent2:#60d2ff;     /* soft blue */
-  --accent3:#91ffd8;     /* pale jade */
-  --tick:#122021;
-  --railA:#0e191a;
-  --railB:#142223;
-  --marker:#6ef7c9;
-}
-
-/* VOIDLUX — Cosmic indigo & violet with icy highlights */
-html[data-theme="voidlux"]{
-  --bg:#040011;
-  --fg:#d9daff;
-  --muted:#8a8fc9;
-  --accent:#9966ff;      /* neon violet */
-  --accent2:#00ccff;     /* icy blue */
-  --accent3:#6a00ff;     /* deep indigo */
-  --tick:#12002a;
-  --railA:#0a0018;
-  --railB:#13002a;
-  --marker:#9966ff;
-}
-
+  html[data-theme="ionstorm"]{
+    --bg:#00051a; --fg:#d4f8ff; --muted:#7ea1c4;
+    --accent:#00f6ff; --accent2:#ffea00; --accent3:#0095ff;
+    --tick:#07102a; --railA:#000b20; --railB:#03123a; --marker:#00f6ff;
+  }
+  html[data-theme="zenmint"]{
+    --bg:#0a1112; --fg:#e6f4f3; --muted:#99b1ae;
+    --accent:#6ef7c9; --accent2:#60d2ff; --accent3:#91ffd8;
+    --tick:#122021; --railA:#0e191a; --railB:#142223; --marker:#6ef7c9;
+  }
+  html[data-theme="voidlux"]{
+    --bg:#040011; --fg:#d9daff; --muted:#8a8fc9;
+    --accent:#9966ff; --accent2:#00ccff; --accent3:#6a00ff;
+    --tick:#12002a; --railA:#0a0018; --railB:#13002a; --marker:#9966ff;
+  }
 
   /* ---------- BASE LAYOUT ---------- */
   html,body{height:100%}
@@ -153,31 +118,21 @@ html[data-theme="voidlux"]{
 
   .hairline{ border:none; border-top:var(--line-thin) solid rgba(255,255,255,0.1); margin:18px 0 22px; }
 
-  /* Controls row */
   .controls{ display:flex; align-items:center; gap:12px; color:var(--muted); }
-  .controls select,
-  .controls input[type="range"]{
+  .controls select, .controls input[type="range"]{
     background:transparent; color:var(--fg); border:1px solid rgba(255,255,255,.12);
     padding:6px 8px; border-radius:10px; outline:none;
   }
-  /* Dark dropdown styling + readable options */
   .controls select{
-    min-width:190px;
-    background-color:#111;
-    color:var(--fg);
+    min-width:190px; background-color:#111; color:var(--fg);
     border:1px solid rgba(255,255,255,0.15);
     appearance:none;
   }
-  .controls select option{
-    background-color:#111;
-    color:var(--fg);
-  }
-  /* Hover/focus hint */
+  .controls select option{ background-color:#111; color:var(--fg); }
   .controls select:focus{
     box-shadow:0 0 calc(10px*var(--glow)) color-mix(in oklab, var(--accent) 40%, transparent);
-    border-color: color-mix(in oklab, var(--accent) 40%, rgba(255,255,255,0.15));
+    border-color:color-mix(in oklab, var(--accent) 40%, rgba(255,255,255,0.15));
   }
-
   .controls input[type="range"]{ width:180px; accent-color:var(--accent); }
 
   #currentTimeTop{ font-size:1.6rem; color:var(--accent); filter:drop-shadow(0 0 calc(6px*var(--glow)) var(--accent)); }
@@ -197,10 +152,10 @@ html[data-theme="voidlux"]{
 
   .workband{
     position:absolute; inset:0 auto 0 calc((8/24)*100%); width:calc((9/24)*100%);
-    background: linear-gradient(180deg,
+    background:linear-gradient(180deg,
       color-mix(in oklab, var(--accent) 10%, transparent),
       color-mix(in oklab, var(--accent2) 10%, transparent));
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03); pointer-events:none;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03); pointer-events:none;
   }
 
   .ticks{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(96, 1fr); pointer-events:none; }
@@ -209,22 +164,33 @@ html[data-theme="voidlux"]{
 
   .marker{
     position:absolute; top:-6px; bottom:-6px; width:2px; left:0; background:var(--marker);
-    box-shadow: 0 0 calc(10px*var(--glow)) var(--marker),
-                0 0 calc(20px*var(--glow)) color-mix(in oklab, var(--marker) 60%, transparent);
+    box-shadow:0 0 calc(10px*var(--glow)) var(--marker),
+               0 0 calc(20px*var(--glow)) color-mix(in oklab, var(--marker) 60%, transparent);
   }
   .marker::after{
     content:""; position:absolute; left:50%; transform:translateX(-50%); top:-5px; width:9px; height:9px; border-radius:50%;
-    background: radial-gradient(circle at 30% 30%, #fff, var(--marker) 45%, transparent 60%);
-    box-shadow: 0 0 calc(16px*var(--glow)) var(--marker);
+    background:radial-gradient(circle at 30% 30%, #fff, var(--marker) 45%, transparent 60%);
+    box-shadow:0 0 calc(16px*var(--glow)) var(--marker);
   }
 
   .stats{ display:flex; gap:18px; margin-top:12px; color:var(--muted); font-size:.95rem; flex-wrap:wrap; }
   .stats b{ color:var(--fg); }
 
-  .foot{ margin-top:22px; color:var(--muted); font-size:.9rem; }
-  .foot a, .foot a:visited, .foot a:hover{ color:var(--accent); text-decoration:none; }
+  /* ---------- NAV BACK LINK ---------- */
+  .returnnav{text-align:center;margin:40px auto 0;}
+  .returnnav a{
+    color:var(--accent);text-decoration:none;font-size:0.95rem;
+    border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+    padding:6px 12px;transition:all .2s ease;
+  }
+  .returnnav a:hover{
+    background:rgba(255,255,255,0.04);
+    border-color:var(--accent);
+    text-shadow:0 0 6px var(--accent);
+  }
 
-  @media (max-width:480px){ .wrap{ padding:20px 14px 26px; } .rail{ height:32px; } }
+  .foot{ margin-top:22px; color:var(--muted); font-size:.9rem; }
+  .foot a{ color:var(--accent); text-decoration:none; }
 </style>
 </head>
 <body>
@@ -250,11 +216,10 @@ html[data-theme="voidlux"]{
           <option value="deepcircuit">DeepCircuit</option>
           <option value="infravoid">InfraVoid</option>
           <option value="ghostline">Ghostline</option>
-		  <option value="ionstorm">IonStorm</option>
-		  <option value="zenmint">ZenMint</option>
-		  <option value="voidlux">VoidLux</option>
+          <option value="ionstorm">IonStorm</option>
+          <option value="zenmint">ZenMint</option>
+          <option value="voidlux">VoidLux</option>
         </select>
-
         <label for="glow">Glow</label>
         <input id="glow" type="range" min="0" max="1.25" step="0.05" value="0.65" />
       </div>
@@ -276,10 +241,13 @@ html[data-theme="voidlux"]{
       <div>Now: <b id="nowHMS">--:--:--</b></div>
     </div>
 
+    <!-- ✅ Back to Home -->
+    <nav class="returnnav" aria-label="Return">
+      <a href="index.html">← Back to Linear Clock Lab</a>
+    </nav>
+
     <div class="foot">
-      <span>© jm5k 2025</span> •
-      <a href="about.html">About</a> •
-      <a href="focus.html">Focus Timer</a>
+      <span>© jm5k 2025</span>
     </div>
   </div>
 
@@ -300,14 +268,8 @@ html[data-theme="voidlux"]{
   /* ---------- PERSISTENCE ---------- */
   const savedTheme = localStorage.getItem('clock_theme');
   const savedGlow  = localStorage.getItem('clock_glow');
-  if(savedTheme){
-    root.setAttribute('data-theme', savedTheme);
-    themeSel.value = savedTheme;
-  }
-  if(savedGlow){
-    glow.value = savedGlow;
-    root.style.setProperty('--glow', savedGlow);
-  }
+  if(savedTheme){ root.setAttribute('data-theme', savedTheme); themeSel.value = savedTheme; }
+  if(savedGlow){ glow.value = savedGlow; root.style.setProperty('--glow', savedGlow); }
 
   themeSel.addEventListener('change', () => {
     const v = themeSel.value;
