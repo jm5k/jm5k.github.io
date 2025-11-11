@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Stopwatch Lab | Linear Clock Lab</title>
+
+  <!-- 🔍 SEO -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Stopwatch Lab — multi-stopwatch lines with radiant, left-to-right growth, per-row colors, sorting, and LocalStorage persistence. Part of the Linear Clock Lab suite by jm5k.">
+  <meta name="keywords" content="stopwatch, chronometer, multi stopwatch, linear clock, jm5k, productivity, time tracking, time visualization, linearclocklab">
+  <meta name="author" content="jm5k">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://linearclocklab.com/stopwatch.html">
+
+  <!-- 🔗 Social / Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Stopwatch Lab | Linear Clock Lab">
+  <meta property="og:description" content="Track time with radiant, growing lines. Name, color, sort by elapsed, and persist locally.">
+  <meta property="og:url" content="https://linearclocklab.com/stopwatch.html">
+  <meta property="og:image" content="https://linearclocklab.com/profile.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Stopwatch Lab | Linear Clock Lab">
+  <meta name="twitter:description" content="Minimal, technical, fast — multi-stopwatch tracking with left-to-right radiant growth and per-row colors.">
+  <meta name="twitter:image" content="https://linearclocklab.com/profile.png">
+
+  <!-- 🔖 Favicon / Icons -->
+  <link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png">
+  <link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png">
+
+  <!-- 🔗 Return link styles -->
+  <style>
+    .returnnav a{
+      color:#00e5ff; text-decoration:none; font-size:0.95rem;
+      border:1px solid rgba(255,255,255,0.1); border-radius:10px;
+      padding:6px 12px; transition:all .2s ease;
+    }
+    .returnnav a:hover{
+      background:rgba(255,255,255,0.04);
+      border-color:#00e5ff;
+      text-shadow:0 0 6px #00e5ff;
+    }
+  </style>
+
+  <style>
+    :root{
+      --bg:#000;
+      --fg:#d8d8d8;
+      --muted:#8a8a8a;
+      --rail:#141414;
+      --tick:#2a2a2a;
+      --accent:#0ff; /* default cyan */
+    }
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    a, a:visited { color: var(--accent); text-decoration: none; }
+
+    .wrap{max-width:900px; margin:32px auto; padding:0 16px;}
+    header{ text-align:center; }
+    header h1{ margin:0 0 6px 0; font-size:clamp(20px,3.4vw,28px); letter-spacing:.5px;}
+    header p{ margin:0; color:var(--muted); font-size:.95rem}
+    .navline{border:none;border-top:1px solid rgba(255,255,255,0.08); margin:24px 0;}
+
+    .toolbar{
+      display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
+      padding:10px 0 2px 0;
+    }
+    .toolbar input[type="text"]{
+      background:#0a0a0a; color:var(--fg); border:1px solid #1e1e1e; padding:8px 10px; border-radius:8px;
+      outline:none; min-width:240px;
+    }
+    .toolbar button{
+      background:#0a0a0a; color:var(--accent); border:1px solid #1e1e1e; padding:8px 12px; border-radius:10px;
+      cursor:pointer; transition:transform .05s ease;
+    }
+    .toolbar button:active{ transform:translateY(1px); }
+
+    .hint{ color:var(--muted); font-size:.9rem; text-align:center; margin-top:6px; }
+
+    .list{ display:flex; flex-direction:column; gap:16px; margin-top:18px; }
+
+    .card{
+      background:#0a0a0a; border:1px solid #131313; border-radius:16px; padding:14px;
+      box-shadow: inset 0 0 0 1px #0b0b0b;
+    }
+
+    .row{ display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:center; }
+
+    .title{ font-weight:600; letter-spacing:.2px; color:var(--fg); }
+    .title[contenteditable="true"]{ outline:none; border-bottom:1px dashed rgba(255,255,255,0.08); }
+
+    .controls{ display:flex; gap:8px; align-items:center; }
+    .controls button{
+      background:#0c0c0c; color:var(--fg); border:1px solid #1c1c1c; padding:6px 9px; border-radius:10px;
+      cursor:pointer; font-size:.9rem;
+    }
+    .controls .primary{ color:var(--accent); }
+    .controls .danger{ color:#ff6b6b; }
+    .controls .colorBtn{ padding:6px 10px; }
+
+    .rail{
+      position:relative; height:14px; border-radius:999px; background:var(--rail);
+      overflow:hidden; border:1px solid #0f0f0f;
+    }
+    .rail::after{
+      content:""; position:absolute; inset:0;
+      background:
+        linear-gradient(to right, transparent 0, transparent calc(100%/10 - 1px), var(--tick) calc(100%/10 - 1px), var(--tick) calc(100%/10)) repeat-x;
+      background-size: calc(100%/10) 100%;
+      opacity:.35; pointer-events:none;
+    }
+
+    .fill{ position:absolute; left:0; top:0; bottom:0; width:0%; transition: width 0.18s linear; }
+    .marker{ position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; background: var(--accent); }
+
+    .meta{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-top:10px; color:var(--muted); font-size:.92rem;
+    }
+    .meta .elapsed{ color:var(--fg); }
+
+    .hidden-color{ position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
+
+    footer{ text-align:center; color:var(--muted); margin:28px 0 8px 0; font-size:.9rem; }
+  </style>
+</head>
+<body>
+
+  <!-- 🔗 Return link (top-left) -->
+  <nav class="returnnav" aria-label="Return" style="position:fixed; top:18px; left:22px; z-index:1000;">
+    <a href="index.html">← Back to Linear Clock Lab</a>
+  </nav>
+
+  <div class="wrap">
+    <header>
+      <h1>Stopwatch Lab</h1>
+      <p>Radiant chronometers — left ➜ right growth. Persistent, sortable, and color-tunable.</p>
+	  <p>Chronometers persist locally; leaving this page pauses them automatically.</p>
+    </header>
+
+    <hr class="navline" />
+
+    <div class="toolbar">
+      <input id="labelInput" type="text" placeholder="Stopwatch name (optional)" />
+      <button id="addBtn">+ Add Stopwatch</button>
+      <button id="pauseAllBtn">Pause All</button>
+      <button id="resumeAllBtn">Resume All</button>
+      <button id="resetAllBtn">Reset All</button>
+      <button id="sortBtn">Sort: Elapsed ↑</button>
+    </div>
+    <div class="hint">Stopwatches persist locally; leaving this page pauses them automatically.</div>
+
+    <div class="list" id="swList"></div>
+
+    <hr class="navline" />
+    <footer>Minimal time, Maximum clarity. · © jm5k 2025</footer>
+  </div>
+
+  <script>
+  (() => {
+    const STORAGE_KEY = 'lcl_stopwatches_v1';
+    const STORAGE_UI  = 'lcl_stopwatch_ui_v1';
+
+    const list = document.getElementById('swList');
+    const addBtn = document.getElementById('addBtn');
+    const pauseAllBtn = document.getElementById('pauseAllBtn');
+    const resumeAllBtn = document.getElementById('resumeAllBtn');
+    const resetAllBtn = document.getElementById('resetAllBtn');
+    const sortBtn = document.getElementById('sortBtn');
+    const labelInput = document.getElementById('labelInput');
+
+    let rows = [];
+    let sortAsc = true; // by elapsed
+
+    const now = () => performance.now();
+
+    const fmt = (ms) => {
+      ms = Math.max(0, Math.floor(ms));
+      const s = Math.floor(ms/1000);
+      const h = Math.floor(s/3600);
+      const m = Math.floor((s%3600)/60);
+      const r = Math.floor(s%60);
+      const hh = h>0 ? String(h).padStart(2,'0')+':' : '';
+      return hh + String(m).padStart(2,'0') + ':' + String(r).padStart(2,'0');
+    };
+
+    // ---------- Persistence ----------
+    function saveState(){
+      const payload = rows.map(r => ({
+        id: r.id, label: r.label, colorHex: r.colorHex || '#00ffff',
+        elapsedMs: r.elapsedMs, running: false // never auto-run on load
+      }));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        localStorage.setItem(STORAGE_UI, JSON.stringify({ sortAsc }));
+      } catch(e){}
+    }
+    function loadState(){
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const ui  = localStorage.getItem(STORAGE_UI);
+        if (ui){
+          const u = JSON.parse(ui);
+          if (typeof u.sortAsc==='boolean'){ sortAsc=u.sortAsc; sortBtn.textContent=`Sort: Elapsed ${sortAsc?'↑':'↓'}`; }
+        }
+        if (!raw) return false;
+        const arr = JSON.parse(raw);
+        if (!Array.isArray(arr)) return false;
+        rows = arr.map(x=>({
+          id: x.id,
+          label: x.label || 'Untitled Stopwatch',
+          colorHex: x.colorHex || '#00ffff',
+          elapsedMs: Math.max(0, +x.elapsedMs || 0),
+          running: false,
+          lastTick: now(),
+          targetMs: Math.max(60000, (+x.targetMs || 5*60*1000)) // for % scaling only
+        }));
+        return true;
+      } catch(e){ return false; }
+    }
+    let savePending=false;
+    function requestSave(){
+      if (savePending) return;
+      savePending=true; setTimeout(()=>{savePending=false; saveState();},150);
+    }
+
+    // ---------- Helpers ----------
+    function hexToRgb(hex){
+      let h = hex.replace('#','');
+      if (h.length===3){ h = h.split('').map(c=>c+c).join(''); }
+      const num = parseInt(h,16);
+      return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
+    }
+    function setFillStyles(r, card){
+      const {r:rr,g, b} = hexToRgb(r.colorHex || '#00ffff');
+      const fill = card.querySelector('.fill');
+      const marker = card.querySelector('.marker');
+
+      // Brightest at the RIGHT edge (growth boundary), moving right as time increases.
+      fill.style.background = `linear-gradient(90deg,
+        rgba(${rr},${g},${b},0.45) 0%,
+        rgba(${rr},${g},${b},0.32) 20%,
+        rgba(${rr},${g},${b},0.22) 45%,
+        rgba(${rr},${g},${b},0.10) 100%)`;
+
+      fill.style.boxShadow =
+        `inset 0 0 10px rgba(${rr},${g},${b},0.25),
+         0 0 12px rgba(${rr},${g},${b},0.15),
+         0 0 24px rgba(${rr},${g},${b},0.15)`;
+
+      marker.style.background = `rgb(${rr},${g},${b})`;
+      marker.style.boxShadow  = `0 0 18px rgba(${rr},${g},${b},0.55), 0 0 40px rgba(${rr},${g},${b},0.55)`;
+    }
+
+    // We need a scale to convert elapsed to a percentage width.
+    // Strategy: dynamic "target" expands as needed so the bar never caps out.
+    function computeTargetMs(r){
+      // If elapsed surpasses 95% of target, extend target by 50%.
+      if (r.elapsedMs > r.targetMs*0.95){
+        r.targetMs = Math.floor(r.targetMs * 1.5);
+      }
+    }
+
+    // ---------- UI ----------
+    function mkBtn(text,cb,cls){ const b=document.createElement('button'); b.textContent=text; if(cls)b.classList.add(cls); b.onclick=cb; return b; }
+
+    function addRow(label){
+      const id = (crypto?.randomUUID?.() || String(Math.random())).toString();
+      rows.push({
+        id,
+        label: label?.trim() || 'Untitled Stopwatch',
+        colorHex: '#00ffff',
+        elapsedMs: 0,
+        running: false,
+        lastTick: now(),
+        targetMs: 5*60*1000 // start with 5min scale
+      });
+      render(); requestSave();
+    }
+
+    function move(id, dir){
+      const i = rows.findIndex(r=>r.id===id);
+      if(i<0) return;
+      const j = i+dir; if (j<0 || j>=rows.length) return;
+      [rows[i], rows[j]] = [rows[j], rows[i]];
+      render(); requestSave();
+    }
+
+    function toggleRun(id){
+      const r = rows.find(x=>x.id===id); if (!r) return;
+      r.running = !r.running;
+      r.lastTick = now();
+      render(); requestSave();
+    }
+    function resetRow(id){
+      const r = rows.find(x=>x.id===id); if (!r) return;
+      r.elapsedMs = 0; r.running=false; r.targetMs = 5*60*1000;
+      render(); requestSave();
+    }
+    function deleteRow(id){
+      rows = rows.filter(x=>x.id!==id);
+      render(); requestSave();
+    }
+
+    function sortByElapsed(){
+      const active = [...rows];
+      active.sort((a,b)=> sortAsc ? a.elapsedMs - b.elapsedMs : b.elapsedMs - a.elapsedMs);
+      rows = active;
+      render(); requestSave();
+    }
+
+    function updateVisuals(r, card){
+      // Expand target if needed, then compute pct
+      computeTargetMs(r);
+      const pct = Math.min(100, (r.elapsedMs / r.targetMs) * 100);
+      const fill = card.querySelector('.fill');
+      const marker = card.querySelector('.marker');
+      const elapsedEl = card.querySelector('.elapsed');
+
+      fill.style.width = pct + '%';
+      marker.style.left = pct + '%';
+      elapsedEl.textContent = fmt(r.elapsedMs);
+    }
+
+    function render(){
+      list.innerHTML = '';
+      rows.forEach(r=>{
+        const card = document.createElement('div'); card.className='card'; card.dataset.id=r.id;
+        const row = document.createElement('div'); row.className='row';
+        const left = document.createElement('div');
+
+        // Title (inline rename)
+        const title = document.createElement('div'); title.className='title'; title.textContent=r.label;
+        title.contentEditable = true;
+        title.onblur = (e)=>{ const v=e.target.textContent.trim(); if (v){ r.label=v; requestSave(); } };
+        title.onkeydown = (e)=>{ if (e.key==='Enter'){ e.preventDefault(); title.blur(); } };
+        left.appendChild(title);
+
+        // Rail + fill + marker
+        const rail = document.createElement('div'); rail.className='rail'; rail.style.marginTop='12px';
+        const fill = document.createElement('div'); fill.className='fill';
+        const marker = document.createElement('div'); marker.className='marker';
+        rail.append(fill, marker);
+
+        // Meta
+        const meta=document.createElement('div'); meta.className='meta';
+        meta.innerHTML=`<span class="elapsed">${fmt(r.elapsedMs)}</span> elapsed <span class="small">Scale: ${fmt(r.targetMs)}</span>`;
+        left.append(rail, meta);
+
+        // Right controls
+        const ctrls = document.createElement('div'); ctrls.className='controls';
+        const upBtn = mkBtn('↑', ()=>move(r.id,-1));
+        const dnBtn = mkBtn('↓', ()=>move(r.id, 1));
+        const colorBtn = mkBtn('🎨', ()=> colorInput.click(), 'colorBtn');
+        const startBtn = mkBtn(r.running?'Pause':'Start', ()=>toggleRun(r.id), 'primary');
+        const resetBtn = mkBtn('Reset', ()=>resetRow(r.id));
+        const delBtn = mkBtn('Delete', ()=>deleteRow(r.id), 'danger');
+
+        const colorInput = document.createElement('input');
+        colorInput.type='color'; colorInput.className='hidden-color';
+        colorInput.value = r.colorHex || '#00ffff';
+        colorInput.oninput = (e)=>{ r.colorHex = e.target.value; setFillStyles(r, card); requestSave(); };
+
+        ctrls.append(upBtn, dnBtn, colorBtn, startBtn, resetBtn, delBtn, colorInput);
+
+        row.append(left, ctrls);
+        card.append(row);
+        list.append(card);
+
+        // Initial visuals
+        setFillStyles(r, card);
+        updateVisuals(r, card);
+      });
+
+      sortBtn.disabled = rows.length === 0;
+    }
+
+    function tick(){
+      const tnow = now();
+      let any = false;
+      for (const r of rows){
+        if (!r.running) continue;
+        const dt = tnow - r.lastTick;
+        r.lastTick = tnow;
+        const prev = r.elapsedMs;
+        r.elapsedMs = Math.max(0, prev + dt);
+        if (r.elapsedMs !== prev) any = true;
+      }
+      if (any){
+        document.querySelectorAll('.card').forEach(card=>{
+          const r = rows.find(x=>x.id===card.dataset.id);
+          if (r) updateVisuals(r, card);
+        });
+        requestSave();
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    // Handlers
+    addBtn.onclick = ()=>{ addRow(labelInput.value); labelInput.value=''; };
+    pauseAllBtn.onclick = ()=>{ rows.forEach(r=>r.running=false); render(); requestSave(); };
+    resumeAllBtn.onclick = ()=>{ const t=now(); rows.forEach(r=>{ r.lastTick=t; r.running=true; }); render(); requestSave(); };
+    resetAllBtn.onclick = ()=>{ rows.forEach(r=>{ r.elapsedMs=0; r.running=false; r.targetMs=5*60*1000; }); render(); requestSave(); };
+    sortBtn.onclick = ()=>{ sortAsc=!sortAsc; sortBtn.textContent=`Sort: Elapsed ${sortAsc?'↑':'↓'}`; sortByElapsed(); };
+    labelInput.addEventListener('keydown', (e)=>{ if (e.key==='Enter') addBtn.click(); });
+
+    // Boot (restore paused)
+    const loaded = loadState();
+    if (!loaded){
+      addRow('Session 1');
+      addRow('Experiment A');
+    } else {
+      render();
+    }
+  })();
+  </script>
+</body>
+</html>
