@@ -32,6 +32,20 @@
 
 
 <style>
+  .returnnav a{
+  color:#00e5ff;
+  text-decoration:none;
+  font-size:0.95rem;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px;
+  padding:6px 12px;
+  transition:all .2s ease;
+}
+.returnnav a:hover{
+  background:rgba(255,255,255,0.04);
+  border-color:#00e5ff;
+  text-shadow:0 0 6px #00e5ff;
+}
   :root{
     --bg:#000;
     --fg:#d8d8d8;
@@ -112,6 +126,11 @@
 </style>
 </head>
 <body>
+  <!-- 🔗 Return link (top-left) -->
+<nav class="returnnav" aria-label="Return" style="position:fixed; top:18px; left:22px; z-index:1000;">
+  <a href="index.html">← Back to Linear Clock Lab</a>
+</nav>
+
 <div class="wrap">
   <header>
     <h1>Timer Lab</h1>
