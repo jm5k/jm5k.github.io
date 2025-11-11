@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="technolust">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>24-Hour Linear Clock | Preset Themes</title>
+<meta name="description" content="Minimal 24-hour linear clock with selectable neon and classic color presets. Live marker, gradient rail, glow control, and saved preferences." />
+<meta name="author" content="jm5k" />
+<link rel="icon" href="https://jm5k.github.io/profile.png" type="image/png" />
+
+<style>
+  /* ---------- THEME TOKENS (fallback; overridden by [data-theme]) ---------- */
+  :root{
+    --bg:#000; --fg:#bfc7d5; --muted:#7a8393;
+    --accent:#00ffe6; --accent2:#ff2bd6; --accent3:#b4ff00;
+    --tick:#1b1f28; --railA:#0b0f15; --railB:#121826; --marker:#00ffe6;
+    --line-thin:1px; --glow:0.65;
+  }
+
+  /* ---------- BASE PRESETS ---------- */
+  html[data-theme="technolust"]{
+    --bg:#000; --fg:#bfc7d5; --muted:#7a8393;
+    --accent:#00ffe6; --accent2:#ff2bd6; --accent3:#b4ff00;
+    --tick:#1b1f28; --railA:#0b0f15; --railB:#121826; --marker:#00ffe6;
+  }
+  html[data-theme="midnight"]{
+    --bg:#060a12; --fg:#c6d8ff; --muted:#8ea0c6;
+    --accent:#64a8ff; --accent2:#b987ff; --accent3:#66ffcc;
+    --tick:#0e1a2b; --railA:#0a1220; --railB:#0d1730; --marker:#64a8ff;
+  }
+  html[data-theme="vaporwave"]{
+    --bg:#0b0014; --fg:#ffe6ff; --muted:#e6b8ff;
+    --accent:#00ffd1; --accent2:#ff5ec9; --accent3:#ffd166;
+    --tick:#250035; --railA:#150022; --railB:#220033; --marker:#ff5ec9;
+  }
+  html[data-theme="terminal"]{
+    --bg:#000; --fg:#b7ffb7; --muted:#6ddc6d;
+    --accent:#00ff88; --accent2:#00ffa5; --accent3:#7bff00;
+    --tick:#003300; --railA:#001600; --railB:#002100; --marker:#00ff88;
+  }
+  html[data-theme="amber"]{
+    --bg:#0a0600; --fg:#ffd7a1; --muted:#e0ab63;
+    --accent:#ffb000; --accent2:#ff7a00; --accent3:#ffe066;
+    --tick:#3a2500; --railA:#120a00; --railB:#1c0f00; --marker:#ffb000;
+  }
+  html[data-theme="mono"]{
+    --bg:#000; --fg:#dcdcdc; --muted:#9c9c9c;
+    --accent:#ffffff; --accent2:#c0c0c0; --accent3:#a0a0a0;
+    --tick:#2a2a2a; --railA:#0c0c0c; --railB:#121212; --marker:#ffffff;
+  }
+  html[data-theme="solar"]{
+    --bg:#002b36; --fg:#eee8d5; --muted:#93a1a1;
+    --accent:#2aa198; --accent2:#b58900; --accent3:#cb4b16;
+    --tick:#073642; --railA:#01303a; --railB:#023b47; --marker:#2aa198;
+  }
+
+  /* ---------- NEW PRESETS ---------- */
+  html[data-theme="cybercrimson"]{
+    --bg:#070000; --fg:#ffdddd; --muted:#b55;
+    --accent:#ff0033; --accent2:#ff7700; --accent3:#ff2200;
+    --tick:#250000; --railA:#100000; --railB:#1a0000; --marker:#ff0033;
+  }
+  html[data-theme="aurorapulse"]{
+    --bg:#01040a; --fg:#d6f7ff; --muted:#88a0b3;
+    --accent:#00ffaa; --accent2:#a066ff; --accent3:#00e5ff;
+    --tick:#08202a; --railA:#00151f; --railB:#091a27; --marker:#00ffaa;
+  }
+  html[data-theme="neonmist"]{
+    --bg:#0b0d10; --fg:#e0faff; --muted:#aab8c0;
+    --accent:#9dfffa; --accent2:#f7a1ff; --accent3:#fff59e;
+    --tick:#1c2329; --railA:#111417; --railB:#181b1f; --marker:#9dfffa;
+  }
+  html[data-theme="deepcircuit"]{
+    --bg:#01040a; --fg:#cde6ff; --muted:#7387a0;
+    --accent:#00baff; --accent2:#d400ff; --accent3:#39ff9f;
+    --tick:#0e1b2a; --railA:#05101a; --railB:#0a1825; --marker:#00baff;
+  }
+  html[data-theme="chronoamber"]{
+    --bg:#0a0600; --fg:#ffe9c0; --muted:#c9a777;
+    --accent:#ffb300; --accent2:#ff8400; --accent3:#ffc800;
+    --tick:#3a2a00; --railA:#1a1000; --railB:#241500; --marker:#ffb300;
+  }
+  html[data-theme="ghostline"]{
+    --bg:#000; --fg:#d0d0d0; --muted:#808080;
+    --accent:#b0ffff; --accent2:#90a0ff; --accent3:#ffffff;
+    --tick:#222; --railA:#0a0a0a; --railB:#111111; --marker:#b0ffff;
+  }
+
+  /* ---------- BASE LAYOUT ---------- */
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .wrap{ width:min(1000px, 92vw); padding:28px 20px 36px; }
+
+  .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .brand a, .brand a:visited, .brand a:hover{ color:var(--accent); text-decoration:none; letter-spacing:.02em; }
+  .brand small{ color:var(--muted); margin-left:10px; font-size:.9em; }
+
+  .hairline{ border:none; border-top:var(--line-thin) solid rgba(255,255,255,0.1); margin:18px 0 22px; }
+
+  /* Controls row */
+  .controls{ display:flex; align-items:center; gap:12px; color:var(--muted); }
+  .controls select,
+  .controls input[type="range"]{
+    background:transparent; color:var(--fg); border:1px solid rgba(255,255,255,.12);
+    padding:6px 8px; border-radius:10px; outline:none;
+  }
+  /* Dark dropdown styling + readable options */
+  .controls select{
+    min-width:190px;
+    background-color:#111;
+    color:var(--fg);
+    border:1px solid rgba(255,255,255,0.15);
+    appearance:none;
+  }
+  .controls select option{
+    background-color:#111;
+    color:var(--fg);
+  }
+  /* Hover/focus hint */
+  .controls select:focus{
+    box-shadow:0 0 calc(10px*var(--glow)) color-mix(in oklab, var(--accent) 40%, transparent);
+    border-color: color-mix(in oklab, var(--accent) 40%, rgba(255,255,255,0.15));
+  }
+
+  .controls input[type="range"]{ width:180px; accent-color:var(--accent); }
+
+  #currentTimeTop{ font-size:1.6rem; color:var(--accent); filter:drop-shadow(0 0 calc(6px*var(--glow)) var(--accent)); }
+
+  .rail{
+    position:relative; height:36px; border-radius:999px; overflow:hidden;
+    background:
+      linear-gradient(90deg,
+        color-mix(in oklab, var(--accent2) 18%, transparent),
+        color-mix(in oklab, var(--accent) 22%, transparent),
+        color-mix(in oklab, var(--accent3) 18%, transparent)
+      ),
+      linear-gradient(90deg, var(--railA), var(--railB));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+                0 0 calc(14px*var(--glow)) color-mix(in oklab, var(--accent) 30%, transparent);
+  }
+
+  .workband{
+    position:absolute; inset:0 auto 0 calc((8/24)*100%); width:calc((9/24)*100%);
+    background: linear-gradient(180deg,
+      color-mix(in oklab, var(--accent) 10%, transparent),
+      color-mix(in oklab, var(--accent2) 10%, transparent));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03); pointer-events:none;
+  }
+
+  .ticks{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(96, 1fr); pointer-events:none; }
+  .ticks span{ width:1px; height:100%; background:linear-gradient(180deg, transparent, var(--tick), transparent); opacity:.9; }
+  .ticks span:nth-child(4n){ background:linear-gradient(180deg, transparent, rgba(255,255,255,0.22), transparent); opacity:1; }
+
+  .marker{
+    position:absolute; top:-6px; bottom:-6px; width:2px; left:0; background:var(--marker);
+    box-shadow: 0 0 calc(10px*var(--glow)) var(--marker),
+                0 0 calc(20px*var(--glow)) color-mix(in oklab, var(--marker) 60%, transparent);
+  }
+  .marker::after{
+    content:""; position:absolute; left:50%; transform:translateX(-50%); top:-5px; width:9px; height:9px; border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, #fff, var(--marker) 45%, transparent 60%);
+    box-shadow: 0 0 calc(16px*var(--glow)) var(--marker);
+  }
+
+  .stats{ display:flex; gap:18px; margin-top:12px; color:var(--muted); font-size:.95rem; flex-wrap:wrap; }
+  .stats b{ color:var(--fg); }
+
+  .foot{ margin-top:22px; color:var(--muted); font-size:.9rem; }
+  .foot a, .foot a:visited, .foot a:hover{ color:var(--accent); text-decoration:none; }
+
+  @media (max-width:480px){ .wrap{ padding:20px 14px 26px; } .rail{ height:32px; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <a href="index.html">24-Hour Linear Clock</a>
+        <small>Preset Themes</small>
+      </div>
+      <div class="controls" title="Choose theme & adjust glow">
+        <label for="theme">Theme</label>
+        <select id="theme">
+          <option value="technolust">TechnoLust (Neon)</option>
+          <option value="midnight">Midnight Blue</option>
+          <option value="vaporwave">Vaporwave</option>
+          <option value="terminal">Terminal Green</option>
+          <option value="amber">Amber Retro</option>
+          <option value="mono">Mono Minimal</option>
+          <option value="solar">Solar-ish Dark</option>
+          <option value="cybercrimson">CyberCrimson</option>
+          <option value="aurorapulse">AuroraPulse</option>
+          <option value="neonmist">NeonMist</option>
+          <option value="deepcircuit">DeepCircuit</option>
+          <option value="chronoamber">ChronoAmber</option>
+          <option value="ghostline">Ghostline</option>
+        </select>
+
+        <label for="glow">Glow</label>
+        <input id="glow" type="range" min="0" max="1.25" step="0.05" value="0.65" />
+      </div>
+    </div>
+
+    <hr class="hairline" />
+
+    <div id="currentTimeTop">--:--:--</div>
+
+    <div class="rail" aria-label="24-hour time rail">
+      <div class="workband" aria-hidden="true"></div>
+      <div class="ticks" aria-hidden="true"></div>
+      <div class="marker" role="presentation" aria-hidden="true"></div>
+    </div>
+
+    <div class="stats" aria-live="polite">
+      <div>Day elapsed: <b id="pctElapsed">--%</b></div>
+      <div>Remaining: <b id="pctRemain">--%</b></div>
+      <div>Now: <b id="nowHMS">--:--:--</b></div>
+    </div>
+
+    <div class="foot">
+      <span>© jm5k 2025</span> •
+      <a href="about.html">About</a> •
+      <a href="focus.html">Focus Timer</a>
+    </div>
+  </div>
+
+<script>
+  /* ---------- BUILD TICKS ---------- */
+  const ticksEl = document.querySelector('.ticks');
+  for(let i=0;i<96;i++){ ticksEl.appendChild(document.createElement('span')); }
+
+  const marker = document.querySelector('.marker');
+  const nowTop = document.getElementById('currentTimeTop');
+  const nowHMS = document.getElementById('nowHMS');
+  const pctElapsed = document.getElementById('pctElapsed');
+  const pctRemain = document.getElementById('pctRemain');
+  const glow = document.getElementById('glow');
+  const themeSel = document.getElementById('theme');
+  const root = document.documentElement;
+
+  /* ---------- PERSISTENCE ---------- */
+  const savedTheme = localStorage.getItem('clock_theme');
+  const savedGlow  = localStorage.getItem('clock_glow');
+  if(savedTheme){
+    root.setAttribute('data-theme', savedTheme);
+    themeSel.value = savedTheme;
+  }
+  if(savedGlow){
+    glow.value = savedGlow;
+    root.style.setProperty('--glow', savedGlow);
+  }
+
+  themeSel.addEventListener('change', () => {
+    const v = themeSel.value;
+    root.setAttribute('data-theme', v);
+    localStorage.setItem('clock_theme', v);
+  });
+
+  glow.addEventListener('input', e=>{
+    root.style.setProperty('--glow', e.target.value);
+    localStorage.setItem('clock_glow', e.target.value);
+  });
+
+  /* ---------- CLOCK LOOP ---------- */
+  const pad = n => String(n).padStart(2,'0');
+
+  function update(){
+    const d = new Date();
+    const h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+    const msToday = h*3600000 + m*60000 + s*1000 + d.getMilliseconds();
+    const pct = msToday / 86400000;
+    marker.style.left = (pct*100).toFixed(6) + '%';
+
+    const hh = pad(h), mm = pad(m), ss = pad(s);
+    nowTop.textContent = `${hh}:${mm}:${ss}`;
+    nowHMS.textContent = `${hh}:${mm}:${ss}`;
+    const pe = pct*100;
+    pctElapsed.textContent = pe.toFixed(2) + '%';
+    pctRemain.textContent = (100 - pe).toFixed(2) + '%';
+  }
+
+  update();
+  setInterval(update, 1000);
+</script>
+</body>
+</html>
