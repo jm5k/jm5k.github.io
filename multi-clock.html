@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <title>Multi-Clock | 24-Hour Linear Clock by jm5k</title>
-<meta name="description" content="Multi-timezone 24-hour linear clocks with UTC-offset sorting, pinned favorites, custom labels, gradient progress line, drag & drop reordering, edit-in-place labels, and localStorage persistence." />
+<meta name="description" content="Multi-timezone 24-hour linear clocks with UTC-offset sorting, pinned favorites, custom labels, gradient progress line, drag & drop reordering, edit-in-place labels, localStorage persistence, and JSON export/import." />
 <link rel="icon" href="https://jm5k.github.io/profile.png" type="image/png" />
 
 <style>
@@ -24,24 +24,12 @@
   .wrap{max-width:960px; margin:0 auto}
 
   /* ← Back link (top-left) */
-  .returnnav {
-    max-width:960px; margin:0 auto 10px;
-  }
+  .returnnav { max-width:960px; margin:0 auto 10px; }
   .returnnav a{
-    display:inline-block;
-    color:var(--accent);
-    text-decoration:none;
-    font-size:0.95rem;
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:10px;
-    padding:6px 12px;
-    transition:all .2s ease;
+    display:inline-block; color:var(--accent); text-decoration:none; font-size:0.95rem;
+    border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:6px 12px; transition:all .2s ease;
   }
-  .returnnav a:hover{
-    background:rgba(255,255,255,0.04);
-    border-color:var(--accent);
-    text-shadow:0 0 6px var(--accent);
-  }
+  .returnnav a:hover{ background:rgba(255,255,255,0.04); border-color:var(--accent); text-shadow:0 0 6px var(--accent); }
 
   h1{margin:6px 0 10px; font-weight:600; font-size:1.25rem; color:var(--yellow)}
   .sub{margin:0 0 18px; color:var(--muted)}
@@ -54,7 +42,8 @@
   .controls select{min-width:340px}
   .controls input[type="text"]{min-width:240px}
   .controls button{cursor:pointer}
-  .controls .hint{color:var(--muted); font-size:0.9rem}
+  .controls .grow{ flex:1 1 auto }
+  .controls .spacer{ flex:1 1 0 }
 
   .clock{
     border:1px solid #111; border-radius:10px; padding:14px 14px 18px; margin:18px 0;
@@ -116,8 +105,15 @@
       <input id="labelInput" type="text" placeholder="Optional label (e.g., London HQ)" />
       <button id="addBtn" aria-label="Add timezone clock">Add</button>
 
-      <!-- NEW: Clear All button -->
-      <button id="clearAllBtn" title="Remove all clocks" style="margin-left:auto;">Clear All</button>
+      <span class="spacer"></span>
+
+      <!-- Export / Import / Clear -->
+      <button id="exportBtn" title="Download JSON of your clocks">Export</button>
+      <button id="importBtn" title="Import clocks from JSON">Import</button>
+      <button id="clearAllBtn" title="Remove all clocks">Clear All</button>
+
+      <!-- Hidden file input for Import -->
+      <input id="filePicker" type="file" accept="application/json" style="display:none">
     </div>
 
     <hr class="nav" />
@@ -126,12 +122,15 @@
 
 <script>
 /* ---------- Constants & DOM ---------- */
-const LS_KEY = 'jm5k_multi_clocks_v2'; // version bump for edit-label feature
-const tzSelect   = document.getElementById('tzSelect');
-const addBtn     = document.getElementById('addBtn');
-const labelInput = document.getElementById('labelInput');
-const clearAllBtn= document.getElementById('clearAllBtn');
-const extraClocks= document.getElementById('extraClocks');
+const LS_KEY = 'jm5k_multi_clocks_v2'; // persistent; includes label editing support
+const tzSelect    = document.getElementById('tzSelect');
+const addBtn      = document.getElementById('addBtn');
+const labelInput  = document.getElementById('labelInput');
+const exportBtn   = document.getElementById('exportBtn');
+const importBtn   = document.getElementById('importBtn');
+const filePicker  = document.getElementById('filePicker');
+const clearAllBtn = document.getElementById('clearAllBtn');
+const extraClocks = document.getElementById('extraClocks');
 
 /* ---------- Utilities ---------- */
 const pad = (n)=> String(n).padStart(2,'0');
@@ -401,13 +400,20 @@ function rerender(){
   renderEmptyState();
 }
 
-/* ---------- Persistence & Init ---------- */
+/* ---------- Empty-state & Buttons ---------- */
 function renderEmptyState(){
   if (clocks.length === 0 && !document.getElementById('empty-note')){
     const p = document.createElement('p'); p.id='empty-note'; p.className='sub'; p.textContent='No clocks added yet. Use the dropdown and Add button.'; extraClocks.appendChild(p);
   } else if (clocks.length > 0){
     const n = document.getElementById('empty-note'); if (n) n.remove();
   }
+}
+function setActionButtons(){
+  const has = clocks.length > 0;
+  clearAllBtn.disabled = !has;
+  exportBtn.disabled   = !has;
+  const dim = (b, on)=>{ b.style.opacity = on ? 1 : 0.5; };
+  dim(clearAllBtn, has); dim(exportBtn, has);
 }
 
 /* ---------- Add ---------- */
@@ -421,42 +427,109 @@ addBtn.addEventListener('click', () => {
   startClock({ tz, label });
   labelInput.value = '';
   saveClocks();
+  setActionButtons();
 });
 tzSelect.addEventListener('keydown', (e) => { if (e.key === 'Enter') addBtn.click(); });
 labelInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addBtn.click(); });
 
-/* ---------- NEW: Clear All ---------- */
-function setClearButtonState(){
-  clearAllBtn.disabled = clocks.length === 0;
-  clearAllBtn.style.opacity = clearAllBtn.disabled ? 0.5 : 1;
-}
+/* ---------- Clear All ---------- */
 clearAllBtn.addEventListener('click', () => {
   if (clocks.length === 0) return;
   const ok = confirm('Remove all clocks? This clears your saved list.');
   if (!ok) return;
 
-  // stop timers and wipe DOM
   stopAll();
   extraClocks.innerHTML = '';
-
-  // reset state & storage
   clocks = [];
   saveClocks();
-
-  // show empty message & disable button
   renderEmptyState();
-  setClearButtonState();
+  setActionButtons();
 });
 
+/* ---------- Export ---------- */
+exportBtn.addEventListener('click', () => {
+  if (!clocks.length) return;
+  const payload = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    clocks
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'multi-clocks.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+/* ---------- Import (merge) ---------- */
+importBtn.addEventListener('click', () => filePicker.click());
+
+filePicker.addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    // Allow simple array fallback: [{tz,label}, ...]
+    const list = Array.isArray(data) ? data
+               : (data && Array.isArray(data.clocks)) ? data.clocks
+               : null;
+
+    if (!list) { alert('Invalid file format. Expected an array or an object with a "clocks" array.'); return; }
+
+    // Validate + merge (dedupe by tz). If same tz appears, update label if provided.
+    let added = 0, updated = 0, skipped = 0;
+    for (const item of list){
+      const tz = String(item.tz || '').trim();
+      const label = (item.label != null ? String(item.label) : '').trim();
+      if (!tz){ skipped++; continue; }
+
+      const idx = clocks.findIndex(c => c.tz === tz);
+      if (idx === -1){
+        clocks.push({ tz, label });
+        added++;
+      } else {
+        // update label only if provided (including blank to clear)
+        if (item.hasOwnProperty('label')){
+          clocks[idx].label = label;
+          updated++;
+        } else {
+          skipped++;
+        }
+      }
+    }
+
+    // Rerender and persist
+    rerender();
+    saveClocks();
+    setActionButtons();
+
+    alert(`Import complete:\nAdded: ${added}\nUpdated: ${updated}\nSkipped: ${skipped}`);
+
+  } catch (err){
+    console.error(err);
+    alert('Could not import: ' + err.message);
+  } finally {
+    // reset input so selecting the same file again will fire change
+    filePicker.value = '';
+  }
+});
+
+/* ---------- Init ---------- */
 function init(){
   buildDropdown();
   clocks = loadClocks();
   if (clocks.length) clocks.forEach(startClock);
   renderEmptyState();
-  setClearButtonState();
+  setActionButtons();
 
-  // watch add/remove to keep the clear button state accurate
-  const mo = new MutationObserver(setClearButtonState);
+  // keep action buttons accurate as DOM changes
+  const mo = new MutationObserver(setActionButtons);
   mo.observe(extraClocks, { childList:true, subtree:false });
 }
 init();
