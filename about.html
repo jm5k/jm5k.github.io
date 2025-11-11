@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 
 <!-- 🔍 Basic SEO -->
-<title>About | 24-Hour Linear Clock by jm5k</title>
-<meta name="description" content="Learn more about the 24-Hour Linear Clock project by jm5k — a minimalist web app that visualizes time as a continuous 24-hour line with workday highlights and live updates.">
-<meta name="keywords" content="linear clock, jm5k, 24 hour clock, minimalist web app, about, contact">
-<meta name="author" content="jm5k">
-<meta name="robots" content="index, follow">
+<title>About | Linear Clock Lab by jm5k</title>
+<meta name="description" content="About the Linear Clock Lab — a suite of minimalist time tools by jm5k. Read the vision, roadmap, and see what's planned and completed for each tool." />
+<meta name="keywords" content="linear clock, jm5k, time visualization, pomodoro, multi timezone, minimalist web app, about" />
+<meta name="author" content="jm5k" />
+<meta name="robots" content="index, follow" />
 
 <!-- 🌐 Open Graph -->
-<meta property="og:title" content="About | 24-Hour Linear Clock by jm5k">
-<meta property="og:description" content="A minimalist time visualization built by jm5k. Learn about the design, concept, and contact info for the 24-Hour Linear Clock.">
-<meta property="og:url" content="https://jm5k.github.io/about.html">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://jm5k.github.io/profile.png">
+<meta property="og:title" content="About | Linear Clock Lab by jm5k" />
+<meta property="og:description" content="A suite of minimalist time tools by jm5k. Vision, roadmap, and status per tool." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://jm5k.github.io/profile.png" />
 
 <!-- 🐦 Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="About | 24-Hour Linear Clock by jm5k">
-<meta name="twitter:description" content="A minimalist time visualization by jm5k — concept, purpose, planned updates, and contact info.">
-<meta name="twitter:image" content="https://jm5k.github.io/profile.png">
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="About | Linear Clock Lab by jm5k" />
+<meta name="twitter:description" content="Minimalist time tools by jm5k — roadmap and status." />
+<meta name="twitter:image" content="https://jm5k.github.io/profile.png" />
 
-<!-- 📱 Favicon -->
-<link rel="icon" href="https://jm5k.github.io/profile.png" type="image/png">
+<link rel="icon" href="https://jm5k.github.io/profile.png" type="image/png" />
 
 <!-- 🧠 Structured Data -->
 <script type="application/ld+json">
@@ -33,178 +31,235 @@
   "@context": "https://schema.org",
   "@type": "AboutPage",
   "url": "https://jm5k.github.io/about.html",
-  "name": "About | 24-Hour Linear Clock",
-  "description": "About the minimalist 24-Hour Linear Clock web app by jm5k, including concept details, contact information, and planned updates.",
+  "name": "About | Linear Clock Lab",
+  "description": "About the Linear Clock Lab — minimalist time tools by jm5k with roadmap and status.",
   "author": { "@type": "Person", "name": "jm5k" },
   "publisher": { "@type": "Person", "name": "jm5k" },
   "mainEntity": {
-    "@type": "WebApplication",
-    "name": "24-Hour Linear Clock",
+    "@type": "SoftwareApplication",
+    "name": "Linear Clock Lab",
     "applicationCategory": "WebApplication",
     "operatingSystem": "Any",
-    "url": "https://jm5k.github.io/",
-    "description": "A minimalist clock showing real-time progress through the day using a continuous 24-hour timeline."
+    "description": "A suite of minimalist time visualization tools that run client-side."
   }
 }
 </script>
 
 <style>
   :root{
-    --fg:#eaeaea; --line:#1f1f1f; --accent:#00e5ff;
-    --chip:#151515; --chip-brd:#222;
+    --bg:#000; --fg:#eaeaea; --muted:#a9a9a9; --line:#1f1f1f; --accent:#00e5ff;
+    --chip:#151515; --chip-brd:#222; --yellow:#e6e600;
   }
-  body {
-    background:#000; color:#ccc; font-family:monospace;
-    margin:0; padding:32px 16px 64px;
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#fff; --fg:#0f0f10; --muted:#5a5a5a; --line:#ececec; --accent:#00a8c6; --chip:#f6f6f6; --chip-brd:#e6e6e6 }
   }
-  .wrap{ max-width:880px; margin:0 auto; text-align:center; }
+  *{box-sizing:border-box}
+  body{ background:var(--bg); color:var(--fg); font-family:monospace; margin:0; padding:32px 16px 64px; }
+  a{ color:var(--accent); text-decoration:none }
+  a:hover{ text-decoration:underline }
 
-  /* —— Global Nav ——————————————————— */
-  .brand{ font-weight:600; margin-bottom:6px; }
-  .topnav{
-    display:flex; align-items:center; justify-content:center;
-    gap:14px; flex-wrap:wrap; font-size:14px; margin-bottom:8px;
+  .wrap{ max-width:980px; margin:0 auto; }
+
+  /* Top-left back link */
+  header{ position:relative; margin-bottom:14px; }
+  .returnlink{
+    position:absolute; left:0; top:0; transform:translateY(-6px);
+    font-size:14px;
   }
-  .topnav a{
-    color:var(--fg); text-decoration:none; padding:6px 8px;
-    border-radius:8px; border:1px solid transparent;
-    transition:color .2s ease, background .2s ease, border-color .2s ease;
+  .returnlink a{
+    display:inline-block; padding:6px 10px; border-radius:10px;
+    border:1px solid var(--line); background:transparent;
+    transition: border-color .2s ease, background .2s ease, text-shadow .2s ease;
   }
-  .topnav a:hover{ border-color:var(--line); color:var(--accent); }
-  .topnav a[aria-current="page"]{
-    color:#00141a; background:var(--accent); border-color:transparent; font-weight:600;
-  }
+  .returnlink a:hover{ background:rgba(255,255,255,0.04); border-color:var(--accent); text-shadow:0 0 6px var(--accent) }
+
+  .brand{ text-align:center; font-weight:600; margin-bottom:8px; }
   .navline{
-    margin:10px 0 18px; height:1px; width:100%;
-    background:linear-gradient(to right, rgba(255,255,255,0.1),
-      rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.1));
+    margin:12px 0 18px; height:1px; width:100%;
+    background:linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.1));
     opacity:.6;
   }
 
-  h1 { color:#0ff; font-size:1.8em; margin:8px 0 0.4em; }
-  h2 { color:#e6e600; margin-top:2em; font-size:1.4em; }
-  p  { color:#aaa; line-height:1.6; margin:1em 0; }
-  ul { list-style:none; padding-left:0; color:#ccc; line-height:1.6; margin:0.8em 0; }
-  li::before { content:"• "; color:#0ff; }
-  a  { color:#0ff; text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  .muted { color:#777; font-size:0.95em; }
-  footer { margin-top:40px; color:#777; font-size:0.9em; }
+  h1{ color:var(--accent); font-size:1.9rem; margin:8px 0 10px }
+  h2{ color:var(--yellow); font-size:1.3rem; margin:28px 0 8px }
+  h3{ color:#ccc; font-size:1.05rem; margin:16px 0 6px }
+  p{ color:#ccc; line-height:1.6; margin:10px 0 }
+  .muted{ color:var(--muted) }
+
+  .section{ border:1px solid var(--line); border-radius:14px; padding:16px 16px 12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05)); margin-top:16px }
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
+  .card{ border:1px solid var(--chip-brd); background:var(--chip); border-radius:12px; padding:12px }
+  ul.plain{ list-style:none; padding-left:0; margin:8px 0 }
+  ul.plain li{ margin:6px 0; line-height:1.5 }
+  ul.plain li::before{ content:"• "; color:var(--accent) }
+
+  .cta{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0 0 }
+  .pill{
+    display:inline-block; padding:8px 12px; border:1px solid var(--line); border-radius:999px; color:var(--fg);
+    background:#0f0f0f;
+  }
+  .pill:hover{ border-color:var(--accent) }
+
+  footer{ margin-top:36px; color:var(--muted); font-size:14px; text-align:center }
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="brand">24-Hour Linear Suite</div>
-      <nav class="topnav" aria-label="Primary">
-        <a href="index.html">Home</a>
-        <a href="clock.html">Minimal Clock</a>
-        <a href="multi-clock.html">Multi-Clock</a>
-        <a href="focus.html">FocusLine</a>
-        <a href="about.html" aria-current="page">About</a>
-      </nav>
+      <div class="returnlink"><a href="index.html">← Back to Linear Clock Lab</a></div>
+      <div class="brand">About the <strong>Linear Clock Lab</strong></div>
       <div class="navline" aria-hidden="true"></div>
     </header>
 
-    <h1>About the 24-Hour Linear Clock</h1>
-
-    <p>
-      The <strong>24-Hour Linear Clock</strong> is a minimalist time visualization built by <strong>jm5k</strong>.
-      It presents the entire day as a single horizontal line — each hour and quarter-hour marked — with
-      a live red indicator for the current time, a highlighted workday band (08:00–17:00), and real-time
-      stats for percent of day elapsed and time remaining. Runs fully in your browser. No tracking. No servers.
-    </p>
-
-    <h2>Completed</h2>
-    <ul>
-      <li>
-        <strong>12-hour / 24-hour toggle</strong> — Applies to both the top time readout and the hour labels.
-        Remembers your preference using <code>localStorage</code>. The toggle control is placed directly under
-        the “elapsed | remaining” line for clarity.
-      </li>
-      <li><strong>Multi-timezone clocks</strong> — Display additional clocks for global times.</li>
-    </ul>
-
-    <h2>Planned Updates</h2>
-    <ul>
-      <li><strong>Vertical layout option</strong> — View the timeline vertically for alternate screen orientations.</li>
-      <li><strong>Reversible time direction</strong> — Flip the time marker to move right→left (or bottom→top).</li>
-      <li><strong>Workday-specific tracking</strong> — Show <em>% of workday elapsed</em> and <em>workday time remaining</em>.</li>
-      <li><strong>Custom marker zones</strong> — Define colored regions for breaks, meetings, or focus blocks (saved locally).</li>
-    </ul>
-
-    <p class="muted">
-      Roadmap is iterative: the goal is to remain simple, fast, and readable while adding power features thoughtfully.
-    </p>
-
-    <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1); margin:32px 0;">
-
-    <section id="focus">
-      <h2 style="font-size:1.4em; margin-bottom:8px;">FocusLine Pomodoro</h2>
+    <!-- Intro -->
+    <section class="section">
+      <h1>What is the Linear Clock Lab?</h1>
       <p>
-        <strong>FocusLine</strong> is a minimalist <a href="./focus.html">Pomodoro timer</a> built to complement the 
-        <a href="./index.html">24-Hour Linear Clock</a>. It visualizes your work sessions as a clean, 
-        horizontal progress bar — free of distractions, accounts, or analytics. 
+        The <strong>Linear Clock Lab</strong> is a suite of minimalist, client-side time tools by <strong>jm5k</strong>.
+        Everything runs in your browser—no tracking, no servers, and no frameworks—focusing on clarity, speed, and control.
       </p>
       <p>
-        You can adjust work and break durations, enable auto-advance, and track total focus minutes for the day — all stored locally in your browser. 
-        Optional chime and desktop notifications help mark each phase without breaking your flow.
+        The suite currently includes: a full-day <em>24-Hour Linear Clock</em>, a <em>Minimal View</em>, <em>Multi Clocks</em> for
+        world time, <em>Color Theme Clocks</em> (experimental), and the <em>FocusLine</em> Pomodoro timer.
       </p>
-      <p>
-        <em>Shortcuts:</em> <kbd>Space</kbd> start/pause, <kbd>S</kbd> skip, <kbd>R</kbd> reset.  
-        It’s privacy-friendly, fast, and built for everyday focus.
-      </p>
+      <div class="cta">
+        <a class="pill" href="https://github.com/jm5k/jm5k.github.io" target="_blank" rel="noopener">View Source on GitHub</a>
+      </div>
     </section>
 
-    <section id="update-multi-clock" style="margin-top:32px;">
-      <h2 style="color:#e6e600; font-size:1.1rem; margin:0 0 8px;">Multi-Timezone Minimal Linear Clocks</h2>
-      <p style="color:#888; margin:0 0 12px;">
-        You can now add additional world clocks to the Linear Clock view. Use the <em>Add</em> button with the
-        timezone dropdown (full IANA list, with favorites pinned) to render extra 24-hour lines under your local clock.
-        Each clock shows live time, a progress fill, and a cyan marker. Remove a clock via the small ✕ or a middle-click.
-      </p>
-
-      <ul style="color:#aaa; margin:0 0 10px 18px; line-height:1.6;">
-        <li>Full IANA timezone list (auto-detected where supported; falls back gracefully).</li>
-        <li>Optional custom label per clock (e.g., “London HQ · Europe/London”).</li>
-        <li>Minimal UI: thin nav line, subtle <span style="color:#e6e600;">yellow</span> for percent, cyan accents.</li>
-        <li>Lightweight: no external libraries, 1-second updates.</li>
-      </ul>
-
-      <p style="color:#888; margin:0;">
-        🔗 <a href="multi-clock.html">Multi-Clock</a>
-      </p>
+    <!-- Support + Contact -->
+    <section class="section">
+      <h2>Support & Contact</h2>
+      <p>Questions, ideas, or want to contribute? Email: <a href="mailto:jm5k_dev@pm.me">jm5k_dev@pm.me</a></p>
+      <div class="cta">
+        <a href="https://www.buymeacoffee.com/jm5k" target="_blank" rel="noopener">
+          <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=e6e600&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee" />
+        </a>
+      </div>
     </section>
 
-    <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1); margin:32px 0;">
+    <!-- Sections per tool (no links to the tools here) -->
+    <section class="section">
+      <h2>24-Hour Linear Clock</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>Completed</h3>
+          <ul class="plain">
+            <li>Clean gray rail with subtle inset, cyan live marker, gentle glow.</li>
+            <li>Quarter-hour and hour tick marks, smooth 1s updates.</li>
+            <li>Stats: % of day elapsed and time remaining.</li>
+            <li>Workday band (08:00–17:00).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Planned</h3>
+          <ul class="plain">
+            <li>Vertical layout option.</li>
+            <li>Reverse marker direction option.</li>
+            <li>Workday-specific stats (elapsed / remaining).</li>
+            <li>Custom marker zones (locally saved).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <h2>Contact</h2>
-    <p>📧 <a href="mailto:jm5k_dev@pm.me">jm5k_dev@pm.me</a></p>
+    <section class="section">
+      <h2>Minimal View</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>Completed</h3>
+          <ul class="plain">
+            <li>Matches lab styling (gray rail, cyan marker, soft glow).</li>
+            <li>12h/24h toggle with localStorage persistence.</li>
+            <li>Hour labels with work-hour emphasis.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Planned</h3>
+          <ul class="plain">
+            <li>Optional ultra-compact “status strip.”</li>
+            <li>Accessibility: reduced motion mode.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <!-- Donation -->
-    <div style="margin-top:20px;">
-      <a href="https://www.buymeacoffee.com/jm5k" target="_blank" style="text-decoration:none;">
-        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=e6e600&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee"/>
-      </a>
-    </div>
+    <section class="section">
+      <h2>Multi Clocks</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>Completed</h3>
+          <ul class="plain">
+            <li>Full IANA timezone dropdown with pinned favorites.</li>
+            <li>Add/remove clocks; labels editable in place.</li>
+            <li>Drag-and-drop reordering + ▲/▼ nudges.</li>
+            <li>Sorted by UTC offset; localStorage persistence.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Planned</h3>
+          <ul class="plain">
+            <li>Pin groups (e.g., “Engineering”, “Family”).</li>
+            <li>Export/import clock sets (JSON).</li>
+            <li>Optional daylight/standard change indicators.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <p style="margin-top:16px;">
-      ⏱ Return to the clock: <a href="index.html">Linear Clock Home</a>
-    </p>
+    <section class="section">
+      <h2>Color Theme Clocks</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>Completed</h3>
+          <ul class="plain">
+            <li>Theme variables scaffold (dark/light aware).</li>
+            <li>Accent-driven gradients and markers.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Planned</h3>
+          <ul class="plain">
+            <li>Theme picker with preview and save.</li>
+            <li>Contrast-safe palettes and WCAG checks.</li>
+            <li>Shareable theme tokens (optional).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <footer>
-      <p>Minimal time, maximum clarity.</p>
-    </footer>
+    <section class="section">
+      <h2>FocusLine</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>Completed</h3>
+          <ul class="plain">
+            <li>Work / Short / Long phases with cycles.</li>
+            <li>Auto-advance and optional chime.</li>
+            <li>Daily total minutes (local history, 7-day prune).</li>
+            <li>Local linear clock bar for perspective.</li>
+            <li>Notes: capture, reorder, search, export .txt/.json.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Planned</h3>
+          <ul class="plain">
+            <li>Snooze / resume reminders (notifications).</li>
+            <li>Session tags and basic analytics (local only).</li>
+            <li>Import notes; merge conflict-safe ordering.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <footer style="margin-top:40px; font-size:0.9em; color:#777;">
-      <hr style="width:60%; margin:20px auto; border:0; border-top:1px solid #333;">
-      <p style="color:#00ffff;">
-        © 2025 <strong>jm5k</strong> | <a href="https://github.com/jm5k/jm5k.github.io/blob/main/LICENSE" target="_blank" style="color:#00ffff; text-decoration:none;">MIT License</a>
-      </p>
-      <p style="color:#555; margin-top:6px;">
-        <a href="https://github.com/jm5k/jm5k.github.io" target="_blank" style="color:#999; text-decoration:none;">View source on GitHub</a>
-      </p>
-    </footer>
+    <!-- Copyright & License -->
+    <section class="section">
+      <h2>Copyright & License</h2>
+      <p>© 2025 <strong>jm5k</strong>. Code released under the <a href="https://github.com/jm5k/jm5k.github.io/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
+      <p class="muted">Use, modify, and share with attribution. No warranty. Keep it fast, simple, and kind to users.</p>
+    </section>
+
+    <footer>Built for clarity. No tracking. Your data stays in your browser.</footer>
   </div>
 </body>
 </html>
