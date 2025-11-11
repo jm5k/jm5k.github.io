@@ -4,12 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>24-Hour Linear Clock | Preset Themes</title>
-<meta name="description" content="Minimal 24-hour linear clock with selectable neon and classic color presets. Live marker, gradient rail, glow control, and saved preferences." />
+<meta name="description" content="Minimal 24-hour linear clock with selectable neon and classic color presets. Live marker, gradient rail, glow control, saved preferences, and a collapsible custom theme editor with export/import." />
 <meta name="author" content="jm5k" />
 <link rel="icon" href="https://jm5k.github.io/profile.png" type="image/png" />
 
 <style>
-  /* ---------- THEME TOKENS (fallback; overridden by [data-theme]) ---------- */
   :root{
     --bg:#000; --fg:#bfc7d5; --muted:#7a8393;
     --accent:#00ffe6; --accent2:#ff2bd6; --accent3:#b4ff00;
@@ -17,96 +16,27 @@
     --line-thin:1px; --glow:0.65;
   }
 
-  /* ---------- BASE PRESETS ---------- */
-  html[data-theme="technolust"]{
-    --bg:#000; --fg:#bfc7d5; --muted:#7a8393;
-    --accent:#00ffe6; --accent2:#ff2bd6; --accent3:#b4ff00;
-    --tick:#1b1f28; --railA:#0b0f15; --railB:#121826; --marker:#00ffe6;
-  }
-  html[data-theme="midnight"]{
-    --bg:#060a12; --fg:#c6d8ff; --muted:#8ea0c6;
-    --accent:#64a8ff; --accent2:#b987ff; --accent3:#66ffcc;
-    --tick:#0e1a2b; --railA:#0a1220; --railB:#0d1730; --marker:#64a8ff;
-  }
-  html[data-theme="vaporwave"]{
-    --bg:#0b0014; --fg:#ffe6ff; --muted:#e6b8ff;
-    --accent:#00ffd1; --accent2:#ff5ec9; --accent3:#ffd166;
-    --tick:#250035; --railA:#150022; --railB:#220033; --marker:#ff5ec9;
-  }
-  html[data-theme="terminal"]{
-    --bg:#000; --fg:#b7ffb7; --muted:#6ddc6d;
-    --accent:#00ff88; --accent2:#00ffa5; --accent3:#7bff00;
-    --tick:#003300; --railA:#001600; --railB:#002100; --marker:#00ff88;
-  }
-  html[data-theme="amber"]{
-    --bg:#0a0600; --fg:#ffd7a1; --muted:#e0ab63;
-    --accent:#ffb000; --accent2:#ff7a00; --accent3:#ffe066;
-    --tick:#3a2500; --railA:#120a00; --railB:#1c0f00; --marker:#ffb000;
-  }
-  html[data-theme="mono"]{
-    --bg:#000; --fg:#dcdcdc; --muted:#9c9c9c;
-    --accent:#ffffff; --accent2:#c0c0c0; --accent3:#a0a0a0;
-    --tick:#2a2a2a; --railA:#0c0c0c; --railB:#121212; --marker:#ffffff;
-  }
-  html[data-theme="solar"]{
-    --bg:#002b36; --fg:#eee8d5; --muted:#93a1a1;
-    --accent:#2aa198; --accent2:#b58900; --accent3:#cb4b16;
-    --tick:#073642; --railA:#01303a; --railB:#023b47; --marker:#2aa198;
-  }
+  /* Presets (unchanged) */
+  html[data-theme="technolust"]{ --bg:#000; --fg:#bfc7d5; --muted:#7a8393; --accent:#00ffe6; --accent2:#ff2bd6; --accent3:#b4ff00; --tick:#1b1f28; --railA:#0b0f15; --railB:#121826; --marker:#00ffe6; }
+  html[data-theme="midnight"]{ --bg:#060a12; --fg:#c6d8ff; --muted:#8ea0c6; --accent:#64a8ff; --accent2:#b987ff; --accent3:#66ffcc; --tick:#0e1a2b; --railA:#0a1220; --railB:#0d1730; --marker:#64a8ff; }
+  html[data-theme="vaporwave"]{ --bg:#0b0014; --fg:#ffe6ff; --muted:#e6b8ff; --accent:#00ffd1; --accent2:#ff5ec9; --accent3:#ffd166; --tick:#250035; --railA:#150022; --railB:#220033; --marker:#ff5ec9; }
+  html[data-theme="terminal"]{ --bg:#000; --fg:#b7ffb7; --muted:#6ddc6d; --accent:#00ff88; --accent2:#00ffa5; --accent3:#7bff00; --tick:#003300; --railA:#001600; --railB:#002100; --marker:#00ff88; }
+  html[data-theme="amber"]{ --bg:#0a0600; --fg:#ffd7a1; --muted:#e0ab63; --accent:#ffb000; --accent2:#ff7a00; --accent3:#ffe066; --tick:#3a2500; --railA:#120a00; --railB:#1c0f00; --marker:#ffb000; }
+  html[data-theme="mono"]{ --bg:#000; --fg:#dcdcdc; --muted:#9c9c9c; --accent:#ffffff; --accent2:#c0c0c0; --accent3:#a0a0a0; --tick:#2a2a2a; --railA:#0c0c0c; --railB:#121212; --marker:#ffffff; }
+  html[data-theme="solar"]{ --bg:#002b36; --fg:#eee8d5; --muted:#93a1a1; --accent:#2aa198; --accent2:#b58900; --accent3:#cb4b16; --tick:#073642; --railA:#01303a; --railB:#023b47; --marker:#2aa198; }
+  html[data-theme="cybercrimson"]{ --bg:#070000; --fg:#ffdddd; --muted:#b55; --accent:#ff0033; --accent2:#ff7700; --accent3:#ff2200; --tick:#250000; --railA:#100000; --railB:#1a0000; --marker:#ff0033; }
+  html[data-theme="aurorapulse"]{ --bg:#01040a; --fg:#d6f7ff; --muted:#88a0b3; --accent:#00ffaa; --accent2:#a066ff; --accent3:#00e5ff; --tick:#08202a; --railA:#00151f; --railB:#091a27; --marker:#00ffaa; }
+  html[data-theme="neonmist"]{ --bg:#0b0d10; --fg:#e0faff; --muted:#aab8c0; --accent:#9dfffa; --accent2:#f7a1ff; --accent3:#fff59e; --tick:#1c2329; --railA:#111417; --railB:#181b1f; --marker:#9dfffa; }
+  html[data-theme="deepcircuit"]{ --bg:#01040a; --fg:#cde6ff; --muted:#7387a0; --accent:#00baff; --accent2:#d400ff; --accent3:#39ff9f; --tick:#0e1b2a; --railA:#05101a; --railB:#0a1825; --marker:#00baff; }
+  html[data-theme="infravoid"]{ --bg:#050006; --fg:#ffdadf; --muted:#b86d7c; --accent:#ff0040; --accent2:#ff6a00; --accent3:#ff006e; --tick:#220010; --railA:#10000c; --railB:#1a0013; --marker:#ff0040; }
+  html[data-theme="ghostline"]{ --bg:#000; --fg:#d0d0d0; --muted:#808080; --accent:#b0ffff; --accent2:#90a0ff; --accent3:#ffffff; --tick:#222; --railA:#0a0a0a; --railB:#111111; --marker:#b0ffff; }
+  html[data-theme="ionstorm"]{ --bg:#00051a; --fg:#d4f8ff; --muted:#7ea1c4; --accent:#00f6ff; --accent2:#ffea00; --accent3:#0095ff; --tick:#07102a; --railA:#000b20; --railB:#03123a; --marker:#00f6ff; }
+  html[data-theme="zenmint"]{ --bg:#0a1112; --fg:#e6f4f3; --muted:#99b1ae; --accent:#6ef7c9; --accent2:#60d2ff; --accent3:#91ffd8; --tick:#122021; --railA:#0e191a; --railB:#142223; --marker:#6ef7c9; }
+  html[data-theme="voidlux"]{ --bg:#040011; --fg:#d9daff; --muted:#8a8fc9; --accent:#9966ff; --accent2:#00ccff; --accent3:#6a00ff; --tick:#12002a; --railA:#0a0018; --railB:#13002a; --marker:#9966ff; }
 
-  /* ---------- EXTRA PRESETS ---------- */
-  html[data-theme="cybercrimson"]{
-    --bg:#070000; --fg:#ffdddd; --muted:#b55;
-    --accent:#ff0033; --accent2:#ff7700; --accent3:#ff2200;
-    --tick:#250000; --railA:#100000; --railB:#1a0000; --marker:#ff0033;
-  }
-  html[data-theme="aurorapulse"]{
-    --bg:#01040a; --fg:#d6f7ff; --muted:#88a0b3;
-    --accent:#00ffaa; --accent2:#a066ff; --accent3:#00e5ff;
-    --tick:#08202a; --railA:#00151f; --railB:#091a27; --marker:#00ffaa;
-  }
-  html[data-theme="neonmist"]{
-    --bg:#0b0d10; --fg:#e0faff; --muted:#aab8c0;
-    --accent:#9dfffa; --accent2:#f7a1ff; --accent3:#fff59e;
-    --tick:#1c2329; --railA:#111417; --railB:#181b1f; --marker:#9dfffa;
-  }
-  html[data-theme="deepcircuit"]{
-    --bg:#01040a; --fg:#cde6ff; --muted:#7387a0;
-    --accent:#00baff; --accent2:#d400ff; --accent3:#39ff9f;
-    --tick:#0e1b2a; --railA:#05101a; --railB:#0a1825; --marker:#00baff;
-  }
-  html[data-theme="infravoid"]{
-    --bg:#050006; --fg:#ffdadf; --muted:#b86d7c;
-    --accent:#ff0040; --accent2:#ff6a00; --accent3:#ff006e;
-    --tick:#220010; --railA:#10000c; --railB:#1a0013; --marker:#ff0040;
-  }
-  html[data-theme="ghostline"]{
-    --bg:#000; --fg:#d0d0d0; --muted:#808080;
-    --accent:#b0ffff; --accent2:#90a0ff; --accent3:#ffffff;
-    --tick:#222; --railA:#0a0a0a; --railB:#111111; --marker:#b0ffff;
-  }
-  html[data-theme="ionstorm"]{
-    --bg:#00051a; --fg:#d4f8ff; --muted:#7ea1c4;
-    --accent:#00f6ff; --accent2:#ffea00; --accent3:#0095ff;
-    --tick:#07102a; --railA:#000b20; --railB:#03123a; --marker:#00f6ff;
-  }
-  html[data-theme="zenmint"]{
-    --bg:#0a1112; --fg:#e6f4f3; --muted:#99b1ae;
-    --accent:#6ef7c9; --accent2:#60d2ff; --accent3:#91ffd8;
-    --tick:#122021; --railA:#0e191a; --railB:#142223; --marker:#6ef7c9;
-  }
-  html[data-theme="voidlux"]{
-    --bg:#040011; --fg:#d9daff; --muted:#8a8fc9;
-    --accent:#9966ff; --accent2:#00ccff; --accent3:#6a00ff;
-    --tick:#12002a; --railA:#0a0018; --railB:#13002a; --marker:#9966ff;
-  }
-
-  /* ---------- BASE LAYOUT ---------- */
   html,body{height:100%}
   body{
-    margin:0;
-    background:var(--bg);
-    color:var(--fg);
+    margin:0; background:var(--bg); color:var(--fg);
     font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     display:flex; align-items:center; justify-content:center;
   }
@@ -118,23 +48,18 @@
 
   .hairline{ border:none; border-top:var(--line-thin) solid rgba(255,255,255,0.1); margin:18px 0 22px; }
 
-  .controls{ display:flex; align-items:center; gap:12px; color:var(--muted); }
-  .controls select, .controls input[type="range"]{
-    background:transparent; color:var(--fg); border:1px solid rgba(255,255,255,.12);
+  .controls{ display:flex; align-items:center; gap:12px; color:var(--muted); flex-wrap:wrap; }
+  .controls select, .controls input[type="range"], .controls button{
+    background:#111; color:var(--fg); border:1px solid rgba(255,255,255,.12);
     padding:6px 8px; border-radius:10px; outline:none;
   }
-  .controls select{
-    min-width:190px; background-color:#111; color:var(--fg);
-    border:1px solid rgba(255,255,255,0.15);
-    appearance:none;
-  }
+  .controls select{ min-width:190px; color:var(--fg); appearance:none; }
   .controls select option{ background-color:#111; color:var(--fg); }
   .controls select:focus{
     box-shadow:0 0 calc(10px*var(--glow)) color-mix(in oklab, var(--accent) 40%, transparent);
     border-color:color-mix(in oklab, var(--accent) 40%, rgba(255,255,255,0.15));
   }
   .controls input[type="range"]{ width:180px; accent-color:var(--accent); }
-
   #currentTimeTop{ font-size:1.6rem; color:var(--accent); filter:drop-shadow(0 0 calc(6px*var(--glow)) var(--accent)); }
 
   .rail{
@@ -149,7 +74,6 @@
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
                 0 0 calc(14px*var(--glow)) color-mix(in oklab, var(--accent) 30%, transparent);
   }
-
   .workband{
     position:absolute; inset:0 auto 0 calc((8/24)*100%); width:calc((9/24)*100%);
     background:linear-gradient(180deg,
@@ -157,7 +81,6 @@
       color-mix(in oklab, var(--accent2) 10%, transparent));
     box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03); pointer-events:none;
   }
-
   .ticks{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(96, 1fr); pointer-events:none; }
   .ticks span{ width:1px; height:100%; background:linear-gradient(180deg, transparent, var(--tick), transparent); opacity:.9; }
   .ticks span:nth-child(4n){ background:linear-gradient(180deg, transparent, rgba(255,255,255,0.22), transparent); opacity:1; }
@@ -176,18 +99,24 @@
   .stats{ display:flex; gap:18px; margin-top:12px; color:var(--muted); font-size:.95rem; flex-wrap:wrap; }
   .stats b{ color:var(--fg); }
 
-  /* ---------- NAV BACK LINK ---------- */
+  /* Collapsible Custom Theme (color pickers only) */
+  details.theme {
+    border:1px solid #111; border-radius:10px; background:#0a0a0a; box-shadow:0 0 0 1px #0f0f0f inset;
+    margin:14px 0 10px; padding:8px 10px;
+  }
+  details.theme > summary{ cursor:pointer; list-style:none; color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px; }
+  details.theme[open] > summary{ margin-bottom:10px; }
+  .theme-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+  .swatch{ display:flex; align-items:center; gap:8px; background:#0b0b0b; border:1px solid #222; padding:8px; border-radius:8px; }
+  .swatch label{ min-width:90px; color:#aaa; }
+  .swatch input[type="color"]{ background:#111; border:1px solid #222; border-radius:6px; padding:0; width:48px; height:34px; }
+
+  .theme-actions{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .theme-actions button{ background:#111; color:var(--fg); border:1px solid #222; padding:8px 10px; border-radius:6px; cursor:pointer; }
+
   .returnnav{text-align:center;margin:40px auto 0;}
-  .returnnav a{
-    color:var(--accent);text-decoration:none;font-size:0.95rem;
-    border:1px solid rgba(255,255,255,0.1);border-radius:10px;
-    padding:6px 12px;transition:all .2s ease;
-  }
-  .returnnav a:hover{
-    background:rgba(255,255,255,0.04);
-    border-color:var(--accent);
-    text-shadow:0 0 6px var(--accent);
-  }
+  .returnnav a{ color:var(--accent); text-decoration:none; font-size:0.95rem; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:6px 12px; transition:all .2s ease; }
+  .returnnav a:hover{ background:rgba(255,255,255,0.04); border-color:var(--accent); text-shadow:0 0 6px var(--accent); }
 
   .foot{ margin-top:22px; color:var(--muted); font-size:.9rem; }
   .foot a{ color:var(--accent); text-decoration:none; }
@@ -222,8 +151,36 @@
         </select>
         <label for="glow">Glow</label>
         <input id="glow" type="range" min="0" max="1.25" step="0.05" value="0.65" />
+        <button id="exportTheme" title="Export current custom theme">Export</button>
+        <button id="importTheme" title="Import a custom theme JSON">Import</button>
+        <input id="themeFile" type="file" accept="application/json" style="display:none">
       </div>
     </div>
+
+    <!-- Collapsible: color pickers only -->
+    <details class="theme" id="themePanel">
+      <summary>🎨 Custom Theme (click to toggle)</summary>
+      <div class="theme-grid">
+        <div class="swatch"><label for="bg">Background</label><input id="bg" type="color" value="#000000"></div>
+        <div class="swatch"><label for="fg">Foreground</label><input id="fg" type="color" value="#bfc7d5"></div>
+        <div class="swatch"><label for="muted">Muted</label><input id="muted" type="color" value="#7a8393"></div>
+
+        <div class="swatch"><label for="accent">Accent</label><input id="accent" type="color" value="#00ffe6"></div>
+        <div class="swatch"><label for="accent2">Accent 2</label><input id="accent2" type="color" value="#ff2bd6"></div>
+        <div class="swatch"><label for="accent3">Accent 3</label><input id="accent3" type="color" value="#b4ff00"></div>
+
+        <div class="swatch"><label for="marker">Marker</label><input id="marker" type="color" value="#00ffe6"></div>
+        <div class="swatch"><label for="tick">Ticks</label><input id="tick" type="color" value="#1b1f28"></div>
+
+        <div class="swatch"><label for="railA">Rail A</label><input id="railA" type="color" value="#0b0f15"></div>
+        <div class="swatch"><label for="railB">Rail B</label><input id="railB" type="color" value="#121826"></div>
+      </div>
+
+      <div class="theme-actions">
+        <button id="resetTheme" title="Restore preset defaults">Reset</button>
+        <button id="collapseTheme" title="Collapse this panel">Collapse</button>
+      </div>
+    </details>
 
     <hr class="hairline" />
 
@@ -241,67 +198,191 @@
       <div>Now: <b id="nowHMS">--:--:--</b></div>
     </div>
 
-    <!-- ✅ Back to Home -->
     <nav class="returnnav" aria-label="Return">
       <a href="index.html">← Back to Linear Clock Lab</a>
     </nav>
 
-    <div class="foot">
-      <span>© jm5k 2025</span>
-    </div>
+    <div class="foot"><span>© jm5k 2025</span></div>
   </div>
 
 <script>
-  /* ---------- BUILD TICKS ---------- */
+(() => {
+  /* Build ticks */
   const ticksEl = document.querySelector('.ticks');
-  for(let i=0;i<96;i++){ ticksEl.appendChild(document.createElement('span')); }
+  for (let i=0;i<96;i++) ticksEl.appendChild(document.createElement('span'));
 
   const marker = document.querySelector('.marker');
   const nowTop = document.getElementById('currentTimeTop');
   const nowHMS = document.getElementById('nowHMS');
   const pctElapsed = document.getElementById('pctElapsed');
-  const pctRemain = document.getElementById('pctRemain');
-  const glow = document.getElementById('glow');
-  const themeSel = document.getElementById('theme');
-  const root = document.documentElement;
+  const pctRemain  = document.getElementById('pctRemain');
+  const glow       = document.getElementById('glow');
+  const themeSel   = document.getElementById('theme');
+  const root       = document.documentElement;
 
-  /* ---------- PERSISTENCE ---------- */
-  const savedTheme = localStorage.getItem('clock_theme');
-  const savedGlow  = localStorage.getItem('clock_glow');
-  if(savedTheme){ root.setAttribute('data-theme', savedTheme); themeSel.value = savedTheme; }
-  if(savedGlow){ glow.value = savedGlow; root.style.setProperty('--glow', savedGlow); }
+  /* Keys */
+  const THEME_KEY = 'clock_theme';
+  const GLOW_KEY  = 'clock_glow';
+  const CUSTOM_VARS_KEY = 'clock_custom_vars_v1';
+  const UI_KEY    = 'clock_theme_ui_v1';
 
-  themeSel.addEventListener('change', () => {
-    const v = themeSel.value;
-    root.setAttribute('data-theme', v);
-    localStorage.setItem('clock_theme', v);
-  });
+  const css = (k,v)=> root.style.setProperty(k,v);
+  const getVar = k => getComputedStyle(root).getPropertyValue(k).trim();
 
-  glow.addEventListener('input', e=>{
-    root.style.setProperty('--glow', e.target.value);
-    localStorage.setItem('clock_glow', e.target.value);
-  });
-
-  /* ---------- CLOCK LOOP ---------- */
+  /* Clock loop (robust init) */
   const pad = n => String(n).padStart(2,'0');
-
   function update(){
     const d = new Date();
     const h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
     const msToday = h*3600000 + m*60000 + s*1000 + d.getMilliseconds();
     const pct = msToday / 86400000;
     marker.style.left = (pct*100).toFixed(6) + '%';
-
     const hh = pad(h), mm = pad(m), ss = pad(s);
     nowTop.textContent = `${hh}:${mm}:${ss}`;
     nowHMS.textContent = `${hh}:${mm}:${ss}`;
     const pe = pct*100;
     pctElapsed.textContent = pe.toFixed(2) + '%';
-    pctRemain.textContent = (100 - pe).toFixed(2) + '%';
+    pctRemain.textContent  = (100 - pe).toFixed(2) + '%';
   }
-
   update();
   setInterval(update, 1000);
+
+  /* Load persisted preset & glow (before wiring custom) */
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  const savedGlow  = localStorage.getItem(GLOW_KEY);
+  if (savedTheme) { root.setAttribute('data-theme', savedTheme); themeSel.value = savedTheme; }
+  if (savedGlow)  { glow.value = savedGlow; css('--glow', savedGlow); }
+
+  /* Color pickers <-> CSS vars */
+  const fields = [
+    ['bg','--bg'], ['fg','--fg'], ['muted','--muted'],
+    ['accent','--accent'], ['accent2','--accent2'], ['accent3','--accent3'],
+    ['marker','--marker'], ['tick','--tick'],
+    ['railA','--railA'], ['railB','--railB']
+  ];
+
+  function loadCustomVars(){
+    try { const raw = localStorage.getItem(CUSTOM_VARS_KEY); return raw ? JSON.parse(raw) : null; }
+    catch { return null; }
+  }
+  function saveCustomVars(vars){
+    try { localStorage.setItem(CUSTOM_VARS_KEY, JSON.stringify(vars)); } catch {}
+  }
+  function applyCustomVars(vars){
+    Object.entries(vars).forEach(([k,v]) => css(k, v));
+  }
+  function seedPickersFromComputed(){
+    for (const [id, cssVar] of fields){
+      const el = document.getElementById(id);
+      if (!el) continue;
+      // get computed var (preset or overlay); fallback to current input value
+      const current = getVar(cssVar) || el.value;
+      // Only assign if it looks like a color; otherwise keep input’s default
+      if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(current)) el.value = current;
+    }
+  }
+
+  // Bind live updates
+  for (const [id, cssVar] of fields){
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.addEventListener('input', () => {
+      css(cssVar, el.value);
+      const vars = loadCustomVars() || {};
+      vars[cssVar] = el.value;
+      // keep glow portable in export
+      vars['--glow'] = String(glow.value);
+      saveCustomVars(vars);
+    });
+  }
+
+  // Preset change
+  themeSel.addEventListener('change', () => {
+  const v = themeSel.value;
+  root.setAttribute('data-theme', v);
+  localStorage.setItem('clock_theme', v);
+
+  // 👇 Clear any custom color overrides so preset fully applies
+  localStorage.removeItem('clock_custom_vars_v1');
+  const customFields = ['--bg','--fg','--muted','--accent','--accent2','--accent3','--tick','--railA','--railB','--marker'];
+  for (const cssVar of customFields) root.style.setProperty(cssVar, null);
+
+  // Re-seed color pickers or sliders from the new preset’s current computed values
+  if (typeof seedPickersFromComputed === 'function') seedPickersFromComputed();
+});
+
+
+  // Glow slider
+  glow.addEventListener('input', e => {
+    css('--glow', e.target.value);
+    localStorage.setItem(GLOW_KEY, e.target.value);
+    const vars = loadCustomVars() || {};
+    vars['--glow'] = String(e.target.value);
+    saveCustomVars(vars);
+  });
+
+  // Collapsible state + reset
+  const themePanel = document.getElementById('themePanel');
+  const collapseThemeBtn = document.getElementById('collapseTheme');
+  const resetThemeBtn = document.getElementById('resetTheme');
+
+  function loadUI(){ try { const raw = localStorage.getItem(UI_KEY); return raw ? JSON.parse(raw) : { open:false }; } catch { return { open:false }; } }
+  function saveUI(v){ try { localStorage.setItem(UI_KEY, JSON.stringify(v)); } catch {} }
+
+  themePanel.addEventListener('toggle', () => { const u = loadUI(); u.open = themePanel.open; saveUI(u); });
+  collapseThemeBtn.addEventListener('click', () => { themePanel.open = false; const u = loadUI(); u.open=false; saveUI(u); });
+
+  resetThemeBtn.addEventListener('click', () => {
+    localStorage.removeItem(CUSTOM_VARS_KEY);
+    // Clear inline vars
+    for (const [,cssVar] of fields) css(cssVar, null);
+    // Restore glow
+    const g = savedGlow || '0.65';
+    glow.value = g; css('--glow', g); localStorage.setItem(GLOW_KEY, g);
+    // Reseed pickers from active preset
+    seedPickersFromComputed();
+  });
+
+  // Export / Import
+  const exportBtn = document.getElementById('exportTheme');
+  const importBtn = document.getElementById('importTheme');
+  const themeFile = document.getElementById('themeFile');
+
+  exportBtn.addEventListener('click', () => {
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      preset: root.getAttribute('data-theme') || 'technolust',
+      glow: parseFloat(glow.value || '0.65'),
+      vars: loadCustomVars() || {}
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'clock-preset-theme.json';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+
+  importBtn.addEventListener('click', () => themeFile.click());
+  themeFile.addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    try{
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (data.preset){ root.setAttribute('data-theme', data.preset); themeSel.value = data.preset; localStorage.setItem(THEME_KEY, data.preset); }
+      if (typeof data.glow === 'number'){ glow.value = String(data.glow); css('--glow', String(data.glow)); localStorage.setItem(GLOW_KEY, String(data.glow)); }
+      if (data.vars && typeof data.vars === 'object'){ applyCustomVars(data.vars); saveCustomVars(data.vars); } else { localStorage.removeItem(CUSTOM_VARS_KEY); for (const [,cssVar] of fields) css(cssVar, null); }
+      seedPickersFromComputed();
+      const overlay = loadCustomVars(); if (overlay) applyCustomVars(overlay);
+      alert('Theme imported.');
+    } catch(err){ alert('Import failed: ' + err.message); }
+    finally { themeFile.value = ''; }
+  });
+
+  /* Initial UI state + picker seeding + overlay */
+  const ui = loadUI(); themePanel.open = !!ui.open;
+  seedPickersFromComputed();
+  const overlay = loadCustomVars(); if (overlay) applyCustomVars(overlay);
+})();
 </script>
 </body>
 </html>
