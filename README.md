@@ -1,133 +1,124 @@
 # 🧭 Linear Clock Lab
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Build: Static HTML5](https://img.shields.io/badge/Build-Static%20HTML5-lightgrey.svg)](https://jm5k.github.io/) [![Made by jm5k](https://img.shields.io/badge/Made%20by-jm5k-00ffff.svg)](https://jm5k.github.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Build: Static HTML5](https://img.shields.io/badge/Build-Static%20HTML5-lightgrey.svg)](https://linearclocklab.com/) [![Made by jm5k](https://img.shields.io/badge/Made%20by-jm5k-00ffff.svg)](https://linearclocklab.com/)
 
-A suite of minimalist, client-side time tools that visualize your day as a single continuous line — extended with multi-timezone, theme, and focus-tracking utilities.  
-Built by **[jm5k](https://jm5k.github.io/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
+A suite of minimalist, client-side time tools that visualize your day as a single continuous line — extended with timers, stopwatches, multi-timezone support, themes, and focus-tracking utilities.  
+Built by **[jm5k](https://linearclocklab.com/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
 
 ---
 
 ## 🔗 Live Demo
-➡️ **Linear Clock Lab:** [https://jm5k.github.io/](https://jm5k.github.io/)  
-View and explore the entire suite — all pages load locally, with instant switching and no backend dependencies.
+➡️ **Linear Clock Lab:** [https://linearclocklab.com/](https://linearclocklab.com/)  
+Explore the full suite — all pages load locally, with instant switching and zero backend dependencies.
 
 ---
 
 ## 🕐 Core Tools
 - **24-Hour Linear Clock** — your full day on one line  
 - **Minimal View** — compact version of the main clock  
-- **Multi Clocks** — world-time tracking with drag/drop reordering  
-- **Color Theme Clocks** — fully customizable theme and glow presets  
-- **FocusLine Pomodoro** — timeboxing with live local-day awareness  
+- **Multi Clocks** — world-time tracking with reordering  
+- **Color Theme Clocks** — customizable themes and glow presets  
+- **FocusLine Pomodoro** — focused work cycles with notes  
+- **Timer** — persistent countdowns with color progress and labeling  
+- **Stopwatch** — sleek time tracker with gradient progress and local history  
 
-All components share the same **unified navigation bar**, **visual style**, and **privacy-first design**.
+All components share a **unified navigation bar**, **consistent design**, and **privacy-first behavior**.
 
 ---
 
 ## ✅ Completed Features
-- Clean gray rail with subtle inset glow and cyan live marker  
-- Quarter-hour and hour tick marks with smooth updates  
-- 12-hour / 24-hour toggle (persisted with `localStorage`)  
-- Workday highlight band (08:00–17:00)  
-- Real-time stats for % of day elapsed and remaining  
-- Multi-Timezone Linear Clocks  
+- Smooth cyan marker and clean gradient rail  
+- Quarter-hour and hour tick marks  
+- Real-time % of day elapsed / remaining  
+- 12-hour / 24-hour toggle (saved locally)  
+- Workday highlight (08:00–17:00)  
+- Local persistence for all settings  
+- **Multi-Timezone Linear Clocks**
   - Add/remove clocks dynamically  
-  - Inline label editing  
   - Full IANA timezone dropdown  
-  - Drag-and-drop and ▲ / ▼ ordering  
-  - JSON Export / Import for clock sets  
-  - Clear-All option for quick reset  
+  - Label editing, reordering, export/import  
+  - Clear-all and auto-save features  
 - **FocusLine Pomodoro**
-  - Adjustable Work / Short / Long Break durations  
-  - Auto-advance, optional chime, and desktop notifications  
-  - Daily total minutes (local history)  
-  - Built-in **Local Time Bar** showing day progress  
-  - Notes capture system with export and search  
-  - Clear Done / Clear All / local persistence  
+  - Adjustable intervals  
+  - Chime and desktop notifications  
+  - Notes capture, export, and search  
+  - Persistent local stats and timers  
 - **Color Theme Clocks**
-  - Collapsible Customization Panel (🎨 section)  
-  - Real-time color pickers for all major UI elements  
-  - Live preview while editing  
-  - Custom glow slider  
-  - Local save of all color and glow settings  
-  - One-click Export / Import of theme JSON  
-  - Automatic theme switching without residual overrides  
-  - Full preset reset and reseed behavior  
-  - Persistent panel open/closed state  
+  - Live color pickers and glow control  
+  - Theme import/export and presets  
+  - Instant theme switching  
+- **Timer**
+  - Multiple countdowns with labels  
+  - Local persistence per tab  
+  - Progress gradients and pause/resume  
+  - Sorting, color picker, and auto-clear options  
+- **Stopwatch**
+  - Start/pause/reset with progress bar  
+  - Gradient progress that fills over time  
+  - Persistent state and lap tracking  
+  - Local-only data retention  
 
 ---
 
 ## 🧭 Planned Updates
 - Vertical layout and reversible marker direction  
-- Workday-only mode (% of workday elapsed / remaining)  
-- Custom marker zones for breaks, events, or focus blocks  
-- Optional export integration (e.g., “Move to Tasks” for FocusLine)  
-- Saved multi-clock groups (Engineering / Family / Travel, etc.)  
-- Global theme sync across all clock views  
+- Workday-only mode (% of workday elapsed/remaining)  
+- Custom marker zones for breaks and focus blocks  
+- Saved multi-clock groups (Engineering / Family / Travel)  
+- Global theme sync across all tools  
+- Stopwatch export logs and Timer alarms  
+
+---
+
+## ⏱️ Timer Overview
+**Timer** lets you create, label, and manage multiple countdowns.  
+All data stays local — close or reload safely.
+
+### ✨ Features
+- Persistent per-tab timers using localStorage  
+- Color customization for each timer  
+- Sorting and one-click clear  
+- Countdown progress fills dynamically  
+- Pausing or navigating away halts timers safely  
+
+---
+
+## ⏳ Stopwatch Overview
+A clean, responsive stopwatch that visualizes progress as a glowing line filling from left to right.
+
+### ✨ Features
+- Start, pause, and reset with smooth animations  
+- Gradient progress across time  
+- Local storage remembers elapsed time  
+- Supports labeling and historical tracking  
+- Consistent design and navigation with other tools  
 
 ---
 
 ## 🕒 FocusLine Overview
-**FocusLine** ties your focus blocks to the real passage of time.  
-No accounts. No analytics. Just pure flow.
-
-### ✨ Features
-- Adjustable Pomodoro-style phases  
-- Optional chime + desktop notifications  
-- Built-in local linear clock  
-- Capture Notes section (local-only)
-  - Timestamped, reorderable, searchable  
-  - Export as `.txt` or `.json`  
-- Keyboard shortcuts:  
-  - `Space` → Start / Pause  
-  - `S` → Skip  
-  - `R` → Reset  
-  - `N` → Jump to Notes  
-
-### 🧩 Note Philosophy
-Ideas deserve capture, not interruption.  
-Write fast, stay focused, act later.
+**FocusLine** ties your focus blocks to the real passage of time — combining Pomodoro cycles and note capture.  
+Privacy-first and fully offline.
 
 ---
 
 ## 🌍 Multi-Clock Overview
-Visualize time across the world in a clean, single-line view.
-
-### ✨ Highlights
-- Add, label, and reorder timezones  
-- Inline editing and auto-save  
-- Lightweight, 1s update rate  
-- Minimal design: subtle yellow percentages, cyan accents  
-- Local-only persistence — no cookies, no sync  
-- Export / Import for saved clock setups  
+View multiple timezones at a glance with synchronized linear progress bars.
 
 ---
 
 ## 🎨 Theme Editor Overview
-The **Color Theme Clock** brings full visual customization to the suite.  
-Every accent, background, and glow element can be tuned and saved locally.
-
-### ✨ Features
-- Collapsible customization section for a clean interface  
-- Interactive color pickers (no hex code knowledge needed)  
-- Real-time preview for all color attributes and glow strength  
-- Preset themes: TechnoLust, Midnight, Vaporwave, Terminal, Amber, and more  
-- Automatic preset switching without lingering overrides  
-- Reset button to restore the original preset instantly  
-- Local persistence across sessions  
-- One-click **Export / Import** of your entire theme setup  
-- Compatible with future preset updates  
-
-This system uses a hybrid model of CSS variable updates and localStorage persistence — ensuring that every change is instant, reversible, and private.
+The **Color Theme Clock** allows complete visual customization, from background and glow to text and accent hues.
 
 ---
 
 ## 🗺️ Project Structure
-- `index.html` — 24-hour Linear Clock (main view)  
+- `index.html` — Main Linear Clock  
 - `clock.html` — Minimal View  
 - `multi-clock.html` — Multi-Timezone Clocks  
-- `focus.html` — FocusLine Pomodoro with Notes  
-- `about.html` — Suite overview, roadmap, and license info  
-- `clock_presets.html` — Theme and color variant presets  
+- `focus.html` — FocusLine Pomodoro  
+- `clock_presets.html` — Theme and Color Presets  
+- `timer.html` — Countdown Timer  
+- `stopwatch.html` — Stopwatch  
+- `about.html` — Overview, roadmap, and license  
 
 ---
 
@@ -143,6 +134,6 @@ If you enjoy the Linear Clock Lab and want to support future updates:
 ---
 
 ## ⚖️ License
-© 2025 **jm5k** — Released under the [MIT License](https://github.com/jm5k/jm5k.github.io/blob/main/LICENSE).  
+© 2025 **jm5k** — Released under the [MIT License](https://linearclocklab.com/LICENSE).  
 Minimal time, maximum clarity.  
-[https://jm5k.github.io/](https://jm5k.github.io/)
+[https://linearclocklab.com/](https://linearclocklab.com/)
