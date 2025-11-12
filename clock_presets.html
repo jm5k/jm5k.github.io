@@ -6,8 +6,6 @@
 <title>24-Hour Linear Clock | Preset Themes</title>
 
 <!-- 🔍 SEO -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Explore preset themes for the 24-Hour Linear Clock by jm5k — switch between neon, classic, or custom color palettes with live updates, gradient rails, glow controls, and export/import options.">
 <meta name="keywords" content="linear clock, theme presets, neon clock, minimalist clock, jm5k, linearclocklab, custom clock themes, 24-hour clock">
 <meta name="author" content="jm5k">
@@ -30,7 +28,6 @@
 <link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png">
 <link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png">
 
-
 <style>
   :root{
     --bg:#000; --fg:#bfc7d5; --muted:#7a8393;
@@ -39,7 +36,7 @@
     --line-thin:1px; --glow:0.65;
   }
 
-  /* Presets (unchanged) */
+  /* Presets */
   html[data-theme="technolust"]{ --bg:#000; --fg:#bfc7d5; --muted:#7a8393; --accent:#00ffe6; --accent2:#ff2bd6; --accent3:#b4ff00; --tick:#1b1f28; --railA:#0b0f15; --railB:#121826; --marker:#00ffe6; }
   html[data-theme="midnight"]{ --bg:#060a12; --fg:#c6d8ff; --muted:#8ea0c6; --accent:#64a8ff; --accent2:#b987ff; --accent3:#66ffcc; --tick:#0e1a2b; --railA:#0a1220; --railB:#0d1730; --marker:#64a8ff; }
   html[data-theme="vaporwave"]{ --bg:#0b0014; --fg:#ffe6ff; --muted:#e6b8ff; --accent:#00ffd1; --accent2:#ff5ec9; --accent3:#ffd166; --tick:#250035; --railA:#150022; --railB:#220033; --marker:#ff5ec9; }
@@ -149,7 +146,7 @@
   <div class="wrap">
     <div class="top">
       <div class="brand">
-        
+        <a href="index.html">Linear Clock Lab</a>
         <small>Custom or Preset Color Themes</small>
       </div>
       <div class="controls" title="Choose theme & adjust glow">
@@ -234,9 +231,10 @@
   const ticksEl = document.querySelector('.ticks');
   for (let i=0;i<96;i++) ticksEl.appendChild(document.createElement('span'));
 
-  const marker = document.querySelector('.marker');
-  const nowTop = document.getElementById('currentTimeTop');
-  const timeLeft = document.getElementById('timeLeft');
+  /* Element refs */
+  const marker     = document.querySelector('.marker');
+  const nowTop     = document.getElementById('currentTimeTop');
+  const timeLeft   = document.getElementById('timeLeft');
   const pctElapsed = document.getElementById('pctElapsed');
   const pctRemain  = document.getElementById('pctRemain');
   const glow       = document.getElementById('glow');
@@ -249,50 +247,49 @@
   const CUSTOM_VARS_KEY = 'clock_custom_vars_v1';
   const UI_KEY    = 'clock_theme_ui_v1';
 
-  const css = (k,v)=> root.style.setProperty(k,v);
-  const getVar = k => getComputedStyle(root).getPropertyValue(k).trim();
+  const css   = (k,v)=> root.style.setProperty(k,v);
+  const getVar= k => getComputedStyle(root).getPropertyValue(k).trim();
+  const pad   = n => String(n).padStart(2,'0');
 
-  /* Clock loop (robust init) */
-  const pad = n => String(n).padStart(2,'0');
+  /* Update loop: DST-safe percentages + countdown to midnight */
   function update(){
-  const d = new Date();
+    try{
+      const d = new Date();
 
-  // Start and end of "today" in local time (DST-safe day length)
-  const startOfDay = new Date(d); startOfDay.setHours(0,0,0,0);
-  const endOfDay   = new Date(d); endOfDay.setHours(24,0,0,0);
+      // Local day bounds (handles 23/24/25h days)
+      const startOfDay = new Date(d); startOfDay.setHours(0,0,0,0);
+      const endOfDay   = new Date(d); endOfDay.setHours(24,0,0,0);
 
-  const msInDay   = endOfDay - startOfDay;   // can be 23/24/25 hours
-  const msToday   = d - startOfDay;
-  let   msRemain  = endOfDay - d;            // countdown
+      const msInDay  = endOfDay - startOfDay;
+      const msToday  = d - startOfDay;
+      let   msRemain = endOfDay - d;
+      if (msRemain < 0) msRemain = 0;
 
-  // Progress & marker
-  const pct = msToday / msInDay;
-  document.querySelector('.marker').style.left = (pct*100).toFixed(6) + '%';
+      const pct = msToday / msInDay;
+      if (marker) marker.style.left = (pct*100).toFixed(6) + '%';
 
-  // Top clock stays as current time
-  const pad = n => String(n).padStart(2,'0');
-  const hh  = pad(d.getHours());
-  const mm  = pad(d.getMinutes());
-  const ss  = pad(d.getSeconds());
-  nowTop.textContent = `${hh}:${mm}:${ss}`;
+      // Top current time
+      const hh = pad(d.getHours()), mm = pad(d.getMinutes()), ss = pad(d.getSeconds());
+      if (nowTop) nowTop.textContent = `${hh}:${mm}:${ss}`;
 
-  // Percentages (DST-safe)
-  const pe = pct * 100;
-  pctElapsed.textContent = pe.toFixed(2) + '%';
-  pctRemain.textContent  = (100 - pe).toFixed(2) + '%';
+      // Percentages
+      const pe = pct*100;
+      if (pctElapsed) pctElapsed.textContent = pe.toFixed(2) + '%';
+      if (pctRemain)  pctRemain.textContent  = (100 - pe).toFixed(2) + '%';
 
-  // Countdown to midnight (never negative)
-  if (msRemain < 0) msRemain = 0;
-  const hLeft = Math.floor(msRemain / 3600000);
-  const mLeft = Math.floor((msRemain % 3600000) / 60000);
-  const sLeft = Math.floor((msRemain % 60000) / 1000);
-  timeLeft.textContent = `${pad(hLeft)}:${pad(mLeft)}:${pad(sLeft)}`;
-}
+      // Countdown to midnight
+      const hLeft = Math.floor(msRemain / 3600000);
+      const mLeft = Math.floor((msRemain % 3600000) / 60000);
+      const sLeft = Math.floor((msRemain % 60000) / 1000);
+      if (timeLeft) timeLeft.textContent = `${pad(hLeft)}:${pad(mLeft)}:${pad(sLeft)}`;
+    } catch(e){
+      console.error('Clock update error:', e);
+    }
   }
   update();
   setInterval(update, 1000);
 
-  /* Load persisted preset & glow (before wiring custom) */
+  /* Load persisted preset & glow */
   const savedTheme = localStorage.getItem(THEME_KEY);
   const savedGlow  = localStorage.getItem(GLOW_KEY);
   if (savedTheme) { root.setAttribute('data-theme', savedTheme); themeSel.value = savedTheme; }
@@ -320,14 +317,12 @@
     for (const [id, cssVar] of fields){
       const el = document.getElementById(id);
       if (!el) continue;
-      // get computed var (preset or overlay); fallback to current input value
       const current = getVar(cssVar) || el.value;
-      // Only assign if it looks like a color; otherwise keep input’s default
       if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(current)) el.value = current;
     }
   }
 
-  // Bind live updates
+  // Bind live updates to color inputs
   for (const [id, cssVar] of fields){
     const el = document.getElementById(id);
     if (!el) continue;
@@ -335,27 +330,25 @@
       css(cssVar, el.value);
       const vars = loadCustomVars() || {};
       vars[cssVar] = el.value;
-      // keep glow portable in export
-      vars['--glow'] = String(glow.value);
+      vars['--glow'] = String(glow.value); // keep glow with export
       saveCustomVars(vars);
     });
   }
 
   // Preset change
   themeSel.addEventListener('change', () => {
-  const v = themeSel.value;
-  root.setAttribute('data-theme', v);
-  localStorage.setItem('clock_theme', v);
+    const v = themeSel.value;
+    root.setAttribute('data-theme', v);
+    localStorage.setItem(THEME_KEY, v);
 
-  // 👇 Clear any custom color overrides so preset fully applies
-  localStorage.removeItem('clock_custom_vars_v1');
-  const customFields = ['--bg','--fg','--muted','--accent','--accent2','--accent3','--tick','--railA','--railB','--marker'];
-  for (const cssVar of customFields) root.style.setProperty(cssVar, null);
+    // Clear custom color overrides so preset fully applies
+    localStorage.removeItem(CUSTOM_VARS_KEY);
+    const customFields = ['--bg','--fg','--muted','--accent','--accent2','--accent3','--tick','--railA','--railB','--marker'];
+    for (const cssVar of customFields) root.style.setProperty(cssVar, null);
 
-  // Re-seed color pickers or sliders from the new preset’s current computed values
-  if (typeof seedPickersFromComputed === 'function') seedPickersFromComputed();
-});
-
+    // Reseed pickers from new preset
+    seedPickersFromComputed();
+  });
 
   // Glow slider
   glow.addEventListener('input', e => {
@@ -379,12 +372,9 @@
 
   resetThemeBtn.addEventListener('click', () => {
     localStorage.removeItem(CUSTOM_VARS_KEY);
-    // Clear inline vars
     for (const [,cssVar] of fields) css(cssVar, null);
-    // Restore glow
     const g = savedGlow || '0.65';
     glow.value = g; css('--glow', g); localStorage.setItem(GLOW_KEY, g);
-    // Reseed pickers from active preset
     seedPickersFromComputed();
   });
 
@@ -415,7 +405,8 @@
       const data = JSON.parse(text);
       if (data.preset){ root.setAttribute('data-theme', data.preset); themeSel.value = data.preset; localStorage.setItem(THEME_KEY, data.preset); }
       if (typeof data.glow === 'number'){ glow.value = String(data.glow); css('--glow', String(data.glow)); localStorage.setItem(GLOW_KEY, String(data.glow)); }
-      if (data.vars && typeof data.vars === 'object'){ applyCustomVars(data.vars); saveCustomVars(data.vars); } else { localStorage.removeItem(CUSTOM_VARS_KEY); for (const [,cssVar] of fields) css(cssVar, null); }
+      if (data.vars && typeof data.vars === 'object'){ applyCustomVars(data.vars); saveCustomVars(data.vars); } 
+      else { localStorage.removeItem(CUSTOM_VARS_KEY); for (const [,cssVar] of fields) css(cssVar, null); }
       seedPickersFromComputed();
       const overlay = loadCustomVars(); if (overlay) applyCustomVars(overlay);
       alert('Theme imported.');
@@ -431,7 +422,3 @@
 </script>
 </body>
 </html>
-
-
-
-
