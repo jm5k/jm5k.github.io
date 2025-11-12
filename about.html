@@ -1,274 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-<!-- 🔍 Basic SEO -->
-<title>About | Linear Clock Lab</title>
+    <!-- 🔍 Basic SEO -->
+    <title>About | Linear Clock Lab</title>
 
-<!-- 🔍 SEO -->
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Linear Clock Lab — jm5k’s hub for minimalist time visualizations and tools. Explore the original 24-hour linear clock, multi-timezone clock, FocusLine timer, and themed presets." />
-<meta name="keywords" content="linear clock, time visualization, 24 hour clock, multi-timezone clock, focus timer, presets, jm5k" />
-<meta name="author" content="jm5k" />
-<meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://linearclocklab.com/" />
+    <!-- 🔍 SEO -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Linear Clock Lab — jm5k’s hub for minimalist time visualizations and tools. Explore the original 24-hour linear clock, multi-timezone clock, FocusLine timer, and themed presets."
+    />
+    <meta
+      name="keywords"
+      content="linear clock, time visualization, 24 hour clock, multi-timezone clock, focus timer, presets, jm5k"
+    />
+    <meta name="author" content="jm5k" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://linearclocklab.com/" />
 
-<!-- 🔗 Social (Open Graph & Twitter) -->
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Linear Clock Lab" />
-<meta property="og:description" content="jm5k’s hub for minimalist time visualizations and tools — original 24-hour linear clock, multi-timezone views, FocusLine timer, and themed presets." />
-<meta property="og:url" content="https://linearclocklab.com/" />
-<meta property="og:image" content="https://linearclocklab.com/profile.png" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Linear Clock Lab" />
-<meta name="twitter:description" content="Minimal time. Maximum clarity. Explore 24-hour linear clocks, multi-timezone views, and FocusLine." />
-<meta name="twitter:image" content="https://linearclocklab.com/profile.png" />
+    <!-- 🔗 Social (Open Graph & Twitter) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Linear Clock Lab" />
+    <meta
+      property="og:description"
+      content="jm5k’s hub for minimalist time visualizations and tools — original 24-hour linear clock, multi-timezone views, FocusLine timer, and themed presets."
+    />
+    <meta property="og:url" content="https://linearclocklab.com/" />
+    <meta
+      property="og:image"
+      content="https://linearclocklab.com/profile.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Linear Clock Lab" />
+    <meta
+      name="twitter:description"
+      content="Minimal time. Maximum clarity. Explore 24-hour linear clocks, multi-timezone views, and FocusLine."
+    />
+    <meta
+      name="twitter:image"
+      content="https://linearclocklab.com/profile.png"
+    />
 
-<!-- 🔖 Favicon / App Icons -->
-<link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png" />
-<link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png" />
-<link rel="manifest" href="/site.webmanifest">
+    <!-- 🔖 Favicon / App Icons -->
+    <link
+      rel="icon"
+      href="https://linearclocklab.com/profile.png"
+      type="image/png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://linearclocklab.com/profile.png"
+    />
+    <link rel="manifest" href="/site.webmanifest" />
 
+    <!-- 🧠 Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "url": "https://linearclocklab.com/about.html",
+        "name": "About | Linear Clock Lab",
+        "description": "About the Linear Clock Lab — minimalist time tools by jm5k with roadmap and status.",
+        "author": { "@type": "Person", "name": "jm5k" },
+        "publisher": { "@type": "Person", "name": "jm5k" },
+        "mainEntity": {
+          "@type": "SoftwareApplication",
+          "name": "Linear Clock Lab",
+          "applicationCategory": "WebApplication",
+          "operatingSystem": "Any",
+          "description": "A suite of minimalist time visualization tools that run client-side."
+        }
+      }
+    </script>
 
-<!-- 🧠 Structured Data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "AboutPage",
-  "url": "https://jm5k.github.io/about.html",
-  "name": "About | Linear Clock Lab",
-  "description": "About the Linear Clock Lab — minimalist time tools by jm5k with roadmap and status.",
-  "author": { "@type": "Person", "name": "jm5k" },
-  "publisher": { "@type": "Person", "name": "jm5k" },
-  "mainEntity": {
-    "@type": "SoftwareApplication",
-    "name": "Linear Clock Lab",
-    "applicationCategory": "WebApplication",
-    "operatingSystem": "Any",
-    "description": "A suite of minimalist time visualization tools that run client-side."
-  }
-}
-</script>
+    <style>
+      :root {
+        --bg: #000;
+        --fg: #eaeaea;
+        --muted: #a9a9a9;
+        --line: #1f1f1f;
+        --accent: #00e5ff;
+        --chip: #151515;
+        --chip-brd: #222;
+        --yellow: #e6e600;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #fff;
+          --fg: #0f0f10;
+          --muted: #5a5a5a;
+          --line: #ececec;
+          --accent: #00a8c6;
+          --chip: #f6f6f6;
+          --chip-brd: #e6e6e6;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: monospace;
+        margin: 0;
+        padding: 32px 16px 64px;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
 
-<style>
-  :root{
-    --bg:#000; --fg:#eaeaea; --muted:#a9a9a9; --line:#1f1f1f; --accent:#00e5ff;
-    --chip:#151515; --chip-brd:#222; --yellow:#e6e600;
-  }
-  @media (prefers-color-scheme: light){
-    :root{ --bg:#fff; --fg:#0f0f10; --muted:#5a5a5a; --line:#ececec; --accent:#00a8c6; --chip:#f6f6f6; --chip-brd:#e6e6e6 }
-  }
-  *{box-sizing:border-box}
-  body{ background:var(--bg); color:var(--fg); font-family:monospace; margin:0; padding:32px 16px 64px; }
-  a{ color:var(--accent); text-decoration:none }
-  a:hover{ text-decoration:underline }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+      }
 
-  .wrap{ max-width:980px; margin:0 auto; }
+      /* Top-left back link */
+      header {
+        position: relative;
+        margin-bottom: 14px;
+      }
+      .returnlink {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: translateY(-6px);
+        font-size: 14px;
+      }
+      .returnlink a {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: transparent;
+        transition: border-color 0.2s ease, background 0.2s ease,
+          text-shadow 0.2s ease;
+      }
+      .returnlink a:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: var(--accent);
+        text-shadow: 0 0 6px var(--accent);
+      }
 
-  /* Top-left back link */
-  header{ position:relative; margin-bottom:14px; }
-  .returnlink{
-    position:absolute; left:0; top:0; transform:translateY(-6px);
-    font-size:14px;
-  }
-  .returnlink a{
-    display:inline-block; padding:6px 10px; border-radius:10px;
-    border:1px solid var(--line); background:transparent;
-    transition: border-color .2s ease, background .2s ease, text-shadow .2s ease;
-  }
-  .returnlink a:hover{ background:rgba(255,255,255,0.04); border-color:var(--accent); text-shadow:0 0 6px var(--accent) }
+      .brand {
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .navline {
+        margin: 12px 0 18px;
+        height: 1px;
+        width: 100%;
+        background: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0.1),
+          rgba(255, 255, 255, 0.06) 40%,
+          rgba(255, 255, 255, 0.1)
+        );
+        opacity: 0.6;
+      }
 
-  .brand{ text-align:center; font-weight:600; margin-bottom:8px; }
-  .navline{
-    margin:12px 0 18px; height:1px; width:100%;
-    background:linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.1));
-    opacity:.6;
-  }
+      h1 {
+        color: var(--accent);
+        font-size: 1.9rem;
+        margin: 8px 0 10px;
+      }
+      h2 {
+        color: var(--yellow);
+        font-size: 1.3rem;
+        margin: 28px 0 8px;
+      }
+      h3 {
+        color: #ccc;
+        font-size: 1.05rem;
+        margin: 16px 0 6px;
+      }
+      p {
+        color: #ccc;
+        line-height: 1.6;
+        margin: 10px 0;
+      }
+      .muted {
+        color: var(--muted);
+      }
 
-  h1{ color:var(--accent); font-size:1.9rem; margin:8px 0 10px }
-  h2{ color:var(--yellow); font-size:1.3rem; margin:28px 0 8px }
-  h3{ color:#ccc; font-size:1.05rem; margin:16px 0 6px }
-  p{ color:#ccc; line-height:1.6; margin:10px 0 }
-  .muted{ color:var(--muted) }
+      .section {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 16px 12px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(0, 0, 0, 0.05)
+        );
+        margin-top: 16px;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .card {
+        border: 1px solid var(--chip-brd);
+        background: var(--chip);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      ul.plain {
+        list-style: none;
+        padding-left: 0;
+        margin: 8px 0;
+      }
+      ul.plain li {
+        margin: 6px 0;
+        line-height: 1.5;
+      }
+      ul.plain li::before {
+        content: "• ";
+        color: var(--accent);
+      }
 
-  .section{ border:1px solid var(--line); border-radius:14px; padding:16px 16px 12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05)); margin-top:16px }
-  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
-  .card{ border:1px solid var(--chip-brd); background:var(--chip); border-radius:12px; padding:12px }
-  ul.plain{ list-style:none; padding-left:0; margin:8px 0 }
-  ul.plain li{ margin:6px 0; line-height:1.5 }
-  ul.plain li::before{ content:"• "; color:var(--accent) }
+      .cta {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 12px 0 0;
+      }
+      .pill {
+        display: inline-block;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--fg);
+        background: #0f0f0f;
+      }
+      .pill:hover {
+        border-color: var(--accent);
+      }
 
-  .cta{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0 0 }
-  .pill{
-    display:inline-block; padding:8px 12px; border:1px solid var(--line); border-radius:999px; color:var(--fg);
-    background:#0f0f0f;
-  }
-  .pill:hover{ border-color:var(--accent) }
-
-  footer{ margin-top:36px; color:var(--muted); font-size:14px; text-align:center }
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <header>
-      <div class="returnlink"><a href="index.html">← Back to Linear Clock Lab</a></div>
-      <div class="brand">About the <strong>Linear Clock Lab</strong></div>
-      <div class="navline" aria-hidden="true"></div>
-    </header>
-
-    <!-- Intro -->
-    <section class="section">
-      <h1>What is the Linear Clock Lab?</h1>
-      <p>
-        The <strong>Linear Clock Lab</strong> is a suite of minimalist, client-side time tools by <strong>jm5k</strong>.
-        Everything runs in your browser—no tracking, no servers, and no frameworks—focusing on clarity, speed, and control.
-      </p>
-      <p>
-        The suite currently includes: a full-day <em>24-Hour Linear Clock</em>, a <em>Minimal View</em>, <em>Multi Clocks</em> for
-        world time, <em>Color Theme Clocks</em> (experimental), and the <em>FocusLine</em> Pomodoro timer.
-      </p>
-      <div class="cta">
-        <a class="pill" href="https://github.com/jm5k/jm5k.github.io" target="_blank" rel="noopener">View Source on GitHub</a>
-      </div>
-    </section>
-
-    <!-- Support + Contact -->
-    <section class="section">
-      <h2>Support & Contact</h2>
-      <p>Questions, ideas, or want to contribute? Email: <a href="mailto:jm5k_dev@pm.me">jm5k_dev@pm.me</a></p>
-      <div class="cta">
-        <a href="https://www.buymeacoffee.com/jm5k" target="_blank" rel="noopener">
-          <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=e6e600&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee" />
-        </a>
-      </div>
-    </section>
-
-    <!-- Sections per tool (no links to the tools here) -->
-    <section class="section">
-      <h2>24-Hour Linear Clock</h2>
-      <div class="two-col">
-        <div class="card">
-          <h3>Completed</h3>
-          <ul class="plain">
-            <li>Clean gray rail with subtle inset, cyan live marker, gentle glow.</li>
-            <li>Quarter-hour and hour tick marks, smooth 1s updates.</li>
-            <li>Stats: % of day elapsed and time remaining.</li>
-            <li>Workday band (08:00–17:00).</li>
-          </ul>
+      footer {
+        margin-top: 36px;
+        color: var(--muted);
+        font-size: 14px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="returnlink">
+          <a href="index.html">← Back to Linear Clock Lab</a>
         </div>
-        <div class="card">
-          <h3>Planned</h3>
-          <ul class="plain">
-            <li>Vertical layout option.</li>
-            <li>Reverse marker direction option.</li>
-            <li>Workday-specific stats (elapsed / remaining).</li>
-            <li>Custom marker zones (locally saved).</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+        <div class="brand">About the <strong>Linear Clock Lab</strong></div>
+        <div class="navline" aria-hidden="true"></div>
+      </header>
 
-    <section class="section">
-      <h2>Minimal View</h2>
-      <div class="two-col">
-        <div class="card">
-          <h3>Completed</h3>
-          <ul class="plain">
-            <li>Matches lab styling (gray rail, cyan marker, soft glow).</li>
-            <li>12h/24h toggle with localStorage persistence.</li>
-            <li>Hour labels with work-hour emphasis.</li>
-          </ul>
+      <!-- Intro -->
+      <section class="section">
+        <h1>What is the Linear Clock Lab?</h1>
+        <p>
+          The <strong>Linear Clock Lab</strong> is a suite of minimalist,
+          client-side time tools by <strong>jm5k</strong>. Everything runs in
+          your browser—no tracking, no servers, and no frameworks—focusing on
+          clarity, speed, and control.
+        </p>
+        <p>
+          The suite currently includes: a full-day
+          <em>24-Hour Linear Clock</em>, a <em>Minimal View</em>,
+          <em>Multi Clocks</em> for world time,
+          <em>Color Theme Clocks</em> (experimental), and the
+          <em>FocusLine</em> Pomodoro timer.
+        </p>
+        <div class="cta">
+          <a
+            class="pill"
+            href="https://github.com/jm5k/linearclocklab.com"
+            target="_blank"
+            rel="noopener"
+            >View Source on GitHub</a
+          >
         </div>
-        <div class="card">
-          <h3>Planned</h3>
-          <ul class="plain">
-            <li>Optional ultra-compact “status strip.”</li>
-            <li>Accessibility: reduced motion mode.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section">
-      <h2>Multi Clocks</h2>
-      <div class="two-col">
-        <div class="card">
-          <h3>Completed</h3>
-          <ul class="plain">
-            <li>Full IANA timezone dropdown with pinned favorites.</li>
-            <li>Add/remove clocks; labels editable in place.</li>
-            <li>Drag-and-drop reordering + ▲/▼ nudges.</li>
-            <li>Sorted by UTC offset; localStorage persistence.</li>
-          </ul>
+      <!-- Support + Contact -->
+      <section class="section">
+        <h2>Support & Contact</h2>
+        <p>
+          Questions, ideas, or want to contribute? Email:
+          <a href="mailto:jm5k_dev@pm.me">jm5k_dev@pm.me</a>
+        </p>
+        <div class="cta">
+          <a
+            href="https://www.buymeacoffee.com/jm5k"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=jm5k&button_colour=e6e600&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff"
+              alt="Buy Me A Coffee"
+            />
+          </a>
         </div>
-        <div class="card">
-          <h3>Planned</h3>
-          <ul class="plain">
-            <li>Pin groups (e.g., “Engineering”, “Family”).</li>
-            <li>Export/import clock sets (JSON).</li>
-            <li>Optional daylight/standard change indicators.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section">
-      <h2>Color Theme Clocks</h2>
-      <div class="two-col">
-        <div class="card">
-          <h3>Completed</h3>
-          <ul class="plain">
-            <li>Theme variables scaffold (dark/light aware).</li>
-            <li>Accent-driven gradients and markers.</li>
-          </ul>
+      <!-- Sections per tool (no links to the tools here) -->
+      <section class="section">
+        <h2>24-Hour Linear Clock</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Completed</h3>
+            <ul class="plain">
+              <li>
+                Clean gray rail with subtle inset, cyan live marker, gentle
+                glow.
+              </li>
+              <li>Quarter-hour and hour tick marks, smooth 1s updates.</li>
+              <li>Stats: % of day elapsed and time remaining.</li>
+              <li>Workday band (08:00–17:00).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Planned</h3>
+            <ul class="plain">
+              <li>Vertical layout option.</li>
+              <li>Reverse marker direction option.</li>
+              <li>Workday-specific stats (elapsed / remaining).</li>
+              <li>Custom marker zones (locally saved).</li>
+            </ul>
+          </div>
         </div>
-        <div class="card">
-          <h3>Planned</h3>
-          <ul class="plain">
-            <li>Theme picker with preview and save.</li>
-            <li>Contrast-safe palettes and WCAG checks.</li>
-            <li>Shareable theme tokens (optional).</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section">
-      <h2>FocusLine</h2>
-      <div class="two-col">
-        <div class="card">
-          <h3>Completed</h3>
-          <ul class="plain">
-            <li>Work / Short / Long phases with cycles.</li>
-            <li>Auto-advance and optional chime.</li>
-            <li>Daily total minutes (local history, 7-day prune).</li>
-            <li>Local linear clock bar for perspective.</li>
-            <li>Notes: capture, reorder, search, export .txt/.json.</li>
-          </ul>
+      <section class="section">
+        <h2>Minimal View</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Completed</h3>
+            <ul class="plain">
+              <li>Matches lab styling (gray rail, cyan marker, soft glow).</li>
+              <li>12h/24h toggle with localStorage persistence.</li>
+              <li>Hour labels with work-hour emphasis.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Planned</h3>
+            <ul class="plain">
+              <li>Optional ultra-compact “status strip.”</li>
+              <li>Accessibility: reduced motion mode.</li>
+            </ul>
+          </div>
         </div>
-        <div class="card">
-          <h3>Planned</h3>
-          <ul class="plain">
-            <li>Snooze / resume reminders (notifications).</li>
-            <li>Session tags and basic analytics (local only).</li>
-            <li>Import notes; merge conflict-safe ordering.</li>
-          </ul>
+      </section>
+
+      <section class="section">
+        <h2>Multi Clocks</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Completed</h3>
+            <ul class="plain">
+              <li>Full IANA timezone dropdown with pinned favorites.</li>
+              <li>Add/remove clocks; labels editable in place.</li>
+              <li>Drag-and-drop reordering + ▲/▼ nudges.</li>
+              <li>Sorted by UTC offset; localStorage persistence.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Planned</h3>
+            <ul class="plain">
+              <li>Pin groups (e.g., “Engineering”, “Family”).</li>
+              <li>Export/import clock sets (JSON).</li>
+              <li>Optional daylight/standard change indicators.</li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Copyright & License -->
-    <section class="section">
-      <h2>Copyright & License</h2>
-      <p>© 2025 <strong>jm5k</strong>. Code released under the <a href="https://github.com/jm5k/jm5k.github.io/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
-      <p class="muted">Use, modify, and share with attribution. No warranty. Keep it fast, simple, and kind to users.</p>
-    </section>
+      <section class="section">
+        <h2>Color Theme Clocks</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Completed</h3>
+            <ul class="plain">
+              <li>Theme variables scaffold (dark/light aware).</li>
+              <li>Accent-driven gradients and markers.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Planned</h3>
+            <ul class="plain">
+              <li>Theme picker with preview and save.</li>
+              <li>Contrast-safe palettes and WCAG checks.</li>
+              <li>Shareable theme tokens (optional).</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-    <footer>Built for clarity. No tracking. Your data stays in your browser.</footer>
-  </div>
-</body>
+      <section class="section">
+        <h2>FocusLine</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Completed</h3>
+            <ul class="plain">
+              <li>Work / Short / Long phases with cycles.</li>
+              <li>Auto-advance and optional chime.</li>
+              <li>Daily total minutes (local history, 7-day prune).</li>
+              <li>Local linear clock bar for perspective.</li>
+              <li>Notes: capture, reorder, search, export .txt/.json.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Planned</h3>
+            <ul class="plain">
+              <li>Snooze / resume reminders (notifications).</li>
+              <li>Session tags and basic analytics (local only).</li>
+              <li>Import notes; merge conflict-safe ordering.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Copyright & License -->
+      <section class="section">
+        <h2>Copyright & License</h2>
+        <p>
+          © 2025 <strong>jm5k</strong>. Code released under the
+          <a
+            href="https://github.com/jm5k/linearclocklab.com/blob/main/LICENSE"
+            target="_blank"
+            rel="noopener"
+            >MIT License</a
+          >.
+        </p>
+        <p class="muted">
+          Use, modify, and share with attribution. No warranty. Keep it fast,
+          simple, and kind to users.
+        </p>
+      </section>
+
+      <footer>
+        Built for clarity. No tracking. Your data stays in your browser.
+      </footer>
+    </div>
+  </body>
 </html>
-

@@ -1,213 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dashboard | Linear Clock Lab</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | Linear Clock Lab</title>
 
-<!-- 🔍 SEO -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Experimental Dashboard for the Linear Clock Lab — arrange clocks, timers, and tools as movable tiles in a minimalist workspace.">
-<meta name="keywords" content="dashboard, linear clock lab, jm5k, time visualization, productivity tools, focus dashboard, custom layout, minimal design">
-<meta name="author" content="jm5k">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://linearclocklab.com/dashboard.html">
+    <!-- 🔍 SEO -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Experimental Dashboard for the Linear Clock Lab — arrange clocks, timers, and tools as movable tiles in a minimalist workspace."
+    />
+    <meta
+      name="keywords"
+      content="dashboard, linear clock lab, jm5k, time visualization, productivity tools, focus dashboard, custom layout, minimal design"
+    />
+    <meta name="author" content="jm5k" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://linearclocklab.com/dashboard.html" />
 
-<!-- 🔗 Social / Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="Dashboard | Linear Clock Lab">
-<meta property="og:description" content="Organize your time tools with the Linear Clock Lab dashboard — a clean, modular workspace for minimalist focus.">
-<meta property="og:url" content="https://linearclocklab.com/dashboard.html">
-<meta property="og:image" content="https://linearclocklab.com/profile.png">
+    <!-- 🔗 Social / Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Dashboard | Linear Clock Lab" />
+    <meta
+      property="og:description"
+      content="Organize your time tools with the Linear Clock Lab dashboard — a clean, modular workspace for minimalist focus."
+    />
+    <meta
+      property="og:url"
+      content="https://linearclocklab.com/dashboard.html"
+    />
+    <meta
+      property="og:image"
+      content="https://linearclocklab.com/profile.png"
+    />
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Dashboard | Linear Clock Lab">
-<meta name="twitter:description" content="Arrange clocks and focus tools in a customizable minimalist dashboard by jm5k.">
-<meta name="twitter:image" content="https://linearclocklab.com/profile.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Dashboard | Linear Clock Lab" />
+    <meta
+      name="twitter:description"
+      content="Arrange clocks and focus tools in a customizable minimalist dashboard by jm5k."
+    />
+    <meta
+      name="twitter:image"
+      content="https://linearclocklab.com/profile.png"
+    />
 
-<!-- 🔖 Favicon / Icons -->
-<link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png">
-<link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png">
+    <!-- 🔖 Favicon / Icons -->
+    <link
+      rel="icon"
+      href="https://linearclocklab.com/profile.png"
+      type="image/png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://linearclocklab.com/profile.png"
+    />
 
+    <style>
+      :root {
+        --bg: #000;
+        --fg: #ccc;
+        --muted: #888;
+        --accent: #0ff;
+        --line: rgba(255, 255, 255, 0.1);
+        --tile: #0a0a0a;
+        --tile-border: #181818;
+        --handle: #222;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: monospace;
+        display: block;
+        min-height: 100vh;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
 
-<style>
-  :root{
-    --bg:#000; --fg:#ccc; --muted:#888; --accent:#0ff; --line:rgba(255,255,255,0.1);
-    --tile:#0a0a0a; --tile-border:#181818; --handle:#222;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  body{
-    background:var(--bg); color:var(--fg); font-family:monospace;
-    display:block; min-height:100vh;
-  }
-  a{color:var(--accent); text-decoration:none}
+      /* Header */
+      header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--line);
+        background: #050505;
+      }
+      .returnlink {
+        position: absolute;
+        left: 24px;
+      }
+      .returnlink a {
+        color: var(--accent);
+        font-size: 0.95rem;
+      }
+      .brand {
+        font-size: 1.2rem;
+        letter-spacing: 0.5px;
+        color: var(--fg);
+      }
 
-  /* Header */
-  header{
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:16px 24px;
-    border-bottom:1px solid var(--line);
-    background:#050505;
-  }
-  .returnlink{
-    position:absolute;
-    left:24px;
-  }
-  .returnlink a{
-    color:var(--accent);
-    font-size:0.95rem;
-  }
-  .brand{
-    font-size:1.2rem;
-    letter-spacing:0.5px;
-    color:var(--fg);
-  }
+      /* Toolbar */
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 10px 0;
+        flex-wrap: wrap;
+      }
+      .toolbar select,
+      .toolbar input,
+      .toolbar button {
+        background: #0b0b0b;
+        color: var(--fg);
+        border: 1px solid var(--tile-border);
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.95rem;
+      }
+      .toolbar button:hover {
+        border-color: var(--accent);
+      }
 
-  /* Toolbar */
-  .toolbar{
-    display:flex; gap:8px; align-items:center; justify-content:center; padding:12px 10px 0;
-    flex-wrap:wrap;
-  }
-  .toolbar select, .toolbar input, .toolbar button{
-    background:#0b0b0b; color:var(--fg); border:1px solid var(--tile-border); padding:6px 8px; border-radius:6px;
-    font-family:monospace; font-size:0.95rem;
-  }
-  .toolbar button:hover{border-color:var(--accent)}
+      /* Canvas */
+      .canvas {
+        position: relative;
+        width: 98vw;
+        max-width: 2000px;
+        min-height: 480px;
+        margin: 20px auto 60px auto;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: linear-gradient(180deg, #060606, #050505);
+        overflow: visible;
+      }
+      .grid-hint {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(
+            to right,
+            var(--line) 1px,
+            transparent 1px
+          ),
+          linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+        background-size: 80px 100%, 100% 80px;
+        pointer-events: none;
+        opacity: 0.35;
+      }
 
-  /* Canvas */
-  .canvas{
-    position:relative;
-    width:98vw;
-    max-width:2000px;
-    min-height:480px;
-    margin:20px auto 60px auto;
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:linear-gradient(180deg,#060606,#050505);
-    overflow:visible;
-  }
-  .grid-hint{
-    position:absolute; inset:0;
-    background-image:linear-gradient(to right, var(--line) 1px, transparent 1px),
-                     linear-gradient(to bottom, var(--line) 1px, transparent 1px);
-    background-size: 80px 100%, 100% 80px;
-    pointer-events:none;
-    opacity:0.35;
-  }
+      /* Tiles */
+      .tile {
+        position: absolute;
+        background: var(--tile);
+        border: 1px solid var(--tile-border);
+        border-radius: 12px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        user-select: none;
+      }
+      .tile:focus-within {
+        outline: 1px solid var(--accent);
+      }
+      .tile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 10px;
+        background: linear-gradient(180deg, #0f0f0f, #0b0b0b);
+        border-bottom: 1px solid var(--tile-border);
+        cursor: move;
+      }
+      .tile-title {
+        font-size: 0.95rem;
+        color: #ddd;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tile-actions {
+        display: flex;
+        gap: 6px;
+      }
+      .tile-actions button {
+        background: var(--handle);
+        color: var(--fg);
+        border: 1px solid var(--tile-border);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .tile-actions button:hover {
+        border-color: var(--accent);
+      }
+      .tile-content {
+        flex: 1;
+        background: #000;
+        position: relative;
+      }
+      .tile-content iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
 
-  /* Tiles */
-  .tile{
-    position:absolute; background:var(--tile); border:1px solid var(--tile-border);
-    border-radius:12px; box-shadow:0 8px 22px rgba(0,0,0,0.35);
-    overflow:hidden; display:flex; flex-direction:column; user-select:none;
-  }
-  .tile:focus-within{outline:1px solid var(--accent)}
-  .tile-header{
-    display:flex; align-items:center; justify-content:space-between; gap:8px;
-    padding:8px 10px; background:linear-gradient(180deg,#0f0f0f,#0b0b0b);
-    border-bottom:1px solid var(--tile-border); cursor:move;
-  }
-  .tile-title{font-size:0.95rem; color:#ddd; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .tile-actions{display:flex; gap:6px}
-  .tile-actions button{
-    background:var(--handle); color:var(--fg); border:1px solid var(--tile-border);
-    padding:4px 8px; border-radius:6px; font-family:monospace; font-size:0.85rem; cursor:pointer;
-  }
-  .tile-actions button:hover{border-color:var(--accent)}
-  .tile-content{flex:1; background:#000; position:relative}
-  .tile-content iframe{width:100%; height:100%; border:0}
+      /* Resize handles */
+      .resize-handle {
+        position: absolute;
+        background: var(--handle);
+        opacity: 0.7;
+        border: 1px solid var(--tile-border);
+      }
+      .resize-handle.e {
+        right: -4px;
+        top: 0;
+        width: 8px;
+        height: 100%;
+        cursor: ew-resize;
+      }
+      .resize-handle.s {
+        bottom: -4px;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        cursor: ns-resize;
+      }
+      .resize-handle.se {
+        right: -4px;
+        bottom: -4px;
+        width: 12px;
+        height: 12px;
+        cursor: nwse-resize;
+        border-radius: 3px;
+      }
 
-  /* Resize handles */
-  .resize-handle{
-    position:absolute; background:var(--handle); opacity:0.7; border:1px solid var(--tile-border);
-  }
-  .resize-handle.e{right:-4px; top:0; width:8px; height:100%; cursor:ew-resize}
-  .resize-handle.s{bottom:-4px; left:0; width:100%; height:8px; cursor:ns-resize}
-  .resize-handle.se{right:-4px; bottom:-4px; width:12px; height:12px; cursor:nwse-resize; border-radius:3px}
+      footer {
+        padding: 16px;
+        text-align: center;
+      }
+      .tagline {
+        margin: 12px 0 6px 0;
+        font-size: 0.95rem;
+        color: #ddd;
+      }
+      .legal {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="returnlink">
+        <a href="index.html">← Back to Linear Clock Lab</a>
+      </div>
+      <div class="brand">Experimental Dashboard</div>
+    </header>
 
-  footer{padding:16px; text-align:center;}
-  .tagline{margin:12px 0 6px 0; font-size:0.95rem; color:#ddd}
-  .legal{font-size:0.85rem; color:var(--muted)}
-</style>
-</head>
-<body>
+    <div class="toolbar">
+      <label for="tilePreset">Add tile:</label>
+      <select id="tilePreset">
+        <option value="clock.html|Minimal Clock">Minimal Clock</option>
+        <option value="multi-clock.html|Multi-Timezone">
+          Multi-Timezone Clock
+        </option>
+        <option value="focus.html|FocusLine Pomodoro">
+          FocusLine Pomodoro
+        </option>
+      </select>
+      <button id="addTile">Add</button>
 
-<header>
-  <div class="returnlink"><a href="index.html">← Back to Linear Clock Lab</a></div>
-  <div class="brand">Experimental Dashboard</div>
-</header>
+      <span style="width: 18px"></span>
 
-<div class="toolbar">
-  <label for="tilePreset">Add tile:</label>
-  <select id="tilePreset">
-    <option value="clock.html|Minimal Clock">Minimal Clock</option>
-    <option value="multi-clock.html|Multi-Timezone">Multi-Timezone Clock</option>
-    <option value="focus.html|FocusLine Pomodoro">FocusLine Pomodoro</option>
-  </select>
-  <button id="addTile">Add</button>
+      <label>Custom URL:</label>
+      <input id="customUrl" placeholder="clock.html" size="16" />
+      <input id="customTitle" placeholder="Title" size="12" />
+      <button id="addCustom">Add Custom</button>
 
-  <span style="width:18px"></span>
+      <span style="width: 18px"></span>
 
-  <label>Custom URL:</label>
-  <input id="customUrl" placeholder="clock.html" size="16" />
-  <input id="customTitle" placeholder="Title" size="12" />
-  <button id="addCustom">Add Custom</button>
+      <button id="resetLayout" title="Clear and load defaults">
+        Reset Layout
+      </button>
+    </div>
 
-  <span style="width:18px"></span>
+    <main class="canvas" id="canvas">
+      <div class="grid-hint"></div>
+    </main>
 
-  <button id="resetLayout" title="Clear and load defaults">Reset Layout</button>
-</div>
+    <footer>
+      <hr class="thin-line" />
+      <div class="tagline">Minimal time, Maximum clarity.</div>
+      <div class="legal">
+        © jm5k 2025 — Made by <a href="https://linearclocklab.com/">jm5k</a>
+      </div>
+    </footer>
 
-<main class="canvas" id="canvas">
-  <div class="grid-hint"></div>
-</main>
+    <script>
+      (() => {
+        const canvas = document.getElementById("canvas");
+        const grid = 20;
+        let state = loadState() || defaultState();
 
-<footer>
-  <hr class="thin-line">
-  <div class="tagline">Minimal time, Maximum clarity.</div>
-  <div class="legal">© jm5k 2025 — Made by <a href="https://jm5k.github.io/">jm5k</a></div>
-</footer>
+        function defaultState() {
+          return {
+            tiles: [
+              {
+                id: uid(),
+                title: "Minimal Clock",
+                url: "clock.html",
+                x: 20,
+                y: 20,
+                w: 640,
+                h: 300,
+              },
+              {
+                id: uid(),
+                title: "Multi-Timezone",
+                url: "multi-clock.html",
+                x: 700,
+                y: 20,
+                w: 720,
+                h: 360,
+              },
+              {
+                id: uid(),
+                title: "FocusLine Pomodoro",
+                url: "focus.html",
+                x: 20,
+                y: 360,
+                w: 720,
+                h: 420,
+              },
+            ],
+          };
+        }
+        function uid() {
+          return "t" + Math.random().toString(36).slice(2, 9);
+        }
+        function snap(v) {
+          return Math.max(0, Math.round(v / grid) * grid);
+        }
+        function saveState() {
+          localStorage.setItem("lcl_dashboard_v1", JSON.stringify(state));
+        }
+        function loadState() {
+          try {
+            return JSON.parse(localStorage.getItem("lcl_dashboard_v1"));
+          } catch (e) {
+            return null;
+          }
+        }
 
-<script>
-(() => {
-  const canvas = document.getElementById('canvas');
-  const grid = 20;
-  let state = loadState() || defaultState();
+        function render() {
+          [...canvas.querySelectorAll(".tile")].forEach((n) => n.remove());
+          let maxBottom = 0;
 
-  function defaultState(){
-    return {
-      tiles: [
-        {id: uid(), title:'Minimal Clock',      url:'clock.html',       x:20,  y:20,  w:640, h:300},
-        {id: uid(), title:'Multi-Timezone',     url:'multi-clock.html', x:700, y:20,  w:720, h:360},
-        {id: uid(), title:'FocusLine Pomodoro', url:'focus.html',       x:20,  y:360, w:720, h:420}
-      ]
-    };
-  }
-  function uid(){ return 't' + Math.random().toString(36).slice(2,9); }
-  function snap(v){ return Math.max(0, Math.round(v / grid) * grid); }
-  function saveState(){ localStorage.setItem('lcl_dashboard_v1', JSON.stringify(state)); }
-  function loadState(){
-    try{ return JSON.parse(localStorage.getItem('lcl_dashboard_v1')); }catch(e){ return null; }
-  }
+          state.tiles.forEach((t) => {
+            const el = document.createElement("div");
+            el.className = "tile";
+            el.style.left = t.x + "px";
+            el.style.top = t.y + "px";
+            el.style.width = t.w + "px";
+            el.style.height = t.h + "px";
+            el.dataset.id = t.id;
 
-  function render(){
-    [...canvas.querySelectorAll('.tile')].forEach(n=>n.remove());
-    let maxBottom = 0;
-
-    state.tiles.forEach(t => {
-      const el = document.createElement('div');
-      el.className = 'tile';
-      el.style.left = t.x + 'px';
-      el.style.top  = t.y + 'px';
-      el.style.width  = t.w + 'px';
-      el.style.height = t.h + 'px';
-      el.dataset.id = t.id;
-
-      el.innerHTML = `
+            el.innerHTML = `
         <div class="tile-header">
           <div class="tile-title" title="${t.title}">${t.title}</div>
           <div class="tile-actions">
@@ -223,115 +397,174 @@
         </div>
       `;
 
-      el.querySelector('.tile-header').addEventListener('mousedown', startDrag);
-      el.querySelector('.resize-handle.e').addEventListener('mousedown', e => startResize(e, 'e'));
-      el.querySelector('.resize-handle.s').addEventListener('mousedown', e => startResize(e, 's'));
-      el.querySelector('.resize-handle.se').addEventListener('mousedown', e => startResize(e, 'se'));
-      el.querySelector('.tile-actions').addEventListener('click', (e)=>{
-        const btn = e.target.closest('button'); if(!btn) return;
-        const id = el.dataset.id;
-        if(btn.dataset.action === 'remove'){
-          state.tiles = state.tiles.filter(x => x.id !== id);
-          saveState(); render();
-        } else if(btn.dataset.action === 'edit'){
-          const found = state.tiles.find(x => x.id === id);
-          if(!found) return;
-          const title = prompt('Tile title:', found.title) ?? found.title;
-          const url   = prompt('Tile URL:', found.url) ?? found.url;
-          found.title = (title||found.title).trim();
-          found.url   = (url||found.url).trim();
-          saveState(); render();
+            el.querySelector(".tile-header").addEventListener(
+              "mousedown",
+              startDrag
+            );
+            el.querySelector(".resize-handle.e").addEventListener(
+              "mousedown",
+              (e) => startResize(e, "e")
+            );
+            el.querySelector(".resize-handle.s").addEventListener(
+              "mousedown",
+              (e) => startResize(e, "s")
+            );
+            el.querySelector(".resize-handle.se").addEventListener(
+              "mousedown",
+              (e) => startResize(e, "se")
+            );
+            el.querySelector(".tile-actions").addEventListener("click", (e) => {
+              const btn = e.target.closest("button");
+              if (!btn) return;
+              const id = el.dataset.id;
+              if (btn.dataset.action === "remove") {
+                state.tiles = state.tiles.filter((x) => x.id !== id);
+                saveState();
+                render();
+              } else if (btn.dataset.action === "edit") {
+                const found = state.tiles.find((x) => x.id === id);
+                if (!found) return;
+                const title = prompt("Tile title:", found.title) ?? found.title;
+                const url = prompt("Tile URL:", found.url) ?? found.url;
+                found.title = (title || found.title).trim();
+                found.url = (url || found.url).trim();
+                saveState();
+                render();
+              }
+            });
+
+            canvas.appendChild(el);
+            maxBottom = Math.max(maxBottom, t.y + t.h);
+          });
+
+          const padding = 80;
+          const newHeight = Math.max(480, maxBottom + padding);
+          canvas.style.height = newHeight + "px";
+          document.body.style.height = newHeight + 200 + "px";
         }
-      });
 
-      canvas.appendChild(el);
-      maxBottom = Math.max(maxBottom, t.y + t.h);
-    });
+        function tileFromEvent(e) {
+          const el = e.target.closest(".tile");
+          if (!el) return null;
+          const id = el.dataset.id;
+          const model = state.tiles.find((t) => t.id === id);
+          return { el, model };
+        }
 
-    const padding = 80;
-    const newHeight = Math.max(480, maxBottom + padding);
-    canvas.style.height = newHeight + 'px';
-    document.body.style.height = newHeight + 200 + 'px';
-  }
+        let dragCtx = null;
+        function startDrag(e) {
+          const t = tileFromEvent(e);
+          if (!t) return;
+          dragCtx = {
+            id: t.model.id,
+            startX: e.clientX,
+            startY: e.clientY,
+            baseX: t.model.x,
+            baseY: t.model.y,
+          };
+          document.addEventListener("mousemove", onDragMove);
+          document.addEventListener("mouseup", endDrag);
+        }
+        function onDragMove(e) {
+          if (!dragCtx) return;
+          const dx = e.clientX - dragCtx.startX;
+          const dy = e.clientY - dragCtx.startY;
+          const m = state.tiles.find((x) => x.id === dragCtx.id);
+          if (!m) return;
+          m.x = snap(dragCtx.baseX + dx);
+          m.y = snap(dragCtx.baseY + dy);
+          saveState();
+          render();
+        }
+        function endDrag() {
+          document.removeEventListener("mousemove", onDragMove);
+          document.removeEventListener("mouseup", endDrag);
+          dragCtx = null;
+        }
 
-  function tileFromEvent(e){
-    const el = e.target.closest('.tile');
-    if(!el) return null;
-    const id = el.dataset.id;
-    const model = state.tiles.find(t => t.id === id);
-    return {el, model};
-  }
+        let rsCtx = null;
+        function startResize(e, edge) {
+          e.stopPropagation();
+          const t = tileFromEvent(e);
+          if (!t) return;
+          rsCtx = {
+            id: t.model.id,
+            edge,
+            startX: e.clientX,
+            startY: e.clientY,
+            baseW: t.model.w,
+            baseH: t.model.h,
+          };
+          document.addEventListener("mousemove", onResizeMove);
+          document.addEventListener("mouseup", endResize);
+        }
+        function onResizeMove(e) {
+          if (!rsCtx) return;
+          const dx = e.clientX - rsCtx.startX;
+          const dy = e.clientY - rsCtx.startY;
+          const m = state.tiles.find((x) => x.id === rsCtx.id);
+          if (!m) return;
+          if (rsCtx.edge.includes("e"))
+            m.w = Math.max(240, snap(rsCtx.baseW + dx));
+          if (rsCtx.edge.includes("s"))
+            m.h = Math.max(180, snap(rsCtx.baseH + dy));
+          saveState();
+          render();
+        }
+        function endResize() {
+          document.removeEventListener("mousemove", onResizeMove);
+          document.removeEventListener("mouseup", endResize);
+          rsCtx = null;
+        }
 
-  let dragCtx = null;
-  function startDrag(e){
-    const t = tileFromEvent(e); if(!t) return;
-    dragCtx = {id:t.model.id, startX:e.clientX, startY:e.clientY, baseX:t.model.x, baseY:t.model.y};
-    document.addEventListener('mousemove', onDragMove);
-    document.addEventListener('mouseup', endDrag);
-  }
-  function onDragMove(e){
-    if(!dragCtx) return;
-    const dx = e.clientX - dragCtx.startX;
-    const dy = e.clientY - dragCtx.startY;
-    const m = state.tiles.find(x => x.id === dragCtx.id);
-    if(!m) return;
-    m.x = snap(dragCtx.baseX + dx);
-    m.y = snap(dragCtx.baseY + dy);
-    saveState(); render();
-  }
-  function endDrag(){
-    document.removeEventListener('mousemove', onDragMove);
-    document.removeEventListener('mouseup', endDrag);
-    dragCtx = null;
-  }
+        // Toolbar
+        document.getElementById("addTile").addEventListener("click", () => {
+          const v = document.getElementById("tilePreset").value;
+          const [url, title] = v.split("|");
+          state.tiles.push({
+            id: uid(),
+            title,
+            url,
+            x: snap(40 + Math.random() * 120),
+            y: snap(40 + Math.random() * 120),
+            w: 640,
+            h: 320,
+          });
+          saveState();
+          render();
+        });
 
-  let rsCtx = null;
-  function startResize(e, edge){
-    e.stopPropagation();
-    const t = tileFromEvent(e); if(!t) return;
-    rsCtx = {id:t.model.id, edge, startX:e.clientX, startY:e.clientY, baseW:t.model.w, baseH:t.model.h};
-    document.addEventListener('mousemove', onResizeMove);
-    document.addEventListener('mouseup', endResize);
-  }
-  function onResizeMove(e){
-    if(!rsCtx) return;
-    const dx = e.clientX - rsCtx.startX;
-    const dy = e.clientY - rsCtx.startY;
-    const m = state.tiles.find(x => x.id === rsCtx.id);
-    if(!m) return;
-    if(rsCtx.edge.includes('e')) m.w = Math.max(240, snap(rsCtx.baseW + dx));
-    if(rsCtx.edge.includes('s')) m.h = Math.max(180, snap(rsCtx.baseH + dy));
-    saveState(); render();
-  }
-  function endResize(){
-    document.removeEventListener('mousemove', onResizeMove);
-    document.removeEventListener('mouseup', endResize);
-    rsCtx = null;
-  }
+        document.getElementById("addCustom").addEventListener("click", () => {
+          const url = (document.getElementById("customUrl").value || "").trim();
+          const title =
+            (document.getElementById("customTitle").value || "").trim() ||
+            "Custom";
+          if (!url) {
+            alert('Enter a URL like "clock.html"');
+            return;
+          }
+          state.tiles.push({
+            id: uid(),
+            title,
+            url,
+            x: snap(60 + Math.random() * 120),
+            y: snap(60 + Math.random() * 120),
+            w: 640,
+            h: 360,
+          });
+          saveState();
+          render();
+        });
 
-  // Toolbar
-  document.getElementById('addTile').addEventListener('click', () => {
-    const v = document.getElementById('tilePreset').value;
-    const [url, title] = v.split('|');
-    state.tiles.push({id:uid(), title, url, x:snap(40 + Math.random()*120), y:snap(40 + Math.random()*120), w:640, h:320});
-    saveState(); render();
-  });
+        document.getElementById("resetLayout").addEventListener("click", () => {
+          if (!confirm("Reset layout to defaults?")) return;
+          state = defaultState();
+          saveState();
+          render();
+        });
 
-  document.getElementById('addCustom').addEventListener('click', () => {
-    const url = (document.getElementById('customUrl').value || '').trim();
-    const title = (document.getElementById('customTitle').value || '').trim() || 'Custom';
-    if(!url) { alert('Enter a URL like "clock.html"'); return; }
-    state.tiles.push({id:uid(), title, url, x:snap(60 + Math.random()*120), y:snap(60 + Math.random()*120), w:640, h:360});
-    saveState(); render();
-  });
-
-  document.getElementById('resetLayout').addEventListener('click', () => {
-    if(!confirm('Reset layout to defaults?')) return;
-    state = defaultState(); saveState(); render();
-  });
-
-  render();
-})();
-</script>
-</body>
+        render();
+      })();
+    </script>
+  </body>
 </html>

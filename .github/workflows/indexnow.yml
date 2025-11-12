@@ -1,7 +1,7 @@
 name: IndexNow Ping
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 jobs:
   ping:
     runs-on: ubuntu-latest
@@ -11,14 +11,14 @@ jobs:
         run: |
           JSON=$(cat <<'EOF'
           {
-            "host": "jm5k.github.io",
+            "host": "linearclocklab.com",
             "key": "8e3f2c9db1f44a7ab6ac2f8f4f2b7f91",
             "urlList": [
-              "https://jm5k.github.io/",
-              "https://jm5k.github.io/clock.html",
-              "https://jm5k.github.io/about.html",
-              "https://jm5k.github.io/focus.html"
-              "https://jm5k.github.io/multi-clock.html"
+              "https://linearclocklab.com/",
+              "https://linearclocklab.com/clock.html",
+              "https://linearclocklab.com/about.html",
+              "https://linearclocklab.com/focus.html"
+              "https://linearclocklab.com/multi-clock.html"
             ]
           }
           EOF
