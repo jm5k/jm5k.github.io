@@ -218,7 +218,7 @@
     <div class="stats" aria-live="polite">
       <div>Day elapsed: <b id="pctElapsed">--%</b></div>
       <div>Remaining: <b id="pctRemain">--%</b></div>
-      <div>Now: <b id="nowHMS">--:--:--</b></div>
+      <div>Time left: <b id="timeLeft">--:--:--</b></div>
     </div>
 
     <nav class="returnnav" aria-label="Return">
@@ -236,7 +236,7 @@
 
   const marker = document.querySelector('.marker');
   const nowTop = document.getElementById('currentTimeTop');
-  const nowHMS = document.getElementById('nowHMS');
+  const timeLeft = document.getElementById('timeLeft');
   const pctElapsed = document.getElementById('pctElapsed');
   const pctRemain  = document.getElementById('pctRemain');
   const glow       = document.getElementById('glow');
@@ -255,17 +255,39 @@
   /* Clock loop (robust init) */
   const pad = n => String(n).padStart(2,'0');
   function update(){
-    const d = new Date();
-    const h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
-    const msToday = h*3600000 + m*60000 + s*1000 + d.getMilliseconds();
-    const pct = msToday / 86400000;
-    marker.style.left = (pct*100).toFixed(6) + '%';
-    const hh = pad(h), mm = pad(m), ss = pad(s);
-    nowTop.textContent = `${hh}:${mm}:${ss}`;
-    nowHMS.textContent = `${hh}:${mm}:${ss}`;
-    const pe = pct*100;
-    pctElapsed.textContent = pe.toFixed(2) + '%';
-    pctRemain.textContent  = (100 - pe).toFixed(2) + '%';
+  const d = new Date();
+
+  // Start and end of "today" in local time (DST-safe day length)
+  const startOfDay = new Date(d); startOfDay.setHours(0,0,0,0);
+  const endOfDay   = new Date(d); endOfDay.setHours(24,0,0,0);
+
+  const msInDay   = endOfDay - startOfDay;   // can be 23/24/25 hours
+  const msToday   = d - startOfDay;
+  let   msRemain  = endOfDay - d;            // countdown
+
+  // Progress & marker
+  const pct = msToday / msInDay;
+  document.querySelector('.marker').style.left = (pct*100).toFixed(6) + '%';
+
+  // Top clock stays as current time
+  const pad = n => String(n).padStart(2,'0');
+  const hh  = pad(d.getHours());
+  const mm  = pad(d.getMinutes());
+  const ss  = pad(d.getSeconds());
+  nowTop.textContent = `${hh}:${mm}:${ss}`;
+
+  // Percentages (DST-safe)
+  const pe = pct * 100;
+  pctElapsed.textContent = pe.toFixed(2) + '%';
+  pctRemain.textContent  = (100 - pe).toFixed(2) + '%';
+
+  // Countdown to midnight (never negative)
+  if (msRemain < 0) msRemain = 0;
+  const hLeft = Math.floor(msRemain / 3600000);
+  const mLeft = Math.floor((msRemain % 3600000) / 60000);
+  const sLeft = Math.floor((msRemain % 60000) / 1000);
+  timeLeft.textContent = `${pad(hLeft)}:${pad(mLeft)}:${pad(sLeft)}`;
+}
   }
   update();
   setInterval(update, 1000);
@@ -409,6 +431,7 @@
 </script>
 </body>
 </html>
+
 
 
 
