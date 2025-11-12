@@ -2,9 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://linearclocklab.com/</loc></url>
   <url><loc>https://linearclocklab.com/clock.html</loc></url>
-  <url><loc>https://linearclocklab.com/clock_presets.html</loc></url>
   <url><loc>https://linearclocklab.com/multi-clock.html</loc></url>
-  <url><loc>https://linearclocklab.com/focusline.html</loc></url>
-  <url><loc>https://linearclocklab.com/dashboard.html</loc></url>
+  <url><loc>https://linearclocklab.com/focus.html</loc></url>
+  <url><loc>https://linearclocklab.com/timer.html</loc></url>
+  <url><loc>https://linearclocklab.com/stopwatch.html</loc></url>
   <url><loc>https://linearclocklab.com/about.html</loc></url>
 </urlset>
