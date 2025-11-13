@@ -1,225 +1,600 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>24-Hour Linear Clock | Minimal View</title>
+    <title>24-Hour Linear Clock | Minimal</title>
 
-<!-- 🔍 SEO -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Minimal 24-hour linear clock by jm5k — a sleek web app visualizing your day as a single continuous line with live updates and clear progress tracking.">
-<meta name="keywords" content="linear clock, minimal clock, 24 hour clock, timeline clock, jm5k, linearclocklab, time visualization">
-<meta name="author" content="jm5k">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://linearclocklab.com/clock.html">
+    <!-- 🔍 SEO -->
+    <meta
+      name="description"
+      content="Minimal 24-hour linear clock by jm5k — orientation & direction controls with 12/24-hour labels."
+    />
+    <meta
+      name="keywords"
+      content="linear clock, minimal clock, 24 hour clock, vertical clock, horizontal clock, timeline clock, jm5k, linearclocklab, time visualization"
+    />
+    <meta name="author" content="jm5k" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://linearclocklab.com/clock.html" />
 
-<!-- 🔗 Social / Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="24-Hour Linear Clock | Linear Clock Lab">
-<meta property="og:description" content="Experience time as a single, elegant line — the minimalist 24-hour linear clock by jm5k.">
-<meta property="og:url" content="https://linearclocklab.com/clock.html">
-<meta property="og:image" content="https://linearclocklab.com/profile.png">
+    <!-- 🔗 Social / Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="24-Hour Linear Clock | Linear Clock Lab"
+    />
+    <meta
+      property="og:description"
+      content="Experience time as a single elegant line — with orientation, direction, and 12/24-hour labeling."
+    />
+    <meta property="og:url" content="https://linearclocklab.com/clock.html" />
+    <meta
+      property="og:image"
+      content="https://linearclocklab.com/profile.png"
+    />
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="24-Hour Linear Clock | Linear Clock Lab">
-<meta name="twitter:description" content="Experience time as a single elegant line — minimalist and clear.">
-<meta name="twitter:image" content="https://linearclocklab.com/profile.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="24-Hour Linear Clock | Linear Clock Lab"
+    />
+    <meta
+      name="twitter:description"
+      content="Experience time as a single elegant line — minimalist and clear."
+    />
+    <meta
+      name="twitter:image"
+      content="https://linearclocklab.com/profile.png"
+    />
 
-<!-- 🔖 Favicon / Icons -->
-<link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png">
-<link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png">
+    <!-- 🔖 Favicon / Icons -->
+    <link
+      rel="icon"
+      href="https://linearclocklab.com/profile.png"
+      type="image/png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://linearclocklab.com/profile.png"
+    />
 
+    <style>
+      :root {
+        --fg: #eaeaea;
+        --muted: #9ca3af;
+        --accent: #00e5ff;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: #000;
+        color: var(--fg);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+          "Liberation Mono", monospace;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      a,
+      a:visited,
+      a:hover,
+      a:active {
+        color: var(--accent);
+        text-decoration: none;
+      }
 
-<style>
-  :root{
-    --fg:#eaeaea; --muted:#9ca3af; --accent:#00e5ff;
-  }
-  html,body{height:100%}
-  body{
-    margin:0;
-    background:#000;
-    color:var(--fg);
-    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    display:flex; align-items:center; justify-content:center; text-align:center;
-  }
-  a, a:visited, a:hover, a:active { color:var(--accent); text-decoration:none; }
+      .wrap {
+        width: min(1000px, 92vw);
+        padding: 28px 20px 36px;
+        margin: auto;
+      }
 
-  .wrap{ width:min(1000px, 92vw); padding:28px 20px 36px; }
+      /* Time readout */
+      #currentTimeTop {
+        color: #0ff;
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+      }
 
-  /* Time readout */
-  #currentTimeTop{ color:#0ff; font-size:1.8rem; margin-bottom:8px; }
+      /* Cluster holds rail + labels; switches layout by orientation */
+      .railCluster {
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 0;
+      }
+      .railCluster.horizontal {
+        grid-template-columns: 1fr;
+        grid-template-areas: "rail" "labels";
+      }
+      .railCluster.vertical {
+        grid-template-columns: auto 64px;
+        grid-template-areas: "rail labels";
+        column-gap: 14px;
+      }
 
-  /* Plain gray rail (no gradient/glow) */
-  #bar{
-    position:relative; width:95%; height:60px; margin:8px auto;
-    background:#111; border:2px solid #666; border-radius:6px; overflow:hidden;
-  }
-  #ticks{ position:absolute; top:0; left:0; width:100%; height:100%; }
-  .tick{ position:absolute; top:0; height:100%; }
-  .tick.qtr{ width:1px; background:rgba(255,255,255,0.1); }
-  .tick.hour{ width:2px; background:rgba(255,255,255,0.3); }
+      /* Plain gray rail */
+      #bar {
+        position: relative;
+        background: #111;
+        border: 2px solid #666;
+        border-radius: 6px;
+        overflow: hidden;
+        grid-area: rail;
+        margin: 0 auto;
+      }
+      .horizontal #bar {
+        width: 95%;
+        height: 60px;
+      }
+      .vertical #bar {
+        width: 60px;
+        height: min(70vh, 640px);
+      }
 
-  /* Original red time marker */
-  #marker{ position:absolute; top:0; width:4px; height:100%; background:red; }
+      #ticks {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .tick {
+        position: absolute;
+      }
 
-  .label{
-    display:flex; justify-content:space-between;
-    width:95%; margin:8px auto 6px; font-size:0.9em; color:#888;
-  }
-  .workhour{ color:yellow; }
-  #statsBottom{ color:#9cf; margin-top:6px; font-size:1.05em; }
+      /* Horizontal ticks */
+      .tick-h.qtr {
+        top: 0;
+        height: 100%;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .tick-h.hour {
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background: rgba(255, 255, 255, 0.3);
+      }
 
-  /* Toggle switch */
-  #controls { margin:10px 0 6px; }
-  .switch {
-    display:inline-flex; align-items:center; gap:.6rem; cursor:pointer;
-    color:#9cf; user-select:none;
-  }
-  .switch input { position:absolute; opacity:0; width:0; height:0; }
-  .slider {
-    position:relative; width:44px; height:24px; background:#333;
-    border:1px solid #555; border-radius:999px;
-    transition:background .2s ease, border-color .2s ease;
-  }
-  .slider::before {
-    content:""; position:absolute; height:18px; width:18px;
-    left:3px; top:50%; transform:translateY(-50%);
-    background:#bbb; border-radius:50%; transition:left .18s ease, background .2s ease;
-  }
-  .switch input:checked + .slider { background:#0b3a3a; border-color:#0aa; }
-  .switch input:checked + .slider::before { left:23px; background:#0ff; }
-  .switch-label { font-size:.95em; color:#9cf; }
+      /* Vertical ticks */
+      .tick-v.qtr {
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .tick-v.hour {
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.3);
+      }
 
-  /* Return link at bottom */
-  .returnnav { text-align:center; margin:28px auto 0; }
-  .returnnav a{
-    color:var(--accent); text-decoration:none; font-size:0.95rem;
-    border:1px solid rgba(255,255,255,0.1); border-radius:10px;
-    padding:6px 12px; transition:all .2s ease;
-  }
-  .returnnav a:hover{
-    background:rgba(255,255,255,0.04);
-    border-color:var(--accent);
-    text-shadow:0 0 6px var(--accent);
-  }
+      /* Red time marker */
+      #marker {
+        position: absolute;
+        background: red;
+      }
+      .marker-h {
+        width: 4px;
+        height: 100%;
+        top: 0;
+      }
+      .marker-v {
+        height: 4px;
+        width: 100%;
+        left: 0;
+      }
 
-  footer{ margin-top:14px; color:#777; font-size:0.9em; }
-</style>
-</head>
-<body>
-  <div class="wrap">
+      /* Labels */
+      #hourLabels {
+        grid-area: labels;
+      }
+      .labelRow {
+        display: flex;
+        justify-content: space-between;
+        width: 95%;
+        margin: 8px auto 6px;
+        font-size: 0.9em;
+        color: #888;
+      }
+      .labelCol {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: min(70vh, 640px);
+        margin: 0;
+        font-size: 0.9em;
+        color: #888;
+        text-align: left;
+      }
+      .workhour {
+        color: yellow;
+      }
 
-    <div id="currentTimeTop">--:--</div>
+      #statsBottom {
+        color: #9cf;
+        margin-top: 6px;
+        font-size: 1.05em;
+      }
 
-    <div id="bar" aria-label="24-hour time rail">
-      <div id="ticks" aria-hidden="true"></div>
-      <div id="marker" role="presentation" aria-hidden="true"></div>
+      /* 12/24 switch */
+      #controlsMain {
+        margin: 16px 0 10px;
+      }
+      .switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        cursor: pointer;
+        color: #9cf;
+        user-select: none;
+      }
+      .switch input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 999px;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .slider::before {
+        content: "";
+        position: absolute;
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #bbb;
+        border-radius: 50%;
+        transition: left 0.18s, background 0.2s;
+      }
+      .switch input:checked + .slider {
+        background: #0b3a3a;
+        border-color: #0aa;
+      }
+      .switch input:checked + .slider::before {
+        left: 23px;
+        background: #0ff;
+      }
+      .switch-label {
+        font-size: 0.95em;
+        color: #9cf;
+      }
+
+      /* Collapsible customizer (bottom) */
+      details {
+        margin: 18px auto 2px;
+        width: min(1000px, 92vw);
+        background: #0a0a0a;
+        border: 1px solid #111;
+        border-radius: 10px;
+      }
+      summary {
+        cursor: pointer;
+        list-style: none;
+        user-select: none;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: #9ca3af; /* grey default */
+        text-align: left;
+        transition: color 0.2s ease, text-shadow 0.2s ease;
+      }
+      summary:hover {
+        color: #00e5ff; /* cyan accent */
+        text-shadow: 0 0 6px #00e5ff;
+      }
+
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      .panel {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        padding: 10px 12px 14px;
+        color: var(--muted);
+        text-align: left;
+      }
+      .panel label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      select {
+        background: #0f0f10;
+        color: var(--fg);
+        border: 1px solid #1a1a1a;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-family: inherit;
+        outline: none;
+      }
+
+      /* Return link */
+      .returnnav {
+        text-align: center;
+        margin: 20px auto 0;
+      }
+      .returnnav a {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.95rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 6px 12px;
+        transition: all 0.2s ease;
+      }
+      .returnnav a:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: var(--accent);
+        text-shadow: 0 0 6px var(--accent);
+      }
+
+      footer {
+        margin-top: 14px;
+        color: #777;
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div id="currentTimeTop">--:--</div>
+
+      <!-- Rail + labels cluster -->
+      <div id="cluster" class="railCluster horizontal">
+        <div id="bar" aria-label="24-hour time rail">
+          <div id="ticks" aria-hidden="true"></div>
+          <div
+            id="marker"
+            class="marker-h"
+            role="presentation"
+            aria-hidden="true"
+          ></div>
+        </div>
+        <div id="hourLabels" class="labelRow"></div>
+      </div>
+
+      <div id="statsBottom"></div>
+
+      <!-- 12/24-hour toggle (kept mid-page) -->
+      <div id="controlsMain">
+        <label class="switch" title="Switch between 12h and 24h">
+          <input
+            id="formatToggle"
+            type="checkbox"
+            aria-label="Toggle 24-hour time"
+          />
+          <span class="slider"></span>
+          <span id="formatLabel" class="switch-label">24-hour</span>
+        </label>
+      </div>
+
+      <!-- Collapsible control panel — moved to bottom, before nav -->
+      <details id="customize">
+        <summary>Customize Clock Orientation</summary>
+        <div class="panel">
+          <label
+            >Orientation
+            <select id="orientation">
+              <option value="horizontal">Horizontal</option>
+              <option value="vertical">Vertical</option>
+            </select>
+          </label>
+          <label
+            >Direction
+            <select id="direction">
+              <option value="forward">Forward (start → end)</option>
+              <option value="backward">Backward (end → start)</option>
+            </select>
+          </label>
+        </div>
+      </details>
+
+      <nav class="returnnav" aria-label="Return">
+        <a href="index.html">← Back to Linear Clock Lab</a>
+      </nav>
+
+      <footer>
+        <p>© 2025 <strong>jm5k</strong></p>
+      </footer>
     </div>
 
-    <div class="label" id="hourLabels"></div>
-    <div id="statsBottom"></div>
+    <script>
+      /* ===== Persistence ===== */
+      const LS = { use24h: "use24h", prefs: "clock.prefs.v3" };
+      let use24h = JSON.parse(localStorage.getItem(LS.use24h) ?? "true");
+      let prefs = { orientation: "horizontal", direction: "forward" };
+      try {
+        prefs = {
+          ...prefs,
+          ...(JSON.parse(localStorage.getItem(LS.prefs)) || {}),
+        };
+      } catch {}
 
-    <div id="controls">
-      <label class="switch" title="Switch between 12h and 24h">
-        <input id="formatToggle" type="checkbox" aria-label="Toggle 24-hour time">
-        <span class="slider"></span>
-        <span id="formatLabel" class="switch-label">24-hour</span>
-      </label>
-    </div>
+      /* ===== Elements ===== */
+      const cluster = document.getElementById("cluster");
+      const bar = document.getElementById("bar");
+      const ticks = document.getElementById("ticks");
+      const marker = document.getElementById("marker");
+      const labels = document.getElementById("hourLabels");
+      const current = document.getElementById("currentTimeTop");
+      const stats = document.getElementById("statsBottom");
 
-    <nav class="returnnav" aria-label="Return">
-      <a href="index.html">← Back to Linear Clock Lab</a>
-    </nav>
+      const orientationSel = document.getElementById("orientation");
+      const directionSel = document.getElementById("direction");
+      orientationSel.value = prefs.orientation;
+      directionSel.value = prefs.direction;
 
-    <footer>
-      <p>© 2025 <strong>jm5k</strong></p>
-    </footer>
-  </div>
+      /* ===== Formatting ===== */
+      function formatHourLabel(h24) {
+        if (use24h) return String(h24).padStart(2, "0");
+        const base = h24 % 12 || 12;
+        return String(base).padStart(2, "0");
+      }
+      function fmtHMS(totalSeconds) {
+        const s = Math.max(0, Math.floor(totalSeconds));
+        const hh = String(Math.floor(s / 3600)).padStart(2, "0");
+        const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+        const ss = String(s % 60).padStart(2, "0");
+        return `${hh}:${mm}:${ss}`;
+      }
+      function formatClockTime(hours, minutes) {
+        if (use24h)
+          return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+            2,
+            "0"
+          )}`;
+        let h = hours % 12;
+        if (h === 0) h = 12;
+        return `${String(h).padStart(2, "0")}:${String(minutes).padStart(
+          2,
+          "0"
+        )} ${hours >= 12 ? "PM" : "AM"}`;
+      }
 
-<script>
-function createTicks(){
-  const t = document.getElementById('ticks');
-  for(let h=0; h<24; h++){
-    for(let q=0; q<4; q++){
-      const pos = (h + q/4) / 24 * 100;
-      const d = document.createElement('div');
-      d.className = 'tick ' + (q===0 ? 'hour' : 'qtr');
-      d.style.left = `calc(${pos}% - 1px)`;
-      t.appendChild(d);
-    }
-  }
-}
+      /* ===== Ticks & Labels ===== */
+      function buildTicks() {
+        ticks.innerHTML = "";
+        const vertical = prefs.orientation === "vertical";
+        for (let h = 0; h < 24; h++) {
+          for (let q = 0; q < 4; q++) {
+            const pos = ((h + q / 4) / 24) * 100;
+            const d = document.createElement("div");
+            if (vertical) {
+              d.className = "tick tick-v " + (q === 0 ? "hour" : "qtr");
+              d.style.top = `calc(${pos}% - ${q === 0 ? 1 : 0.5}px)`;
+            } else {
+              d.className = "tick tick-h " + (q === 0 ? "hour" : "qtr");
+              d.style.left = `calc(${pos}% - ${q === 0 ? 1 : 0.5}px)`;
+            }
+            ticks.appendChild(d);
+          }
+        }
+      }
+      function renderLabels() {
+        const vertical = prefs.orientation === "vertical";
+        labels.className = vertical ? "labelCol" : "labelRow";
+        labels.innerHTML = "";
+        for (let h = 0; h <= 24; h++) {
+          const span = document.createElement("span");
+          span.textContent = formatHourLabel(h);
+          if (h >= 8 && h <= 17) span.classList.add("workhour");
+          labels.appendChild(span);
+        }
+      }
 
-let use24h = JSON.parse(localStorage.getItem('use24h') ?? 'true');
+      /* ===== Marker sizing fix ===== */
+      function setMarkerForOrientation() {
+        if (prefs.orientation === "vertical") {
+          marker.classList.remove("marker-h");
+          marker.classList.add("marker-v");
+          marker.style.width = "100%";
+          marker.style.height = "4px";
+          marker.style.left = "0";
+          marker.style.top = ""; // set in updateClock
+        } else {
+          marker.classList.remove("marker-v");
+          marker.classList.add("marker-h");
+          marker.style.width = "4px";
+          marker.style.height = "100%";
+          marker.style.top = "0";
+          marker.style.left = ""; // set in updateClock
+        }
+      }
 
-function formatHourLabel(h24){
-  if (use24h) return String(h24).padStart(2,'0');
-  const base = (h24 % 12) || 12;
-  return String(base).padStart(2,'0');
-}
+      /* ===== Layout Switch ===== */
+      function applyLayout() {
+        const vertical = prefs.orientation === "vertical";
+        cluster.classList.toggle("vertical", vertical);
+        cluster.classList.toggle("horizontal", !vertical);
 
-function renderHourLabels(){
-  const labels = document.getElementById('hourLabels');
-  labels.innerHTML = '';
-  for (let h = 0; h <= 24; h++){
-    const span = document.createElement('span');
-    span.textContent = formatHourLabel(h);
-    if (h >= 8 && h <= 17) span.classList.add('workhour');
-    labels.appendChild(span);
-  }
-}
+        setMarkerForOrientation();
+        buildTicks();
+        renderLabels();
+        updateClock();
+      }
 
-function fmtHMS(totalSeconds){
-  const s = Math.max(0, Math.floor(totalSeconds));
-  const hh = String(Math.floor(s/3600)).padStart(2,'0');
-  const mm = String(Math.floor((s%3600)/60)).padStart(2,'0');
-  const ss = String(s%60).padStart(2,'0');
-  return `${hh}:${mm}:${ss}`;
-}
+      /* ===== Clock Update ===== */
+      function updateClock() {
+        const now = new Date();
+        const h = now.getHours(),
+          m = now.getMinutes(),
+          s = now.getSeconds();
+        const secondsSinceMidnight = h * 3600 + m * 60 + s;
+        const secondsPerDay = 86400;
+        const frac = secondsSinceMidnight / secondsPerDay;
+        const forward = prefs.direction === "forward";
+        const progress = forward ? frac : 1 - frac;
 
-function formatClockTime(hours, minutes){
-  if (use24h) {
-    return `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}`;
-  } else {
-    let h = hours % 12; if (h === 0) h = 12;
-    return `${String(h).padStart(2,'0')}:${String(minutes).padStart(2,'0')} ${hours>=12?'PM':'AM'}`;
-  }
-}
+        if (prefs.orientation === "vertical") {
+          marker.style.left = "0";
+          marker.style.top = `calc(${progress * 100}% - 2px)`;
+        } else {
+          marker.style.top = "0";
+          marker.style.left = `calc(${progress * 100}% - 2px)`;
+        }
 
-function updateClock(){
-  const now = new Date();
-  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-  const hoursFloat = h + m/60 + s/3600;
-  document.getElementById('marker').style.left = `calc(${hoursFloat/24*100}%)`;
-  document.getElementById('currentTimeTop').textContent = formatClockTime(h,m);
+        current.textContent = formatClockTime(h, m);
+        const pct = frac * 100;
+        const remaining = secondsPerDay - secondsSinceMidnight;
+        stats.textContent = `${pct.toFixed(2)}% of day elapsed | ${fmtHMS(
+          remaining
+        )} remaining`;
+      }
 
-  const secondsSinceMidnight = h*3600 + m*60 + s;
-  const secondsPerDay = 86400;
-  const pct = (secondsSinceMidnight / secondsPerDay) * 100;
-  const remaining = secondsPerDay - secondsSinceMidnight;
-  document.getElementById('statsBottom').textContent =
-    `${pct.toFixed(2)}% of day elapsed | ${fmtHMS(remaining)} remaining`;
-}
+      /* ===== Init ===== */
+      applyLayout();
+      updateClock();
+      setInterval(updateClock, 1000);
 
-createTicks();
-renderHourLabels();
-updateClock();
-setInterval(updateClock, 1000);
+      /* ===== 12/24 Toggle ===== */
+      const toggle = document.getElementById("formatToggle");
+      const label = document.getElementById("formatLabel");
+      toggle.checked = use24h;
+      label.textContent = use24h ? "24-hour" : "12-hour";
+      toggle.addEventListener("change", () => {
+        use24h = toggle.checked;
+        localStorage.setItem(LS.use24h, JSON.stringify(use24h));
+        label.textContent = use24h ? "24-hour" : "12-hour";
+        renderLabels();
+        updateClock();
+      });
 
-const toggle = document.getElementById('formatToggle');
-const label = document.getElementById('formatLabel');
-toggle.checked = use24h;
-label.textContent = use24h ? '24-hour' : '12-hour';
-toggle.addEventListener('change', ()=>{
-  use24h = toggle.checked;
-  localStorage.setItem('use24h', JSON.stringify(use24h));
-  label.textContent = use24h ? '24-hour' : '12-hour';
-  renderHourLabels();
-  updateClock();
-});
-</script>
-</body>
+      /* ===== Customizer events ===== */
+      function savePrefs() {
+        localStorage.setItem(LS.prefs, JSON.stringify(prefs));
+      }
+      const orientationSelEl = document.getElementById("orientation");
+      const directionSelEl = document.getElementById("direction");
+
+      orientationSelEl.addEventListener("change", () => {
+        prefs.orientation = orientationSelEl.value;
+        savePrefs();
+        applyLayout();
+      });
+      directionSelEl.addEventListener("change", () => {
+        prefs.direction = directionSelEl.value;
+        savePrefs();
+        updateClock();
+      });
+    </script>
+  </body>
 </html>
-
