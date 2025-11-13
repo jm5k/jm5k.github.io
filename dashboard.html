@@ -18,7 +18,7 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://linearclocklab.com/dashboard.html" />
 
-    <!-- 🔗 Social / Open Graph -->
+    <!-- 🔗 Social -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Dashboard | Linear Clock Lab" />
     <meta
@@ -33,7 +33,6 @@
       property="og:image"
       content="https://linearclocklab.com/profile.png"
     />
-
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Dashboard | Linear Clock Lab" />
     <meta
@@ -45,7 +44,7 @@
       content="https://linearclocklab.com/profile.png"
     />
 
-    <!-- 🔖 Favicon / Icons -->
+    <!-- 🔖 Icons -->
     <link
       rel="icon"
       href="https://linearclocklab.com/profile.png"
@@ -228,39 +227,42 @@
         width: 100%;
         height: 100%;
         border: 0;
+        position: relative;
+        z-index: 1;
       }
 
-      /* Resize handles */
+      /* Resize handles (always above iframe & shield) */
       .resize-handle {
         position: absolute;
         background: var(--handle);
         opacity: 0.7;
         border: 1px solid var(--tile-border);
+        z-index: 3;
       }
       .resize-handle.e {
-        right: -4px;
+        right: -6px;
         top: 0;
-        width: 8px;
+        width: 12px;
         height: 100%;
         cursor: ew-resize;
       }
       .resize-handle.s {
-        bottom: -4px;
+        bottom: -6px;
         left: 0;
         width: 100%;
-        height: 8px;
+        height: 12px;
         cursor: ns-resize;
       }
       .resize-handle.se {
-        right: -4px;
-        bottom: -4px;
-        width: 12px;
-        height: 12px;
+        right: -6px;
+        bottom: -6px;
+        width: 14px;
+        height: 14px;
         cursor: nwse-resize;
         border-radius: 3px;
       }
 
-      /* Iframe shield during drag/resize */
+      /* Iframe shield toggled during drag/resize */
       .shield {
         position: absolute;
         inset: 0;
@@ -270,6 +272,15 @@
       }
       .shield.active {
         display: block;
+      }
+
+      /* Locked visuals (do NOT block tile-actions) */
+      .tile.locked .tile-header {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .tile.locked .resize-handle {
+        opacity: 0.4;
       }
 
       footer {
@@ -363,12 +374,11 @@
         const canvas = document.getElementById("canvas");
         const grid = 20;
 
-        const STORAGE_KEY = "lcl_dashboard_v3"; // bumped for clean migration
-        const SETTINGS_KEY = "lcl_dashboard_settings_v3";
+        const STORAGE_KEY = "lcl_dashboard_v4"; // bumped for clean migration
+        const SETTINGS_KEY = "lcl_dashboard_settings_v4";
 
         let state = loadState() || defaultState();
         let settings = loadSettings() || { locked: false, snap: true };
-
         let zCounter = 1;
 
         function defaultState() {
@@ -454,7 +464,6 @@
             return null;
           }
         }
-
         function saveSettings() {
           localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
         }
@@ -469,18 +478,15 @@
         // ---------- Render ----------
         function initialRender() {
           canvas.querySelectorAll(".tile").forEach((n) => n.remove());
-          let maxBottom = 0;
-
-          state.tiles.forEach((model) => {
-            const el = buildTileElement(model);
-            canvas.appendChild(el);
-            maxBottom = Math.max(maxBottom, model.y + model.h);
-          });
-
+          state.tiles.forEach((model) => canvas.appendChild(buildTile(model)));
           resizeCanvasToContent();
+          // reflect locked visuals
+          document
+            .querySelectorAll(".tile")
+            .forEach((t) => t.classList.toggle("locked", settings.locked));
         }
 
-        function buildTileElement(model) {
+        function buildTile(model) {
           const el = document.createElement("div");
           el.className = "tile";
           el.style.left = model.x + "px";
@@ -488,25 +494,26 @@
           el.style.width = model.w + "px";
           el.style.height = model.h + "px";
           el.dataset.id = model.id;
+          if (settings.locked) el.classList.add("locked");
 
           el.innerHTML = `
-            <div class="tile-header">
-              <div class="tile-title" title="${model.title}">${model.title}</div>
-              <div class="tile-actions">
-                <button data-action="edit">Edit</button>
-                <button data-action="remove">Remove</button>
-              </div>
+          <div class="tile-header">
+            <div class="tile-title" title="${model.title}">${model.title}</div>
+            <div class="tile-actions">
+              <button data-action="edit">Edit</button>
+              <button data-action="remove">Remove</button>
             </div>
-            <div class="tile-content">
-              <div class="shield"></div>
-              <iframe src="${model.url}" loading="lazy"></iframe>
-              <div class="resize-handle e"></div>
-              <div class="resize-handle s"></div>
-              <div class="resize-handle se"></div>
-            </div>
-          `;
+          </div>
+          <div class="tile-content">
+            <div class="shield"></div>
+            <iframe src="${model.url}" loading="lazy"></iframe>
+            <div class="resize-handle e"></div>
+            <div class="resize-handle s"></div>
+            <div class="resize-handle se"></div>
+          </div>
+        `;
 
-          // Actions
+          // Actions (always enabled)
           el.querySelector(".tile-actions").addEventListener("click", (e) => {
             const btn = e.target.closest("button");
             if (!btn) return;
@@ -529,7 +536,7 @@
             }
           });
 
-          // Drag
+          // Drag start (threshold + ignore action buttons)
           el.querySelector(".tile-header").addEventListener(
             "pointerdown",
             (ev) => startDrag(ev, el)
@@ -555,9 +562,11 @@
         function addTile(model) {
           state.tiles.push(model);
           saveState();
-          const el = buildTileElement(model);
-          canvas.appendChild(el);
+          canvas.appendChild(buildTile(model));
           resizeCanvasToContent();
+          document
+            .querySelectorAll(".tile")
+            .forEach((t) => t.classList.toggle("locked", settings.locked));
         }
 
         function modelById(id) {
@@ -575,34 +584,46 @@
           document.body.style.height = newHeight + 200 + "px";
         }
 
-        // ---------- Drag ----------
+        // ---------- Drag (with threshold) ----------
         function startDrag(ev, el) {
-          if (settings.locked) return;
+          if (settings.locked) return; // lock blocks drag/resize only
+          if (ev.target.closest(".tile-actions")) return; // allow button clicks
 
           const id = el.dataset.id;
           const m = modelById(id);
           if (!m) return;
 
-          ev.preventDefault();
-          el.setPointerCapture(ev.pointerId);
-          el.style.zIndex = (++zCounter).toString();
-
           const header = el.querySelector(".tile-header");
-          header.classList.add("dragging");
-
           const shield = el.querySelector(".shield");
-          shield.classList.add("active");
-
           const rectCanvas = canvas.getBoundingClientRect();
 
+          const THRESH = 4;
           const startX = ev.clientX;
           const startY = ev.clientY;
           const baseX = m.x;
           const baseY = m.y;
 
+          let dragging = false;
+
+          function beginDrag(e) {
+            dragging = true;
+            el.setPointerCapture(e.pointerId);
+            el.style.zIndex = (++zCounter).toString();
+            header.classList.add("dragging");
+            shield.classList.add("active");
+          }
+
           function onMove(e) {
             const dx = e.clientX - startX;
             const dy = e.clientY - startY;
+
+            if (!dragging) {
+              if (Math.abs(dx) > THRESH || Math.abs(dy) > THRESH) {
+                beginDrag(e);
+              } else {
+                return; // treat as click
+              }
+            }
 
             const newX = clamp(baseX + dx, 0, rectCanvas.width - m.w);
             const newY = clamp(baseY + dy, 0, rectCanvas.height - m.h);
@@ -614,31 +635,33 @@
           }
 
           function onUp(e) {
-            el.releasePointerCapture(e.pointerId);
-            header.classList.remove("dragging");
-            shield.classList.remove("active");
+            if (dragging) {
+              el.releasePointerCapture(e.pointerId);
+              header.classList.remove("dragging");
+              shield.classList.remove("active");
 
-            m.x = clamp(
-              maybeSnap(m.x),
-              0,
-              Math.max(0, canvas.clientWidth - m.w)
-            );
-            m.y = clamp(
-              maybeSnap(m.y),
-              0,
-              Math.max(0, canvas.clientHeight - m.h)
-            );
-            el.style.left = m.x + "px";
-            el.style.top = m.y + "px";
+              m.x = clamp(
+                maybeSnap(m.x),
+                0,
+                Math.max(0, canvas.clientWidth - m.w)
+              );
+              m.y = clamp(
+                maybeSnap(m.y),
+                0,
+                Math.max(0, canvas.clientHeight - m.h)
+              );
+              el.style.left = m.x + "px";
+              el.style.top = m.y + "px";
 
-            saveState();
-            resizeCanvasToContent();
-
+              saveState();
+              resizeCanvasToContent();
+            }
             el.removeEventListener("pointermove", onMove);
             el.removeEventListener("pointerup", onUp);
             el.removeEventListener("pointercancel", onUp);
           }
 
+          // Note: no preventDefault on pointerdown; lets clicks through if not dragging
           el.addEventListener("pointermove", onMove);
           el.addEventListener("pointerup", onUp);
           el.addEventListener("pointercancel", onUp);
@@ -755,6 +778,9 @@
         lockCb.addEventListener("change", () => {
           settings.locked = lockCb.checked;
           saveSettings();
+          document
+            .querySelectorAll(".tile")
+            .forEach((t) => t.classList.toggle("locked", settings.locked));
         });
         snapCb.addEventListener("change", () => {
           settings.snap = snapCb.checked;
