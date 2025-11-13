@@ -6,8 +6,6 @@
     <title>Dashboard | Linear Clock Lab</title>
 
     <!-- 🔍 SEO -->
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Experimental Dashboard for the Linear Clock Lab — arrange clocks, timers, and tools as movable tiles in a minimalist workspace."
@@ -78,7 +76,6 @@
         background: var(--bg);
         color: var(--fg);
         font-family: monospace;
-        display: block;
         min-height: 100vh;
       }
       a {
@@ -121,7 +118,8 @@
       }
       .toolbar select,
       .toolbar input,
-      .toolbar button {
+      .toolbar button,
+      .toolbar label {
         background: #0b0b0b;
         color: var(--fg);
         border: 1px solid var(--tile-border);
@@ -129,6 +127,15 @@
         border-radius: 6px;
         font-family: monospace;
         font-size: 0.95rem;
+      }
+      .toolbar label {
+        border: none;
+        background: transparent;
+        padding: 0 2px;
+      }
+      .toolbar input[type="checkbox"] {
+        transform: translateY(1px);
+        margin-right: 6px;
       }
       .toolbar button:hover {
         border-color: var(--accent);
@@ -183,7 +190,10 @@
         padding: 8px 10px;
         background: linear-gradient(180deg, #0f0f0f, #0b0b0b);
         border-bottom: 1px solid var(--tile-border);
-        cursor: move;
+        cursor: grab;
+      }
+      .tile-header.dragging {
+        cursor: grabbing;
       }
       .tile-title {
         font-size: 0.95rem;
@@ -250,6 +260,18 @@
         border-radius: 3px;
       }
 
+      /* Iframe shield during drag/resize */
+      .shield {
+        position: absolute;
+        inset: 0;
+        background: transparent;
+        display: none;
+        z-index: 2;
+      }
+      .shield.active {
+        display: block;
+      }
+
       footer {
         padding: 16px;
         text-align: center;
@@ -262,6 +284,11 @@
       .legal {
         font-size: 0.85rem;
         color: var(--muted);
+      }
+      .thin-line {
+        border: none;
+        border-top: 1px solid var(--line);
+        margin: 24px 0;
       }
     </style>
   </head>
@@ -280,9 +307,12 @@
         <option value="multi-clock.html|Multi-Timezone">
           Multi-Timezone Clock
         </option>
+        <option value="clock_presets.html|Clock Presets">Clock Presets</option>
         <option value="focus.html|FocusLine Pomodoro">
           FocusLine Pomodoro
         </option>
+        <option value="timer.html|Timer">Timer</option>
+        <option value="stopwatch.html|Stopwatch">Stopwatch</option>
       </select>
       <button id="addTile">Add</button>
 
@@ -292,6 +322,22 @@
       <input id="customUrl" placeholder="clock.html" size="16" />
       <input id="customTitle" placeholder="Title" size="12" />
       <button id="addCustom">Add Custom</button>
+
+      <span style="width: 18px"></span>
+
+      <label><input type="checkbox" id="lockLayout" /> Lock layout</label>
+      <label
+        ><input type="checkbox" id="snapToggle" checked /> Snap to grid</label
+      >
+
+      <button id="exportLayout" title="Download layout JSON">Export</button>
+      <input
+        type="file"
+        id="importFile"
+        accept="application/json"
+        style="display: none"
+      />
+      <button id="importLayout" title="Load layout JSON">Import</button>
 
       <span style="width: 18px"></span>
 
@@ -316,7 +362,14 @@
       (() => {
         const canvas = document.getElementById("canvas");
         const grid = 20;
+
+        const STORAGE_KEY = "lcl_dashboard_v3"; // bumped for clean migration
+        const SETTINGS_KEY = "lcl_dashboard_settings_v3";
+
         let state = loadState() || defaultState();
+        let settings = loadSettings() || { locked: false, snap: true };
+
+        let zCounter = 1;
 
         function defaultState() {
           return {
@@ -341,12 +394,39 @@
               },
               {
                 id: uid(),
-                title: "FocusLine Pomodoro",
-                url: "focus.html",
+                title: "Clock Presets",
+                url: "clock_presets.html",
                 x: 20,
                 y: 360,
+                w: 680,
+                h: 420,
+              },
+              {
+                id: uid(),
+                title: "FocusLine Pomodoro",
+                url: "focus.html",
+                x: 720,
+                y: 400,
                 w: 720,
                 h: 420,
+              },
+              {
+                id: uid(),
+                title: "Timer",
+                url: "timer.html",
+                x: 20,
+                y: 820,
+                w: 520,
+                h: 320,
+              },
+              {
+                id: uid(),
+                title: "Stopwatch",
+                url: "stopwatch.html",
+                x: 560,
+                y: 820,
+                w: 520,
+                h: 320,
               },
             ],
           };
@@ -354,184 +434,289 @@
         function uid() {
           return "t" + Math.random().toString(36).slice(2, 9);
         }
-        function snap(v) {
-          return Math.max(0, Math.round(v / grid) * grid);
+        function clamp(v, min, max) {
+          return Math.min(max, Math.max(min, v));
         }
+        function snap(v) {
+          return Math.round(v / grid) * grid;
+        }
+        function maybeSnap(v) {
+          return settings.snap ? snap(v) : v;
+        }
+
         function saveState() {
-          localStorage.setItem("lcl_dashboard_v1", JSON.stringify(state));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         }
         function loadState() {
           try {
-            return JSON.parse(localStorage.getItem("lcl_dashboard_v1"));
+            return JSON.parse(localStorage.getItem(STORAGE_KEY));
           } catch (e) {
             return null;
           }
         }
 
-        function render() {
-          [...canvas.querySelectorAll(".tile")].forEach((n) => n.remove());
+        function saveSettings() {
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        }
+        function loadSettings() {
+          try {
+            return JSON.parse(localStorage.getItem(SETTINGS_KEY));
+          } catch (e) {
+            return null;
+          }
+        }
+
+        // ---------- Render ----------
+        function initialRender() {
+          canvas.querySelectorAll(".tile").forEach((n) => n.remove());
           let maxBottom = 0;
 
-          state.tiles.forEach((t) => {
-            const el = document.createElement("div");
-            el.className = "tile";
-            el.style.left = t.x + "px";
-            el.style.top = t.y + "px";
-            el.style.width = t.w + "px";
-            el.style.height = t.h + "px";
-            el.dataset.id = t.id;
-
-            el.innerHTML = `
-        <div class="tile-header">
-          <div class="tile-title" title="${t.title}">${t.title}</div>
-          <div class="tile-actions">
-            <button data-action="edit">Edit</button>
-            <button data-action="remove">Remove</button>
-          </div>
-        </div>
-        <div class="tile-content">
-          <iframe src="${t.url}" loading="lazy"></iframe>
-          <div class="resize-handle e"></div>
-          <div class="resize-handle s"></div>
-          <div class="resize-handle se"></div>
-        </div>
-      `;
-
-            el.querySelector(".tile-header").addEventListener(
-              "mousedown",
-              startDrag
-            );
-            el.querySelector(".resize-handle.e").addEventListener(
-              "mousedown",
-              (e) => startResize(e, "e")
-            );
-            el.querySelector(".resize-handle.s").addEventListener(
-              "mousedown",
-              (e) => startResize(e, "s")
-            );
-            el.querySelector(".resize-handle.se").addEventListener(
-              "mousedown",
-              (e) => startResize(e, "se")
-            );
-            el.querySelector(".tile-actions").addEventListener("click", (e) => {
-              const btn = e.target.closest("button");
-              if (!btn) return;
-              const id = el.dataset.id;
-              if (btn.dataset.action === "remove") {
-                state.tiles = state.tiles.filter((x) => x.id !== id);
-                saveState();
-                render();
-              } else if (btn.dataset.action === "edit") {
-                const found = state.tiles.find((x) => x.id === id);
-                if (!found) return;
-                const title = prompt("Tile title:", found.title) ?? found.title;
-                const url = prompt("Tile URL:", found.url) ?? found.url;
-                found.title = (title || found.title).trim();
-                found.url = (url || found.url).trim();
-                saveState();
-                render();
-              }
-            });
-
+          state.tiles.forEach((model) => {
+            const el = buildTileElement(model);
             canvas.appendChild(el);
-            maxBottom = Math.max(maxBottom, t.y + t.h);
+            maxBottom = Math.max(maxBottom, model.y + model.h);
           });
 
+          resizeCanvasToContent();
+        }
+
+        function buildTileElement(model) {
+          const el = document.createElement("div");
+          el.className = "tile";
+          el.style.left = model.x + "px";
+          el.style.top = model.y + "px";
+          el.style.width = model.w + "px";
+          el.style.height = model.h + "px";
+          el.dataset.id = model.id;
+
+          el.innerHTML = `
+            <div class="tile-header">
+              <div class="tile-title" title="${model.title}">${model.title}</div>
+              <div class="tile-actions">
+                <button data-action="edit">Edit</button>
+                <button data-action="remove">Remove</button>
+              </div>
+            </div>
+            <div class="tile-content">
+              <div class="shield"></div>
+              <iframe src="${model.url}" loading="lazy"></iframe>
+              <div class="resize-handle e"></div>
+              <div class="resize-handle s"></div>
+              <div class="resize-handle se"></div>
+            </div>
+          `;
+
+          // Actions
+          el.querySelector(".tile-actions").addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn) return;
+            const id = el.dataset.id;
+            if (btn.dataset.action === "remove") {
+              state.tiles = state.tiles.filter((x) => x.id !== id);
+              saveState();
+              el.remove();
+              resizeCanvasToContent();
+            } else if (btn.dataset.action === "edit") {
+              const found = modelById(id);
+              if (!found) return;
+              const title = prompt("Tile title:", found.title) ?? found.title;
+              const url = prompt("Tile URL:", found.url) ?? found.url;
+              found.title = (title || found.title).trim();
+              found.url = (url || found.url).trim();
+              el.querySelector(".tile-title").textContent = found.title;
+              el.querySelector("iframe").src = found.url;
+              saveState();
+            }
+          });
+
+          // Drag
+          el.querySelector(".tile-header").addEventListener(
+            "pointerdown",
+            (ev) => startDrag(ev, el)
+          );
+
+          // Resize
+          el.querySelector(".resize-handle.e").addEventListener(
+            "pointerdown",
+            (e) => startResize(e, el, "e")
+          );
+          el.querySelector(".resize-handle.s").addEventListener(
+            "pointerdown",
+            (e) => startResize(e, el, "s")
+          );
+          el.querySelector(".resize-handle.se").addEventListener(
+            "pointerdown",
+            (e) => startResize(e, el, "se")
+          );
+
+          return el;
+        }
+
+        function addTile(model) {
+          state.tiles.push(model);
+          saveState();
+          const el = buildTileElement(model);
+          canvas.appendChild(el);
+          resizeCanvasToContent();
+        }
+
+        function modelById(id) {
+          return state.tiles.find((t) => t.id === id);
+        }
+
+        function resizeCanvasToContent() {
+          let maxBottom = 0;
+          state.tiles.forEach((t) => {
+            maxBottom = Math.max(maxBottom, t.y + t.h);
+          });
           const padding = 80;
           const newHeight = Math.max(480, maxBottom + padding);
           canvas.style.height = newHeight + "px";
           document.body.style.height = newHeight + 200 + "px";
         }
 
-        function tileFromEvent(e) {
-          const el = e.target.closest(".tile");
-          if (!el) return null;
+        // ---------- Drag ----------
+        function startDrag(ev, el) {
+          if (settings.locked) return;
+
           const id = el.dataset.id;
-          const model = state.tiles.find((t) => t.id === id);
-          return { el, model };
-        }
-
-        let dragCtx = null;
-        function startDrag(e) {
-          const t = tileFromEvent(e);
-          if (!t) return;
-          dragCtx = {
-            id: t.model.id,
-            startX: e.clientX,
-            startY: e.clientY,
-            baseX: t.model.x,
-            baseY: t.model.y,
-          };
-          document.addEventListener("mousemove", onDragMove);
-          document.addEventListener("mouseup", endDrag);
-        }
-        function onDragMove(e) {
-          if (!dragCtx) return;
-          const dx = e.clientX - dragCtx.startX;
-          const dy = e.clientY - dragCtx.startY;
-          const m = state.tiles.find((x) => x.id === dragCtx.id);
+          const m = modelById(id);
           if (!m) return;
-          m.x = snap(dragCtx.baseX + dx);
-          m.y = snap(dragCtx.baseY + dy);
-          saveState();
-          render();
-        }
-        function endDrag() {
-          document.removeEventListener("mousemove", onDragMove);
-          document.removeEventListener("mouseup", endDrag);
-          dragCtx = null;
+
+          ev.preventDefault();
+          el.setPointerCapture(ev.pointerId);
+          el.style.zIndex = (++zCounter).toString();
+
+          const header = el.querySelector(".tile-header");
+          header.classList.add("dragging");
+
+          const shield = el.querySelector(".shield");
+          shield.classList.add("active");
+
+          const rectCanvas = canvas.getBoundingClientRect();
+
+          const startX = ev.clientX;
+          const startY = ev.clientY;
+          const baseX = m.x;
+          const baseY = m.y;
+
+          function onMove(e) {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            const newX = clamp(baseX + dx, 0, rectCanvas.width - m.w);
+            const newY = clamp(baseY + dy, 0, rectCanvas.height - m.h);
+
+            m.x = newX;
+            m.y = newY;
+            el.style.left = newX + "px";
+            el.style.top = newY + "px";
+          }
+
+          function onUp(e) {
+            el.releasePointerCapture(e.pointerId);
+            header.classList.remove("dragging");
+            shield.classList.remove("active");
+
+            m.x = clamp(
+              maybeSnap(m.x),
+              0,
+              Math.max(0, canvas.clientWidth - m.w)
+            );
+            m.y = clamp(
+              maybeSnap(m.y),
+              0,
+              Math.max(0, canvas.clientHeight - m.h)
+            );
+            el.style.left = m.x + "px";
+            el.style.top = m.y + "px";
+
+            saveState();
+            resizeCanvasToContent();
+
+            el.removeEventListener("pointermove", onMove);
+            el.removeEventListener("pointerup", onUp);
+            el.removeEventListener("pointercancel", onUp);
+          }
+
+          el.addEventListener("pointermove", onMove);
+          el.addEventListener("pointerup", onUp);
+          el.addEventListener("pointercancel", onUp);
         }
 
-        let rsCtx = null;
-        function startResize(e, edge) {
-          e.stopPropagation();
-          const t = tileFromEvent(e);
-          if (!t) return;
-          rsCtx = {
-            id: t.model.id,
-            edge,
-            startX: e.clientX,
-            startY: e.clientY,
-            baseW: t.model.w,
-            baseH: t.model.h,
-          };
-          document.addEventListener("mousemove", onResizeMove);
-          document.addEventListener("mouseup", endResize);
-        }
-        function onResizeMove(e) {
-          if (!rsCtx) return;
-          const dx = e.clientX - rsCtx.startX;
-          const dy = e.clientY - rsCtx.startY;
-          const m = state.tiles.find((x) => x.id === rsCtx.id);
+        // ---------- Resize ----------
+        function startResize(ev, el, edge) {
+          if (settings.locked) return;
+
+          const id = el.dataset.id;
+          const m = modelById(id);
           if (!m) return;
-          if (rsCtx.edge.includes("e"))
-            m.w = Math.max(240, snap(rsCtx.baseW + dx));
-          if (rsCtx.edge.includes("s"))
-            m.h = Math.max(180, snap(rsCtx.baseH + dy));
-          saveState();
-          render();
-        }
-        function endResize() {
-          document.removeEventListener("mousemove", onResizeMove);
-          document.removeEventListener("mouseup", endResize);
-          rsCtx = null;
+
+          ev.preventDefault();
+          el.setPointerCapture(ev.pointerId);
+          el.style.zIndex = (++zCounter).toString();
+
+          const shield = el.querySelector(".shield");
+          shield.classList.add("active");
+
+          const startX = ev.clientX;
+          const startY = ev.clientY;
+          const baseW = m.w;
+          const baseH = m.h;
+
+          function onMove(e) {
+            let w = baseW;
+            let h = baseH;
+            if (edge.includes("e"))
+              w = Math.max(240, baseW + (e.clientX - startX));
+            if (edge.includes("s"))
+              h = Math.max(180, baseH + (e.clientY - startY));
+
+            const rectCanvas = canvas.getBoundingClientRect();
+            w = Math.min(w, rectCanvas.width - m.x);
+            h = Math.min(h, rectCanvas.height - m.y);
+
+            m.w = w;
+            m.h = h;
+            el.style.width = w + "px";
+            el.style.height = h + "px";
+          }
+
+          function onUp(e) {
+            el.releasePointerCapture(e.pointerId);
+            shield.classList.remove("active");
+
+            m.w = Math.max(240, maybeSnap(m.w));
+            m.h = Math.max(180, maybeSnap(m.h));
+            el.style.width = m.w + "px";
+            el.style.height = m.h + "px";
+
+            saveState();
+            resizeCanvasToContent();
+
+            el.removeEventListener("pointermove", onMove);
+            el.removeEventListener("pointerup", onUp);
+            el.removeEventListener("pointercancel", onUp);
+          }
+
+          el.addEventListener("pointermove", onMove);
+          el.addEventListener("pointerup", onUp);
+          el.addEventListener("pointercancel", onUp);
         }
 
-        // Toolbar
+        // ---------- Toolbar ----------
         document.getElementById("addTile").addEventListener("click", () => {
           const v = document.getElementById("tilePreset").value;
           const [url, title] = v.split("|");
-          state.tiles.push({
+          addTile({
             id: uid(),
             title,
             url,
-            x: snap(40 + Math.random() * 120),
-            y: snap(40 + Math.random() * 120),
+            x: maybeSnap(40 + Math.random() * 120),
+            y: maybeSnap(40 + Math.random() * 120),
             w: 640,
             h: 320,
           });
-          saveState();
-          render();
         });
 
         document.getElementById("addCustom").addEventListener("click", () => {
@@ -543,27 +728,84 @@
             alert('Enter a URL like "clock.html"');
             return;
           }
-          state.tiles.push({
+          addTile({
             id: uid(),
             title,
             url,
-            x: snap(60 + Math.random() * 120),
-            y: snap(60 + Math.random() * 120),
+            x: maybeSnap(60 + Math.random() * 120),
+            y: maybeSnap(60 + Math.random() * 120),
             w: 640,
             h: 360,
           });
-          saveState();
-          render();
         });
 
         document.getElementById("resetLayout").addEventListener("click", () => {
           if (!confirm("Reset layout to defaults?")) return;
           state = defaultState();
           saveState();
-          render();
+          initialRender();
         });
 
-        render();
+        // Settings toggles
+        const lockCb = document.getElementById("lockLayout");
+        const snapCb = document.getElementById("snapToggle");
+        lockCb.checked = settings.locked;
+        snapCb.checked = settings.snap;
+
+        lockCb.addEventListener("change", () => {
+          settings.locked = lockCb.checked;
+          saveSettings();
+        });
+        snapCb.addEventListener("change", () => {
+          settings.snap = snapCb.checked;
+          saveSettings();
+        });
+
+        // Export / Import
+        document
+          .getElementById("exportLayout")
+          .addEventListener("click", () => {
+            const blob = new Blob([JSON.stringify(state, null, 2)], {
+              type: "application/json",
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "lcl-dashboard-layout.json";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+          });
+
+        document
+          .getElementById("importLayout")
+          .addEventListener("click", () => {
+            document.getElementById("importFile").click();
+          });
+
+        document
+          .getElementById("importFile")
+          .addEventListener("change", async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            try {
+              const txt = await file.text();
+              const data = JSON.parse(txt);
+              if (!data || !Array.isArray(data.tiles))
+                throw new Error("Invalid layout");
+              state = data;
+              saveState();
+              initialRender();
+            } catch (err) {
+              alert("Import failed: " + err.message);
+            } finally {
+              e.target.value = "";
+            }
+          });
+
+        // Kickoff
+        initialRender();
       })();
     </script>
   </body>

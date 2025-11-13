@@ -1,299 +1,468 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<!-- 🔍 SEO -->
-<title>Linear Clock Lab</title>
+    <!-- 🔍 SEO -->
+    <title>Linear Clock Lab</title>
 
-<!-- 🔍 SEO -->
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Linear Clock Lab — jm5k’s hub for minimalist time visualizations and tools. Explore the original 24-hour linear clock, multi-timezone clock, FocusLine timer, and themed presets." />
-<meta name="keywords" content="linear clock, time visualization, 24 hour clock, multi-timezone clock, focus timer, presets, jm5k" />
-<meta name="author" content="jm5k" />
-<meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://linearclocklab.com/" />
+    <!-- 🔍 SEO -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Linear Clock Lab — jm5k’s hub for minimalist time visualizations and tools. Explore the original 24-hour linear clock, multi-timezone clock, FocusLine timer, and themed presets."
+    />
+    <meta
+      name="keywords"
+      content="linear clock, time visualization, 24 hour clock, multi-timezone clock, focus timer, presets, jm5k"
+    />
+    <meta name="author" content="jm5k" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://linearclocklab.com/" />
 
-<!-- 🔗 Social (Open Graph & Twitter) -->
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Linear Clock Lab" />
-<meta property="og:description" content="jm5k’s hub for minimalist time visualizations and tools — original 24-hour linear clock, multi-timezone views, FocusLine timer, and themed presets." />
-<meta property="og:url" content="https://linearclocklab.com/" />
-<meta property="og:image" content="https://linearclocklab.com/profile.png" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Linear Clock Lab" />
-<meta name="twitter:description" content="Minimal time. Maximum clarity. Explore 24-hour linear clocks, multi-timezone views, and FocusLine." />
-<meta name="twitter:image" content="https://linearclocklab.com/profile.png" />
+    <!-- 🔗 Social (Open Graph & Twitter) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Linear Clock Lab" />
+    <meta
+      property="og:description"
+      content="jm5k’s hub for minimalist time visualizations and tools — original 24-hour linear clock, multi-timezone views, FocusLine timer, and themed presets."
+    />
+    <meta property="og:url" content="https://linearclocklab.com/" />
+    <meta
+      property="og:image"
+      content="https://linearclocklab.com/profile.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Linear Clock Lab" />
+    <meta
+      name="twitter:description"
+      content="Minimal time. Maximum clarity. Explore 24-hour linear clocks, multi-timezone views, and FocusLine."
+    />
+    <meta
+      name="twitter:image"
+      content="https://linearclocklab.com/profile.png"
+    />
 
-<!-- 🔖 Favicon / App Icons -->
-<link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png" />
-<link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png" />
-<link rel="manifest" href="/site.webmanifest">
+    <!-- 🔖 Favicon / App Icons -->
+    <link
+      rel="icon"
+      href="https://linearclocklab.com/profile.png"
+      type="image/png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://linearclocklab.com/profile.png"
+    />
+    <link rel="manifest" href="/site.webmanifest" />
 
-<style>
-  :root{
-    --bg:#000; --fg:#e0e0e0; --muted:#9aa0a6; --accent:#0ff;
-    --rail:#111; --tick-q:#ffffff1a; --tick-h:#ffffff4d; --border:#2a2a2a;
-  }
-  /* Base */
-  html,body{height:100%}
-  body{
-    margin:0; background:var(--bg); color:var(--fg);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    text-align:center; padding:36px 16px 28px;
-  }
-  a{ color:var(--accent); text-decoration:none }
-  a:hover{ text-shadow:0 0 8px var(--accent) }
+    <style>
+      :root {
+        --bg: #000;
+        --fg: #e0e0e0;
+        --muted: #9aa0a6;
+        --accent: #0ff;
+        --rail: #111;
+        --tick-q: #ffffff1a;
+        --tick-h: #ffffff4d;
+        --border: #2a2a2a;
+      }
+      /* Base */
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+          "Liberation Mono", monospace;
+        text-align: center;
+        padding: 36px 16px 28px;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-shadow: 0 0 8px var(--accent);
+      }
 
-  /* Header */
-  h1{
-    margin:.1rem 0 .25rem; font-weight:600; letter-spacing:.5px; color:var(--accent)
-  }
-  .sub{ color:var(--muted); margin:0 0 20px; font-size:.95rem }
+      /* Header */
+      h1 {
+        margin: 0.1rem 0 0.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: var(--accent);
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 20px;
+        font-size: 0.95rem;
+      }
 
-  /* Hairline */
-  .hairline{
-    border:none; border-top:1px solid rgba(255,255,255,.1);
-    margin:18px auto 22px; max-width:920px
-  }
+      /* Hairline */
+      .hairline {
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin: 18px auto 22px;
+        max-width: 920px;
+      }
 
-  /* Clock area (original minimal rail) */
-  #currentTimeTop{ color:var(--accent); font-size:1.6rem; margin:8px 0 }
-  #bar{
-    position:relative; width:min(95%, 980px); height:60px; margin:8px auto;
-    background:#0b0b0b; border:2px solid #555; border-radius:8px; overflow:hidden;
-  }
-  #ticks{ position:absolute; inset:0 }
-  .tick{ position:absolute; top:0; height:100% }
-  .tick.qtr{ width:1px; background:var(--tick-q) }
-  .tick.hour{ width:2px; background:var(--tick-h) }
-  #marker{
-    position:absolute; top:0; width:4px; height:100%;
-    background:var(--accent); box-shadow:0 0 10px var(--accent)
-  }
+      /* Clock area (original minimal rail) */
+      #currentTimeTop {
+        color: var(--accent);
+        font-size: 1.6rem;
+        margin: 8px 0;
+      }
+      #bar {
+        position: relative;
+        width: min(95%, 980px);
+        height: 60px;
+        margin: 8px auto;
+        background: #0b0b0b;
+        border: 2px solid #555;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      #ticks {
+        position: absolute;
+        inset: 0;
+      }
+      .tick {
+        position: absolute;
+        top: 0;
+        height: 100%;
+      }
+      .tick.qtr {
+        width: 1px;
+        background: var(--tick-q);
+      }
+      .tick.hour {
+        width: 2px;
+        background: var(--tick-h);
+      }
+      #marker {
+        position: absolute;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
+      }
 
-  .label{
-    display:flex; justify-content:space-between; gap:8px;
-    width:min(95%,980px); margin:8px auto 6px; font-size:.9rem; color:#888
-  }
-  .workhour{ color:#ffea00 }
+      .label {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        width: min(95%, 980px);
+        margin: 8px auto 6px;
+        font-size: 0.9rem;
+        color: #888;
+      }
+      .workhour {
+        color: #ffea00;
+      }
 
-  #statsBottom{ color:#9cf; margin-top:6px; font-size:1.05rem }
+      #statsBottom {
+        color: #9cf;
+        margin-top: 6px;
+        font-size: 1.05rem;
+      }
 
-  /* 12/24h toggle */
-  #controls{ margin:12px 0 0 }
-  .switch{ display:inline-flex; align-items:center; gap:.6rem; cursor:pointer; color:#9cf; user-select:none }
-  .switch input{ position:absolute; opacity:0; width:0; height:0 }
-  .slider{
-    position:relative; width:44px; height:24px; background:#333;
-    border:1px solid #555; border-radius:999px; transition:background .2s, border-color .2s
-  }
-  .slider::before{
-    content:""; position:absolute; height:18px; width:18px; left:3px; top:50%; transform:translateY(-50%);
-    background:#bbb; border-radius:50%; transition:left .18s, background .2s
-  }
-  .switch input:checked + .slider{ background:#0b3a3a; border-color:#0aa }
-  .switch input:checked + .slider::before{ left:23px; background:#0ff }
-  .switch-label{ font-size:.95rem; color:#9cf }
+      /* 12/24h toggle */
+      #controls {
+        margin: 12px 0 0;
+      }
+      .switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        cursor: pointer;
+        color: #9cf;
+        user-select: none;
+      }
+      .switch input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 999px;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .slider::before {
+        content: "";
+        position: absolute;
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #bbb;
+        border-radius: 50%;
+        transition: left 0.18s, background 0.2s;
+      }
+      .switch input:checked + .slider {
+        background: #0b3a3a;
+        border-color: #0aa;
+      }
+      .switch input:checked + .slider::before {
+        left: 23px;
+        background: #0ff;
+      }
+      .switch-label {
+        font-size: 0.95rem;
+        color: #9cf;
+      }
 
-  /* Grid of links */
-  .grid{
-    margin:28px auto 0; max-width:980px;
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
-    gap:16px;
-  }
-  .card{
-    display:block; padding:14px 12px; border:1px solid var(--border); border-radius:12px;
-    color:var(--fg); background:#0a0a0a; transition:all .2s ease
-  }
-  .card:hover{
-    border-color:var(--accent); color:var(--accent); background:rgba(0,255,255,.06);
-    text-shadow:0 0 6px var(--accent)
-  }
-  .card .title{ font-weight:600; margin-bottom:4px }
-  .card .desc{ color:var(--muted); font-size:.92rem }
+      /* Grid of links */
+      .grid {
+        margin: 28px auto 0;
+        max-width: 980px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        display: block;
+        padding: 14px 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--fg);
+        background: #0a0a0a;
+        transition: all 0.2s ease;
+      }
+      .card:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(0, 255, 255, 0.06);
+        text-shadow: 0 0 6px var(--accent);
+      }
+      .card .title {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .card .desc {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
 
-  footer{ margin-top:26px; color:#7a7a7a; font-size:.9rem }
-</style>
-</head>
-<body>
+      footer {
+        margin-top: 26px;
+        color: #7a7a7a;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Linear Clock Lab</h1>
+    <p class="sub">Minimalist time visualizations and productivity tools.</p>
 
-  <h1>Linear Clock Lab</h1>
-  <p class="sub">Minimalist time visualizations and productivity tools.</p>
-  
-  <hr class="hairline" aria-hidden="true" />
+    <hr class="hairline" aria-hidden="true" />
 
-  <!-- Original Minimal Clock -->
-  <div id="currentTimeTop">--:--</div>
-  <div id="bar">
-    <div id="ticks"></div>
-    <div id="marker"></div>
-  </div>
-  <div class="label" id="hourLabels"></div>
-  <div id="statsBottom"></div>
+    <!-- Original Minimal Clock -->
+    <div id="currentTimeTop">--:--</div>
+    <div id="bar">
+      <div id="ticks"></div>
+      <div id="marker"></div>
+    </div>
+    <div class="label" id="hourLabels"></div>
+    <div id="statsBottom"></div>
 
-  <div id="controls">
-    <label class="switch" title="Switch between 12h and 24h">
-      <input id="formatToggle" type="checkbox" aria-label="Toggle 24-hour time" />
-      <span class="slider"></span>
-      <span id="formatLabel" class="switch-label">24-hour</span>
-    </label>
-  </div>
+    <div id="controls">
+      <label class="switch" title="Switch between 12h and 24h">
+        <input
+          id="formatToggle"
+          type="checkbox"
+          aria-label="Toggle 24-hour time"
+        />
+        <span class="slider"></span>
+        <span id="formatLabel" class="switch-label">24-hour</span>
+      </label>
+    </div>
 
-  <hr class="hairline" aria-hidden="true" />
+    <hr class="hairline" aria-hidden="true" />
 
-  <!-- Hub Links -->
-<div class="grid" aria-label="Linear Clock Lab Links">
-  <a class="card" href="clock.html">
-    <div class="title">🕐 Minimal Clock</div>
-    <div class="desc">Pure linear clock line with ticks, live marker, 12/24h toggle.</div>
-  </a>
-  <a class="card" href="multi-clock.html">
-    <div class="title">🌍 Multi-Clock</div>
-    <div class="desc">Add multiple timezones as stacked linear clocks.</div>
-  </a>
-  <a class="card" href="clock_presets.html">
-    <div class="title">💡 Clock Colors</div>
-    <div class="desc">Theme selector with neon & classic palettes and glow control.</div>
-  </a>
-  <a class="card" href="focus.html">
-    <div class="title">⏱️ FocusLine</div>
-    <div class="desc">Minimalist Pomodoro timer and notes to keep you moving.</div>
-  </a>
-  <a class="card" href="stopwatch.html">
-    <div class="title">⏱ Stopwatch</div>
-    <div class="desc">Linear stopwatches tracking time with precision, clarity, and color.</div>
-  </a>
-  <a class="card" href="timer.html">
-    <div class="title">⏱ Timer</div>
-    <div class="desc">Radiant countdown lines for precise, minimalist time tracking.</div>
-  </a>
-  <a class="card" href="dashboard.html">
-    <div class="title">🗂️ Dashboard</div>
-    <div class="desc">Arrange your clocks and tools as movable tiles, this is WIP.</div>
-  </a>
-    <a class="card" href="about.html">
-    <div class="title">📄 About</div>
-    <div class="desc">Project details, roadmap, support and contact info.</div>
-  </a>
-</div>
+    <!-- Hub Links -->
+    <div class="grid" aria-label="Linear Clock Lab Links">
+      <a class="card" href="clock.html">
+        <div class="title">🕐 Minimal Clock</div>
+        <div class="desc">
+          Pure linear clock line with ticks, live marker, 12/24h toggle.
+        </div>
+      </a>
+      <a class="card" href="multi-clock.html">
+        <div class="title">🌍 Multi-Clock</div>
+        <div class="desc">Add multiple timezones as stacked linear clocks.</div>
+      </a>
+      <a class="card" href="clock_presets.html">
+        <div class="title">💡 Clock Colors</div>
+        <div class="desc">
+          Theme selector with neon & classic palettes and glow control.
+        </div>
+      </a>
+      <a class="card" href="focus.html">
+        <div class="title">⏱️ FocusLine</div>
+        <div class="desc">
+          Minimalist Pomodoro timer and notes to keep you moving.
+        </div>
+      </a>
+      <a class="card" href="stopwatch.html">
+        <div class="title">⏱ Stopwatch</div>
+        <div class="desc">
+          Linear stopwatches tracking time with precision, clarity, and color.
+        </div>
+      </a>
+      <a class="card" href="timer.html">
+        <div class="title">⏱ Timer</div>
+        <div class="desc">
+          Radiant countdown lines for precise, minimalist time tracking.
+        </div>
+      </a>
+      <a class="card" href="dashboard.html">
+        <div class="title">🗂️ Dashboard</div>
+        <div class="desc">Arrange your clocks and tools as movable tiles.</div>
+      </a>
+      <a class="card" href="about.html">
+        <div class="title">📄 About</div>
+        <div class="desc">
+          Project details, roadmap, support and contact info.
+        </div>
+      </a>
+    </div>
 
+    <!-- Navigation or link section ends here -->
 
+    <!-- ✨ Motto + Matching Divider -->
+    <hr
+      style="
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin: 32px 0;
+      "
+    />
+    <p
+      style="
+        text-align: center;
+        color: #888;
+        font-size: 0.95em;
+        margin: 18px 0 0;
+      "
+    >
+      <em>Minimal time, maximum clarity.</em>
+    </p>
 
-<!-- Navigation or link section ends here -->
+    <footer style="margin-top: 12px; font-size: 0.9em; color: #777">
+      <p>© 2025 <strong>jm5k</strong></p>
+    </footer>
 
-<!-- ✨ Motto + Matching Divider -->
-<hr style="border:none; border-top:1px solid rgba(255,255,255,0.1); margin:32px 0;">
-<p style="text-align:center; color:#888; font-size:0.95em; margin:18px 0 0;">
-  <em>Minimal time, maximum clarity.</em>
-</p>
+    <script>
+      /* ===== Original minimal clock logic (kept tight) ===== */
+      function createTicks() {
+        const t = document.getElementById("ticks");
+        for (let h = 0; h < 24; h++) {
+          for (let q = 0; q < 4; q++) {
+            const pos = ((h + q / 4) / 24) * 100;
+            const d = document.createElement("div");
+            d.className = "tick " + (q === 0 ? "hour" : "qtr");
+            d.style.left = `calc(${pos}% - 1px)`;
+            t.appendChild(d);
+          }
+        }
+      }
 
-<footer style="margin-top:12px;font-size:0.9em;color:#777;">
-  <p>© 2025 <strong>jm5k</strong></p>
-</footer>
+      let use24h = JSON.parse(localStorage.getItem("use24h") ?? "true");
 
+      function formatHourLabel(h24) {
+        if (use24h) return String(h24).padStart(2, "0");
+        const base = h24 % 12 || 12;
+        return String(base).padStart(2, "0");
+      }
 
-<script>
-/* ===== Original minimal clock logic (kept tight) ===== */
-function createTicks(){
-  const t = document.getElementById('ticks');
-  for(let h=0; h<24; h++){
-    for(let q=0; q<4; q++){
-      const pos = (h + q/4) / 24 * 100;
-      const d = document.createElement('div');
-      d.className = 'tick ' + (q===0 ? 'hour' : 'qtr');
-      d.style.left = `calc(${pos}% - 1px)`;
-      t.appendChild(d);
-    }
-  }
-}
+      function renderHourLabels() {
+        const labels = document.getElementById("hourLabels");
+        labels.innerHTML = "";
+        for (let h = 0; h <= 24; h++) {
+          const span = document.createElement("span");
+          span.textContent = formatHourLabel(h);
+          if (h >= 8 && h <= 17) span.classList.add("workhour");
+          labels.appendChild(span);
+        }
+      }
 
-let use24h = JSON.parse(localStorage.getItem('use24h') ?? 'true');
+      function formatClockTime(hours, minutes) {
+        if (use24h) {
+          return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+            2,
+            "0"
+          )}`;
+        } else {
+          let h = hours % 12;
+          if (h === 0) h = 12;
+          return `${String(h).padStart(2, "0")}:${String(minutes).padStart(
+            2,
+            "0"
+          )} ${hours >= 12 ? "PM" : "AM"}`;
+        }
+      }
 
-function formatHourLabel(h24){
-  if(use24h) return String(h24).padStart(2,'0');
-  const base = (h24 % 12) || 12;
-  return String(base).padStart(2,'0');
-}
+      function fmtHMS(totalSeconds) {
+        const s = Math.max(0, Math.floor(totalSeconds));
+        const hh = String(Math.floor(s / 3600)).padStart(2, "0");
+        const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+        const ss = String(s % 60).padStart(2, "0");
+        return `${hh}:${mm}:${ss}`;
+      }
 
-function renderHourLabels(){
-  const labels = document.getElementById('hourLabels');
-  labels.innerHTML = '';
-  for(let h=0; h<=24; h++){
-    const span = document.createElement('span');
-    span.textContent = formatHourLabel(h);
-    if(h >= 8 && h <= 17) span.classList.add('workhour');
-    labels.appendChild(span);
-  }
-}
+      function updateClock() {
+        const now = new Date();
+        const h = now.getHours(),
+          m = now.getMinutes(),
+          s = now.getSeconds();
+        const hoursFloat = h + m / 60 + s / 3600;
+        document.getElementById("marker").style.left = `calc(${
+          (hoursFloat / 24) * 100
+        }%)`;
+        document.getElementById("currentTimeTop").textContent = formatClockTime(
+          h,
+          m
+        );
+        const secondsSinceMidnight = h * 3600 + m * 60 + s;
+        const secondsPerDay = 86400;
+        const pct = (secondsSinceMidnight / secondsPerDay) * 100;
+        const remaining = secondsPerDay - secondsSinceMidnight;
+        document.getElementById("statsBottom").textContent = `${pct.toFixed(
+          2
+        )}% of day elapsed | ${fmtHMS(remaining)} remaining`;
+      }
 
-function formatClockTime(hours, minutes){
-  if(use24h){
-    return `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}`;
-  } else {
-    let h = hours % 12; if(h === 0) h = 12;
-    return `${String(h).padStart(2,'0')}:${String(minutes).padStart(2,'0')} ${hours>=12?'PM':'AM'}`;
-  }
-}
+      /* Init */
+      createTicks();
+      renderHourLabels();
+      updateClock();
+      setInterval(updateClock, 1000);
 
-function fmtHMS(totalSeconds){
-  const s = Math.max(0, Math.floor(totalSeconds));
-  const hh = String(Math.floor(s/3600)).padStart(2,'0');
-  const mm = String(Math.floor((s%3600)/60)).padStart(2,'0');
-  const ss = String(s%60).padStart(2,'0');
-  return `${hh}:${mm}:${ss}`;
-}
-
-function updateClock(){
-  const now = new Date();
-  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-  const hoursFloat = h + m/60 + s/3600;
-  document.getElementById('marker').style.left = `calc(${hoursFloat/24*100}%)`;
-  document.getElementById('currentTimeTop').textContent = formatClockTime(h,m);
-  const secondsSinceMidnight = h*3600 + m*60 + s;
-  const secondsPerDay = 86400;
-  const pct = (secondsSinceMidnight / secondsPerDay) * 100;
-  const remaining = secondsPerDay - secondsSinceMidnight;
-  document.getElementById('statsBottom').textContent =
-    `${pct.toFixed(2)}% of day elapsed | ${fmtHMS(remaining)} remaining`;
-}
-
-/* Init */
-createTicks();
-renderHourLabels();
-updateClock();
-setInterval(updateClock, 1000);
-
-/* Toggle */
-const toggle = document.getElementById('formatToggle');
-const label = document.getElementById('formatLabel');
-toggle.checked = use24h;
-label.textContent = use24h ? '24-hour' : '12-hour';
-toggle.addEventListener('change', () => {
-  use24h = toggle.checked;
-  localStorage.setItem('use24h', JSON.stringify(use24h));
-  label.textContent = use24h ? '24-hour' : '12-hour';
-  renderHourLabels();
-  updateClock();
-});
-</script>
-</body>
+      /* Toggle */
+      const toggle = document.getElementById("formatToggle");
+      const label = document.getElementById("formatLabel");
+      toggle.checked = use24h;
+      label.textContent = use24h ? "24-hour" : "12-hour";
+      toggle.addEventListener("change", () => {
+        use24h = toggle.checked;
+        localStorage.setItem("use24h", JSON.stringify(use24h));
+        label.textContent = use24h ? "24-hour" : "12-hour";
+        renderHourLabels();
+        updateClock();
+      });
+    </script>
+  </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
