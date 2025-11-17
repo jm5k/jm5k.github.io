@@ -7,7 +7,7 @@
     <title>Temporal Forge | Linear Clock Lab</title>
     <meta
       name="description"
-      content="Temporal Forge — an idle time-smelting game for Linear Clock Lab. Turn real-world seconds into Time Ore, Alloys, Chrono Bars, and Epoch Cores with upgrades, crits, milestones, and time boosts."
+      content="Temporal Forge — an idle time-smelting game for Linear Clock Lab. Turn real-world seconds into Aeon Dust, Pressed Flux, Chrono Bars, and Epoch Cores with upgrades, crits, milestones, and time boosts."
     />
     <meta
       name="keywords"
@@ -449,6 +449,33 @@
         justify-content: flex-end;
       }
 
+      /* Machines (inside Upgrades card) */
+      .machines-list {
+        margin-top: 10px;
+      }
+
+      .upgrade.machine {
+        padding: 9px 11px;
+      }
+
+      .machine-status {
+        font-size: 0.7rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .machine-status span.online {
+        color: var(--success);
+      }
+
+      .machine-status span.locked {
+        color: var(--danger);
+      }
+
+      .machine-status span.resource {
+        color: var(--accent);
+      }
+
       /* Footer */
       footer {
         padding: 10px 6vw 14px;
@@ -494,8 +521,8 @@
       <div class="title-block">
         <h1>Temporal Forge</h1>
         <p>
-          Smelt real-world seconds into alloys, Chrono Bars, and Epoch Cores —
-          with crits, milestones, and time boosts.
+          Smelt real-world seconds into Aeon Dust, Pressed Flux, Chrono Bars,
+          and Epoch Cores — with crits, milestones, and time boosts.
         </p>
       </div>
       <a class="nav-link" href="index.html">
@@ -531,30 +558,30 @@
           >
 
           <div class="resources">
-            <div class="res-pill" id="pill-ore">
+            <div class="res-pill" id="pill-aeon">
               <div class="res-label">
-                <span class="key">Time Ore</span>
+                <span class="key">Aeon Dust</span>
                 <span class="badge">Tier I</span>
               </div>
               <div class="res-value">
-                <strong id="ore-count">0</strong>
+                <strong id="aeon-count">0</strong>
               </div>
               <div class="res-rate">
-                Generation: <span id="ore-rate">0 /s</span>
-                <span id="ore-rate-boost"></span>
+                Generation: <span id="aeon-rate">0 /s</span>
+                <span id="aeon-rate-boost"></span>
               </div>
             </div>
 
-            <div class="res-pill" id="pill-alloy">
+            <div class="res-pill" id="pill-flux">
               <div class="res-label">
-                <span class="key">Alloys</span>
+                <span class="key">Pressed Flux</span>
                 <span class="badge">Tier II</span>
               </div>
               <div class="res-value">
-                <strong id="alloy-count">0</strong>
+                <strong id="flux-count">0</strong>
               </div>
               <div class="res-rate">
-                Auto Smelt: <span id="alloy-rate">0 /s</span>
+                Automation: <span id="flux-rate">0 /s</span>
               </div>
             </div>
 
@@ -584,27 +611,29 @@
           </div>
 
           <div class="actions-block">
-            <!-- Smelting -->
+            <!-- Flux Press / Smelting -->
             <div class="action-row">
-              <div class="action-label">Smelting</div>
+              <div class="action-label">Flux Press</div>
               <button
-                id="btn-smelt"
+                id="btn-press"
                 class="secondary"
-                title="Convert 60 Time Ore into 1 Alloy. Hotkey: S"
+                title="Convert 60 Aeon Dust into 1 Pressed Flux. Hotkey: S"
               >
-                🔥 Smelt 60 Ore → 1 Alloy <span class="hotkey">(S)</span>
+                🔥 Press 60 Aeon Dust → 1 Pressed Flux
+                <span class="hotkey">(S)</span>
               </button>
             </div>
 
-            <!-- Forge Bars -->
+            <!-- Chrono Forge -->
             <div class="action-row">
-              <div class="action-label">Forge Station</div>
+              <div class="action-label">Chrono Forge</div>
               <button
                 id="btn-forge"
                 class="primary"
-                title="Forge Chrono Bars by spending Alloys. Hotkey: F"
+                title="Forge Chrono Bars by spending Pressed Flux. Hotkey: F"
               >
-                🔨 Forge Chrono Bars (60 Alloys) <span class="hotkey">(F)</span>
+                🔨 Forge Chrono Bars (60 Pressed Flux)
+                <span class="hotkey">(F)</span>
               </button>
             </div>
 
@@ -614,9 +643,9 @@
               possible use(s) right now.
             </div>
 
-            <!-- Forge Epoch Cores -->
+            <!-- Temporal Fabrication Array / Epoch Cores -->
             <div class="action-row">
-              <div class="action-label">Epoch Crucible</div>
+              <div class="action-label">Temporal Fabrication Array</div>
               <button
                 id="btn-epoch"
                 class="primary"
@@ -631,21 +660,22 @@
               possible core(s) right now.
             </div>
 
-            <!-- Auto Smelter Toggle -->
+            <!-- Flux Press Automation Toggle -->
             <div class="action-row">
               <div class="action-label">Automation</div>
               <button
                 id="btn-toggle-auto"
                 class="secondary"
-                title="Toggle automatic smelting of Ore into Alloys. Unlocks with tier2automation upgrade."
+                title="Toggle automatic pressing of Aeon Dust into Pressed Flux. Unlocks with automation upgrade and Flux Press machine."
               >
-                Auto Smelter: Locked
+                Flux Press Automation: Locked
               </button>
             </div>
             <div class="auto-meta">
-              Auto Smelter converts <span class="highlight">Time Ore</span> into
-              <span class="highlight">Alloys</span> when enabled. Turn it off if
-              you want to stockpile Ore for upgrades.
+              Flux Press Automation converts
+              <span class="highlight">Aeon Dust</span> into
+              <span class="highlight">Pressed Flux</span> when enabled. Turn it
+              off if you want to stockpile Aeon Dust for upgrades.
             </div>
 
             <!-- Time Boosts -->
@@ -654,9 +684,9 @@
               <button
                 id="btn-time-surge"
                 class="secondary"
-                title="Temporarily triples Time Ore generation."
+                title="Temporarily triples Aeon Dust generation."
               >
-                ⚡ Time Surge (+300% Ore/sec, 20s)
+                ⚡ Time Surge (+300% Aeon Dust/sec, 20s)
               </button>
             </div>
             <div class="boost-meta">
@@ -667,30 +697,33 @@
 
           <div class="smelt-log" id="log">
             <div class="smelt-log-line">
-              Forge initialized. <span class="highlight">Time Ore</span> will
-              accumulate as long as this save exists.
+              Forge initialized.
+              <span class="highlight">Aeon Dust</span> will accumulate as long
+              as this save exists.
             </div>
           </div>
         </section>
 
-        <!-- RIGHT: Upgrades -->
+        <!-- RIGHT: Upgrades + Machines -->
         <section class="card">
           <h2>Upgrades</h2>
           <small
-            >Crits, milestones, and automation push your forge forward.</small
+            >Milestones, automation, and machine unlocks push your forge
+            forward.</small
           >
 
           <div class="upgrades-list" id="upgrades-list">
             <article class="upgrade" data-upgrade-id="tier1generation">
               <div>
                 <div class="upgrade-header">
-                  <strong>Faster Drilling</strong>
+                  <strong>Faster Collector</strong>
                   <span class="desc"
-                    >Boosts Time Ore (Tier I) generation per second.</span
+                    >Boosts Aeon Dust (Tier I) generation per second.</span
                   >
                 </div>
                 <div class="upgrade-meta">
-                  Cost: <span class="cost" data-cost-label>120 Time Ore</span> ·
+                  Cost:
+                  <span class="cost" data-cost-label>120 Aeon Dust</span> ·
                   Level: <span class="level" data-level-label>0</span>
                 </div>
               </div>
@@ -702,13 +735,15 @@
             <article class="upgrade" data-upgrade-id="tier2automation">
               <div>
                 <div class="upgrade-header">
-                  <strong>Auto Smelter</strong>
+                  <strong>Flux Press Automation</strong>
                   <span class="desc"
-                    >Automatically smelts Time Ore into Alloys over time.</span
+                    >Automatically presses Aeon Dust into Pressed Flux over
+                    time.</span
                   >
                 </div>
                 <div class="upgrade-meta">
-                  Cost: <span class="cost" data-cost-label>5 Alloys</span> ·
+                  Cost:
+                  <span class="cost" data-cost-label>5 Pressed Flux</span> ·
                   Level: <span class="level" data-level-label>0</span>
                 </div>
               </div>
@@ -720,18 +755,118 @@
             <article class="upgrade" data-upgrade-id="tier3efficiency">
               <div>
                 <div class="upgrade-header">
-                  <strong>Efficient Forge</strong>
+                  <strong>Chrono Forge Tuning</strong>
                   <span class="desc"
                     >Each forge action creates more Chrono Bars.</span
                   >
                 </div>
                 <div class="upgrade-meta">
-                  Cost: <span class="cost" data-cost-label>10 Alloys</span> ·
+                  Cost:
+                  <span class="cost" data-cost-label>10 Pressed Flux</span> ·
                   Level: <span class="level" data-level-label>0</span>
                 </div>
               </div>
               <div class="upgrade-actions">
                 <button class="secondary" data-upgrade-button>Upgrade</button>
+              </div>
+            </article>
+          </div>
+
+          <!-- Machines: larger pills, under Upgrades -->
+          <div class="upgrades-list machines-list" id="machines-list">
+            <article class="upgrade machine" data-machine-id="dustCollector">
+              <div>
+                <div class="upgrade-header">
+                  <strong>Dust Collector</strong>
+                  <span class="desc"
+                    >Core Aeon Dust generator. Always online from the
+                    start.</span
+                  >
+                </div>
+                <div class="machine-status">
+                  Status: <span class="online">Online</span> · Handles
+                  <span class="resource">Aeon Dust (Tier I)</span>
+                </div>
+              </div>
+              <div class="upgrade-actions">
+                <button class="secondary" disabled>Unlocked</button>
+              </div>
+            </article>
+
+            <article class="upgrade machine" data-machine-id="fluxPress">
+              <div>
+                <div class="upgrade-header">
+                  <strong>Flux Press</strong>
+                  <span class="desc"
+                    >Presses Aeon Dust into Pressed Flux. Required for manual
+                    and automated pressing.</span
+                  >
+                </div>
+                <div class="machine-status">
+                  Status: <span class="locked">Locked</span> · Unlock cost:
+                  <span class="resource" id="machine-flux-cost"
+                    >10,000 Aeon Dust</span
+                  >
+                </div>
+              </div>
+              <div class="upgrade-actions">
+                <button
+                  class="primary"
+                  data-machine-button="fluxPress"
+                  title="Spend 10,000 Aeon Dust to unlock the Flux Press."
+                >
+                  Unlock Flux Press
+                </button>
+              </div>
+            </article>
+
+            <article class="upgrade machine" data-machine-id="chronoForge">
+              <div>
+                <div class="upgrade-header">
+                  <strong>Chrono Forge</strong>
+                  <span class="desc"
+                    >Forges Pressed Flux into Chrono Bars.</span
+                  >
+                </div>
+                <div class="machine-status">
+                  Status: <span class="locked">Locked</span> · Unlock cost:
+                  <span class="resource" id="machine-chrono-cost"
+                    >1,000 Pressed Flux</span
+                  >
+                </div>
+              </div>
+              <div class="upgrade-actions">
+                <button
+                  class="primary"
+                  data-machine-button="chronoForge"
+                  title="Spend 1,000 Pressed Flux to unlock the Chrono Forge."
+                >
+                  Unlock Chrono Forge
+                </button>
+              </div>
+            </article>
+
+            <article class="upgrade machine" data-machine-id="temporalArray">
+              <div>
+                <div class="upgrade-header">
+                  <strong>Temporal Fabrication Array</strong>
+                  <span class="desc">Casts Epoch Cores from Chrono Bars.</span>
+                </div>
+                <div class="machine-status">
+                  Status: <span class="locked">Locked</span> · Unlock cost:
+                  <span class="resource" id="machine-array-cost"
+                    >100 Chrono Bars</span
+                  >
+                </div>
+              </div>
+              <div class="upgrade-actions">
+                <button
+                  class="primary"
+                  data-machine-button="temporalArray"
+                  title="Spend 100 Chrono Bars to unlock the Temporal Fabrication Array."
+                >
+                  Unlock Temporal Array
+                </button>
               </div>
             </article>
           </div>
@@ -748,26 +883,25 @@
         &nbsp;·&nbsp;
         <span class="danger-link" id="reset-save">Reset Forge</span>
       </div>
-    </footer>
 
     <script>
       (function () {
-        const SAVE_KEY = "TemporalForgeSave_v3";
+        const SAVE_KEY = "TemporalForge_AeonDust_v1";
         const DEV_MODE = true; // Set to false for production
 
-        // Resource UI elements (still named after lore terms)
-        const oreEl = document.getElementById("ore-count");
-        const alloyEl = document.getElementById("alloy-count");
+        // Resource UI elements
+        const aeonEl = document.getElementById("aeon-count");
+        const fluxEl = document.getElementById("flux-count");
         const barEl = document.getElementById("bar-count");
         const epochEl = document.getElementById("epoch-count");
-        const oreRateEl = document.getElementById("ore-rate");
-        const oreRateBoostEl = document.getElementById("ore-rate-boost");
-        const alloyRateEl = document.getElementById("alloy-rate");
+        const aeonRateEl = document.getElementById("aeon-rate");
+        const aeonRateBoostEl = document.getElementById("aeon-rate-boost");
+        const fluxRateEl = document.getElementById("flux-rate");
         const barMultEl = document.getElementById("bar-mult");
         const logEl = document.getElementById("log");
         const saveStatusEl = document.getElementById("save-status");
 
-        const btnSmelt = document.getElementById("btn-smelt");
+        const btnPress = document.getElementById("btn-press");
         const btnForge = document.getElementById("btn-forge");
         const btnEpoch = document.getElementById("btn-epoch");
         const btnTimeSurge = document.getElementById("btn-time-surge");
@@ -786,21 +920,42 @@
         const railRemaining = document.getElementById("rail-remaining");
 
         const upgradesListEl = document.getElementById("upgrades-list");
+        const machinesListEl = document.getElementById("machines-list");
 
-        const pillOre = document.getElementById("pill-ore");
-        const pillAlloy = document.getElementById("pill-alloy");
+        const pillAeon = document.getElementById("pill-aeon");
+        const pillFlux = document.getElementById("pill-flux");
         const pillBar = document.getElementById("pill-bar");
         const pillEpoch = document.getElementById("pill-epoch");
 
+        const machineEls = {
+          dustCollector: machinesListEl.querySelector(
+            '[data-machine-id="dustCollector"]'
+          ),
+          fluxPress: machinesListEl.querySelector(
+            '[data-machine-id="fluxPress"]'
+          ),
+          chronoForge: machinesListEl.querySelector(
+            '[data-machine-id="chronoForge"]'
+          ),
+          temporalArray: machinesListEl.querySelector(
+            '[data-machine-id="temporalArray"]'
+          ),
+        };
+
+        // Machine unlock costs
+        const FLUX_PRESS_UNLOCK_DUST = 10000; // Aeon Dust
+        const CHRONO_FORGE_UNLOCK_FLUX = 1000; // Pressed Flux
+        const TEMP_ARRAY_UNLOCK_BARS = 100; // Chrono Bars
+
         // Generic tier economy
-        const TIER1_PER_TIER2 = 60; // 60 Time Ore → 1 Alloy
-        const TIER2_PER_TIER3 = 60; // 60 Alloys → 1 Chrono Bar (before multipliers)
+        const TIER1_PER_TIER2 = 60; // 60 Aeon Dust → 1 Pressed Flux
+        const TIER2_PER_TIER3 = 60; // 60 Pressed Flux → 1 Chrono Bar (before multipliers)
         const TIER3_PER_TIER4 = 12; // 12 Bars → 1 Epoch Core
 
         // Crit chances
-        const CRIT_SMELT_CHANCE = 0.05;
+        const CRIT_PRESS_CHANCE = 0.05;
         const CRIT_FORGE_CHANCE = 0.05;
-        const CRIT_SMELT_MULTIPLIER = 3;
+        const CRIT_PRESS_MULTIPLIER = 3;
         const CRIT_FORGE_MULTIPLIER = 3;
 
         // Time Surge
@@ -809,15 +964,15 @@
         const SURGE_COOLDOWN = 300; // seconds
 
         let state = {
-          // Tiers: internal generic bones
-          tier1resource: 0, // Time Ore
-          tier2resource: 0, // Alloys
+          // Internal tiers
+          tier1resource: 0, // Aeon Dust
+          tier2resource: 0, // Pressed Flux
           tier3resource: 0, // Chrono Bars
           tier4resource: 0, // Epoch Cores
 
           tier1BaseRate: 1,
           tier1BonusRate: 0,
-          tier2AutomationRate: 0, // alloys/sec if enabled and enough tier1
+          tier2AutomationRate: 0, // flux/sec if enabled and enough Aeon Dust
           tier2AutomationEnabled: false,
           tier3Multiplier: 1,
 
@@ -857,6 +1012,13 @@
             },
           },
 
+          machines: {
+            dustCollector: { unlocked: true },
+            fluxPress: { unlocked: false },
+            chronoForge: { unlocked: false },
+            temporalArray: { unlocked: false },
+          },
+
           lastUpdate: Date.now(),
         };
 
@@ -864,29 +1026,28 @@
           tier1generation: {
             baseCost: 120,
             costScale: 1.65,
-            currency: "tier1", // Time Ore
+            currency: "tier1", // Aeon Dust
             bonusPerLevel: 0.4, // +0.4 tier1/s
-            label: "Time Ore",
+            label: "Aeon Dust",
           },
           tier2automation: {
             baseCost: 5,
             costScale: 2,
-            currency: "tier2", // Alloys
-            bonusPerLevel: 0.2, // +0.2 Alloys/s
-            label: "Alloys",
+            currency: "tier2", // Pressed Flux
+            bonusPerLevel: 0.2, // +0.2 Flux/s
+            label: "Pressed Flux",
           },
           tier3efficiency: {
             baseCost: 10,
             costScale: 2.1,
-            currency: "tier2", // Alloys
+            currency: "tier2", // Pressed Flux
             bonusPerLevel: 0.3, // +0.3x forge multiplier
-            label: "Alloys",
+            label: "Pressed Flux",
           },
         };
 
         function formatNumber(value) {
-          // Always show, at most, what you actually have
-          const v = Math.floor(value + 1e-9); // tiny epsilon to calm float noise
+          const v = Math.floor(value + 1e-9);
 
           if (v < 1000) return v.toString();
           if (v < 1000000)
@@ -945,9 +1106,10 @@
               totals: { ...state.totals, ...(data.totals || {}) },
               milestones: { ...state.milestones, ...(data.milestones || {}) },
               boosts: { ...state.boosts, ...(data.boosts || {}) },
+              machines: { ...state.machines, ...(data.machines || {}) },
             };
             appendLog(
-              `<span class="success">Loaded existing forge state.</span> You kept earning <span class="highlight">Time Ore</span> since your last visit.`
+              `<span class="success">Loaded existing forge state.</span> You kept earning <span class="highlight">Aeon Dust</span> since your last visit.`
             );
           } catch (e) {
             console.error("Load error", e);
@@ -1003,10 +1165,16 @@
                 cooldown: 0,
               },
             },
+            machines: {
+              dustCollector: { unlocked: true },
+              fluxPress: { unlocked: false },
+              chronoForge: { unlocked: false },
+              temporalArray: { unlocked: false },
+            },
             lastUpdate: Date.now(),
           };
           appendLog(
-            `<span class="danger">Forge reset.</span> All resources, milestones, and upgrades cleared.`
+            `<span class="danger">Forge reset.</span> All resources, milestones, upgrades, and machines cleared.`
           );
           updateUI();
           saveState();
@@ -1042,55 +1210,55 @@
           const t = state.totals;
           const m = state.milestones;
 
-          // Tier1 (Time Ore) milestones
+          // Tier1 (Aeon Dust) milestones
           if (!m.tier1_10k && t.tier1Generated >= 10000) {
             m.tier1_10k = true;
             state.tier1BonusRate += 0.5;
-            flashPill(pillOre);
+            flashPill(pillAeon);
             appendLog(
-              `<span class="success">Milestone unlocked:</span> Smelted 10,000 Time Ore. Permanent Ore rate +<span class="highlight">0.5/s</span>.`
+              `<span class="success">Milestone unlocked:</span> Collected 10,000 Aeon Dust. Permanent Dust rate +<span class="highlight">0.5/s</span>.`
             );
           }
           if (!m.tier1_100k && t.tier1Generated >= 100000) {
             m.tier1_100k = true;
             state.tier1BonusRate += 1.0;
-            flashPill(pillOre);
+            flashPill(pillAeon);
             appendLog(
-              `<span class="success">Milestone unlocked:</span> Smelted 100,000 Time Ore. Permanent Ore rate +<span class="highlight">1.0/s</span>.`
+              `<span class="success">Milestone unlocked:</span> Collected 100,000 Aeon Dust. Permanent Dust rate +<span class="highlight">1.0/s</span>.`
             );
           }
           if (!m.tier1_1m && t.tier1Generated >= 1000000) {
             m.tier1_1m = true;
             state.tier1BonusRate += 2.0;
-            flashPill(pillOre);
+            flashPill(pillAeon);
             appendLog(
-              `<span class="success">Milestone unlocked:</span> Smelted 1,000,000 Time Ore. Permanent Ore rate +<span class="highlight">2.0/s</span>.`
+              `<span class="success">Milestone unlocked:</span> Collected 1,000,000 Aeon Dust. Permanent Dust rate +<span class="highlight">2.0/s</span>.`
             );
           }
 
-          // Tier2 (Alloys) milestones
+          // Tier2 (Pressed Flux) milestones
           if (!m.tier2_100 && t.tier2Generated >= 100) {
             m.tier2_100 = true;
             state.tier2AutomationRate += 0.1;
-            flashPill(pillAlloy);
+            flashPill(pillFlux);
             appendLog(
-              `<span class="success">Milestone unlocked:</span> Smelted 100 Alloys. Auto Smelt +<span class="highlight">0.10/s</span>.`
+              `<span class="success">Milestone unlocked:</span> Pressed 100 Flux. Automation +<span class="highlight">0.10/s</span>.`
             );
           }
           if (!m.tier2_500 && t.tier2Generated >= 500) {
             m.tier2_500 = true;
             state.tier2AutomationRate += 0.2;
-            flashPill(pillAlloy);
+            flashPill(pillFlux);
             appendLog(
-              `<span class="success">Milestone unlocked:</span> Smelted 500 Alloys. Auto Smelt +<span class="highlight">0.20/s</span>.`
+              `<span class="success">Milestone unlocked:</span> Pressed 500 Flux. Automation +<span class="highlight">0.20/s</span>.`
             );
           }
           if (!m.tier2_2k && t.tier2Generated >= 2000) {
             m.tier2_2k = true;
             state.tier2AutomationRate += 0.4;
-            flashPill(pillAlloy);
+            flashPill(pillFlux);
             appendLog(
-              `<span class="success">Milestone unlocked:</span> Smelted 2,000 Alloys. Auto Smelt +<span class="highlight">0.40/s</span>.`
+              `<span class="success">Milestone unlocked:</span> Pressed 2,000 Flux. Automation +<span class="highlight">0.40/s</span>.`
             );
           }
 
@@ -1126,7 +1294,7 @@
             state.tier1BaseRate += 0.5;
             flashPill(pillEpoch);
             appendLog(
-              `<span class="success">Epoch Milestone:</span> 1 Epoch Core forged. Base Ore rate +<span class="highlight">0.5/s</span>.`
+              `<span class="success">Epoch Milestone:</span> 1 Epoch Core cast. Base Dust rate +<span class="highlight">0.5/s</span>.`
             );
           }
           if (!m.tier4_3 && t.tier4Generated >= 3) {
@@ -1135,7 +1303,7 @@
             state.tier2AutomationRate += 0.2;
             flashPill(pillEpoch);
             appendLog(
-              `<span class="success">Epoch Milestone:</span> 3 Epoch Cores forged. Base Ore rate +<span class="highlight">1.0/s</span>, Auto Smelt +<span class="highlight">0.2/s</span>.`
+              `<span class="success">Epoch Milestone:</span> 3 Epoch Cores cast. Base Dust rate +<span class="highlight">1.0/s</span>, Automation +<span class="highlight">0.2/s</span>.`
             );
           }
           if (!m.tier4_10 && t.tier4Generated >= 10) {
@@ -1143,31 +1311,139 @@
             state.tier3Multiplier += 1.5;
             flashPill(pillEpoch);
             appendLog(
-              `<span class="success">Epoch Milestone:</span> 10 Epoch Cores forged. Forge multiplier +<span class="highlight">1.5x</span>.`
+              `<span class="success">Epoch Milestone:</span> 10 Epoch Cores cast. Forge multiplier +<span class="highlight">1.5x</span>.`
             );
           }
         }
 
         function updateAutoSmelterToggleUI() {
           const level = state.upgrades.tier2automation || 0;
-          if (level <= 0) {
+          const fluxPressUnlocked = state.machines.fluxPress.unlocked;
+
+          if (level <= 0 || !fluxPressUnlocked) {
             btnToggleAuto.disabled = true;
-            btnToggleAuto.textContent = "Auto Smelter: Locked";
+            btnToggleAuto.textContent = fluxPressUnlocked
+              ? "Flux Press Automation: Locked (Upgrade needed)"
+              : "Flux Press Automation: Locked (Machine offline)";
           } else {
             btnToggleAuto.disabled = false;
             btnToggleAuto.textContent = state.tier2AutomationEnabled
-              ? "Auto Smelter: ON"
-              : "Auto Smelter: OFF";
+              ? "Flux Press Automation: ON"
+              : "Flux Press Automation: OFF";
           }
+        }
+
+        function updateMachinesUI() {
+          // Dust Collector: always online
+          const dcEl = machineEls.dustCollector;
+          if (dcEl) {
+            const statusEl = dcEl.querySelector(".machine-status");
+            if (statusEl) {
+              statusEl.innerHTML =
+                'Status: <span class="online">Online</span> · Handles <span class="resource">Aeon Dust (Tier I)</span>';
+            }
+          }
+
+          // Flux Press
+          const fpEl = machineEls.fluxPress;
+          if (fpEl) {
+            const statusEl = fpEl.querySelector(".machine-status");
+            const btn = fpEl.querySelector('[data-machine-button="fluxPress"]');
+            if (state.machines.fluxPress.unlocked) {
+              if (statusEl) {
+                statusEl.innerHTML =
+                  'Status: <span class="online">Online</span> · Handles <span class="resource">Pressed Flux (Tier II)</span>';
+              }
+              if (btn) {
+                btn.disabled = true;
+                btn.textContent = "Unlocked";
+              }
+            } else {
+              const canAfford = state.tier1resource >= FLUX_PRESS_UNLOCK_DUST;
+              if (statusEl) {
+                statusEl.innerHTML =
+                  'Status: <span class="locked">Locked</span> · Unlock cost: <span class="resource">' +
+                  formatNumber(FLUX_PRESS_UNLOCK_DUST) +
+                  " Aeon Dust</span>";
+              }
+              if (btn) {
+                btn.disabled = !canAfford;
+              }
+            }
+          }
+
+          // Chrono Forge
+          const cfEl = machineEls.chronoForge;
+          if (cfEl) {
+            const statusEl = cfEl.querySelector(".machine-status");
+            const btn =
+              cfEl.querySelector('[data-machine-button="chronoForge"]');
+            if (state.machines.chronoForge.unlocked) {
+              if (statusEl) {
+                statusEl.innerHTML =
+                  'Status: <span class="online">Online</span> · Forges <span class="resource">Chrono Bars (Tier III)</span>';
+              }
+              if (btn) {
+                btn.disabled = true;
+                btn.textContent = "Unlocked";
+              }
+            } else {
+              const canAfford =
+                state.tier2resource >= CHRONO_FORGE_UNLOCK_FLUX;
+              if (statusEl) {
+                statusEl.innerHTML =
+                  'Status: <span class="locked">Locked</span> · Unlock cost: <span class="resource">' +
+                  formatNumber(CHRONO_FORGE_UNLOCK_FLUX) +
+                  " Pressed Flux</span>";
+              }
+              if (btn) {
+                btn.disabled = !canAfford;
+              }
+            }
+          }
+
+          // Temporal Fabrication Array
+          const taEl = machineEls.temporalArray;
+          if (taEl) {
+            const statusEl = taEl.querySelector(".machine-status");
+            const btn =
+              taEl.querySelector('[data-machine-button="temporalArray"]');
+            if (state.machines.temporalArray.unlocked) {
+              if (statusEl) {
+                statusEl.innerHTML =
+                  'Status: <span class="online">Online</span> · Casts <span class="resource">Epoch Cores (Tier IV)</span>';
+              }
+              if (btn) {
+                btn.disabled = true;
+                btn.textContent = "Unlocked";
+              }
+            } else {
+              const canAfford =
+                state.tier3resource >= TEMP_ARRAY_UNLOCK_BARS;
+              if (statusEl) {
+                statusEl.innerHTML =
+                  'Status: <span class="locked">Locked</span> · Unlock cost: <span class="resource">' +
+                  formatNumber(TEMP_ARRAY_UNLOCK_BARS) +
+                  " Chrono Bars</span>";
+              }
+              if (btn) {
+                btn.disabled = !canAfford;
+              }
+            }
+          }
+
+          updateAutoSmelterToggleUI();
         }
 
         function updateUpgradesUI() {
           const upgradeEls = upgradesListEl.querySelectorAll(".upgrade");
           upgradeEls.forEach((el) => {
             const id = el.getAttribute("data-upgrade-id");
+            if (!id) return;
             const def = upgradeDefs[id];
-            const level = state.upgrades[id] || 0;
+            if (!def) return;
 
+            const level = state.upgrades[id] || 0;
             const cost = Math.round(
               def.baseCost * Math.pow(def.costScale, level)
             );
@@ -1176,8 +1452,8 @@
             const levelLabel = el.querySelector("[data-level-label]");
             const button = el.querySelector("[data-upgrade-button]");
 
-            costLabel.textContent = `${cost} ${def.label}`;
-            levelLabel.textContent = level;
+            if (costLabel) costLabel.textContent = `${cost} ${def.label}`;
+            if (levelLabel) levelLabel.textContent = level;
 
             let affordable = false;
             if (def.currency === "tier1") {
@@ -1186,37 +1462,39 @@
               affordable = state.tier2resource >= cost;
             }
 
-            button.disabled = !affordable;
+            if (button) button.disabled = !affordable;
           });
 
-          const baseOrePerSec = state.tier1BaseRate + state.tier1BonusRate;
+          const baseAeonPerSec = state.tier1BaseRate + state.tier1BonusRate;
 
-          // Check if Time Surge is active
           const surgeActive = state.boosts.timeSurge?.active;
           const surgeMult = surgeActive ? SURGE_MULTIPLIER : 1;
-          const boostedOrePerSec = baseOrePerSec * surgeMult;
+          const boostedAeonPerSec = baseAeonPerSec * surgeMult;
 
-          // Show base rate, and boosted info when active
-          oreRateEl.textContent = baseOrePerSec.toFixed(2) + " /s";
+          aeonRateEl.textContent = baseAeonPerSec.toFixed(2) + " /s";
 
-          if (oreRateBoostEl) {
+          if (aeonRateBoostEl) {
             if (surgeActive) {
-              oreRateBoostEl.textContent = ` (BOOSTED → ${boostedOrePerSec.toFixed(
+              aeonRateBoostEl.textContent = ` (BOOSTED → ${boostedAeonPerSec.toFixed(
                 2
               )} /s)`;
-              oreRateBoostEl.style.color = "#00ffff";
+              aeonRateBoostEl.style.color = "#00ffff";
             } else {
-              oreRateBoostEl.textContent = "";
+              aeonRateBoostEl.textContent = "";
             }
           }
 
-          // Alloy auto-smelt rate (unchanged logic)
-          const effectiveAutoRate = state.tier2AutomationEnabled
-            ? state.tier2AutomationRate
-            : 0;
-          alloyRateEl.textContent = effectiveAutoRate.toFixed(2) + " /s";
+          const effectiveAutoRate =
+            state.tier2AutomationEnabled &&
+            state.machines.fluxPress.unlocked &&
+            state.upgrades.tier2automation > 0
+              ? state.tier2AutomationRate
+              : 0;
+
+          fluxRateEl.textContent = effectiveAutoRate.toFixed(2) + " /s";
 
           barMultEl.textContent = "x" + state.tier3Multiplier.toFixed(1);
+
           updateAutoSmelterToggleUI();
         }
 
@@ -1225,10 +1503,11 @@
             state.tier2resource / TIER2_PER_TIER3
           );
           forgeReadyEl.textContent = possibleForges;
-          btnForge.disabled = possibleForges <= 0;
+          btnForge.disabled =
+            possibleForges <= 0 || !state.machines.chronoForge.unlocked;
           btnForge.title = possibleForges
-            ? `Forge Chrono Bars using ${TIER2_PER_TIER3} Alloys. You can forge ${possibleForges} time(s) now. Hotkey: F`
-            : `Not enough Alloys. Requires ${TIER2_PER_TIER3} Alloys per Forge. Hotkey: F`;
+            ? `Forge Chrono Bars using ${TIER2_PER_TIER3} Pressed Flux. You can forge ${possibleForges} time(s) now. Hotkey: F`
+            : `Not enough Pressed Flux. Requires ${TIER2_PER_TIER3} Flux per Forge. Hotkey: F`;
         }
 
         function updateEpochUI() {
@@ -1236,7 +1515,8 @@
             state.tier3resource / TIER3_PER_TIER4
           );
           epochReadyEl.textContent = possibleEpochs;
-          btnEpoch.disabled = possibleEpochs <= 0;
+          btnEpoch.disabled =
+            possibleEpochs <= 0 || !state.machines.temporalArray.unlocked;
           btnEpoch.title = possibleEpochs
             ? `Cast an Epoch Core using ${TIER3_PER_TIER4} Chrono Bars. You can cast ${possibleEpochs} time(s) now.`
             : `Not enough Chrono Bars. Requires ${TIER3_PER_TIER4} Bars per Epoch Core.`;
@@ -1259,9 +1539,8 @@
         }
 
         function updateUI() {
-          // Map tier fields to lore UI
-          oreEl.textContent = formatNumber(state.tier1resource);
-          alloyEl.textContent = formatNumber(state.tier2resource);
+          aeonEl.textContent = formatNumber(state.tier1resource);
+          fluxEl.textContent = formatNumber(state.tier2resource);
           barEl.textContent = formatNumber(state.tier3resource);
           epochEl.textContent = formatNumber(state.tier4resource);
 
@@ -1269,6 +1548,7 @@
           updateForgeUI();
           updateEpochUI();
           updateTimeSurgeUI();
+          updateMachinesUI();
         }
 
         function updateBoostTimers(deltaSeconds) {
@@ -1280,7 +1560,7 @@
               surge.remaining = 0;
               surge.cooldown = SURGE_COOLDOWN;
               appendLog(
-                `<span class="highlight">Time Surge</span> has ended. Ore flow returns to normal.`
+                `<span class="highlight">Time Surge</span> has ended. Aeon Dust flow returns to normal.`
               );
             }
           } else if (surge.cooldown > 0) {
@@ -1294,16 +1574,19 @@
             ? SURGE_MULTIPLIER
             : 1;
 
-          const baseOrePerSec = state.tier1BaseRate + state.tier1BonusRate;
-          const orePerSec = baseOrePerSec * surgeMult;
+          const baseAeonPerSec = state.tier1BaseRate + state.tier1BonusRate;
+          const aeonPerSec = baseAeonPerSec * surgeMult;
 
-          const oreGain = orePerSec * deltaSeconds;
-          state.tier1resource += oreGain;
-          state.totals.tier1Generated += oreGain;
+          const aeonGain = aeonPerSec * deltaSeconds;
+          state.tier1resource += aeonGain;
+          state.totals.tier1Generated += aeonGain;
 
-          const effectiveAutoRate = state.tier2AutomationEnabled
-            ? state.tier2AutomationRate
-            : 0;
+          const effectiveAutoRate =
+            state.tier2AutomationEnabled &&
+            state.machines.fluxPress.unlocked &&
+            state.upgrades.tier2automation > 0
+              ? state.tier2AutomationRate
+              : 0;
 
           if (effectiveAutoRate > 0 && state.tier1resource > 0) {
             const potentialTier2 = effectiveAutoRate * deltaSeconds;
@@ -1335,10 +1618,17 @@
           requestAnimationFrame(gameLoop);
         }
 
-        function smeltOre() {
+        function pressFlux() {
+          if (!state.machines.fluxPress.unlocked) {
+            appendLog(
+              `<span class="danger">Flux Press offline.</span> Unlock the Flux Press machine to press Aeon Dust into Flux.`
+            );
+            return;
+          }
+
           if (state.tier1resource < TIER1_PER_TIER2) {
             appendLog(
-              `<span class="danger">Not enough Ore</span> — need ${TIER1_PER_TIER2} Time Ore to smelt.`
+              `<span class="danger">Not enough Aeon Dust</span> — need ${TIER1_PER_TIER2} Dust to press.`
             );
             return;
           }
@@ -1347,24 +1637,22 @@
 
           let gained = 1;
           let crit = false;
-          if (randomChance(CRIT_SMELT_CHANCE)) {
+          if (randomChance(CRIT_PRESS_CHANCE)) {
             crit = true;
-            gained = CRIT_SMELT_MULTIPLIER;
+            gained = CRIT_PRESS_MULTIPLIER;
           }
 
           state.tier2resource += gained;
           state.totals.tier2Generated += gained;
 
           if (crit) {
-            flashPill(pillAlloy);
+            flashPill(pillFlux);
             appendLog(
-              `<span class="crit">Critical smelt!</span> ${TIER1_PER_TIER2} Ore → <span class="success">${gained} Alloys</span>.`
+              `<span class="crit">Critical press!</span> ${TIER1_PER_TIER2} Aeon Dust → <span class="success">${gained} Pressed Flux</span>.`
             );
           } else {
             appendLog(
-              `Manual smelt: <span class="highlight">${TIER1_PER_TIER2}</span> Ore → <span class="success">${gained} Alloy${
-                gained > 1 ? "s" : ""
-              }</span>.`
+              `Manual press: <span class="highlight">${TIER1_PER_TIER2}</span> Aeon Dust → <span class="success">${gained} Flux</span>.`
             );
           }
 
@@ -1374,9 +1662,16 @@
         }
 
         function forgeBars() {
+          if (!state.machines.chronoForge.unlocked) {
+            appendLog(
+              `<span class="danger">Chrono Forge offline.</span> Unlock the Chrono Forge to convert Flux into Bars.`
+            );
+            return;
+          }
+
           if (state.tier2resource < TIER2_PER_TIER3) {
             appendLog(
-              `<span class="danger">Not enough Alloys</span> — need ${TIER2_PER_TIER3} Alloys to forge.`
+              `<span class="danger">Not enough Pressed Flux</span> — need ${TIER2_PER_TIER3} Flux to forge.`
             );
             updateForgeUI();
             return;
@@ -1399,13 +1694,13 @@
           if (crit) {
             flashPill(pillBar);
             appendLog(
-              `<span class="crit">Critical forge!</span> ${TIER2_PER_TIER3} Alloys → <span class="success">${gained.toFixed(
+              `<span class="crit">Critical forge!</span> ${TIER2_PER_TIER3} Flux → <span class="success">${gained.toFixed(
                 1
               )} Chrono Bars</span>.`
             );
           } else {
             appendLog(
-              `Forge action: <span class="highlight">${TIER2_PER_TIER3}</span> Alloys → <span class="success">${gained.toFixed(
+              `Forge action: <span class="highlight">${TIER2_PER_TIER3}</span> Flux → <span class="success">${gained.toFixed(
                 1
               )} Chrono Bars</span>.`
             );
@@ -1417,6 +1712,13 @@
         }
 
         function forgeEpochCore() {
+          if (!state.machines.temporalArray.unlocked) {
+            appendLog(
+              `<span class="danger">Temporal Array offline.</span> Unlock the Temporal Fabrication Array to cast Epoch Cores.`
+            );
+            return;
+          }
+
           if (state.tier3resource < TIER3_PER_TIER4) {
             appendLog(
               `<span class="danger">Not enough Chrono Bars</span> — need ${TIER3_PER_TIER4} Bars to cast an Epoch Core.`
@@ -1431,7 +1733,7 @@
 
           flashPill(pillEpoch);
           appendLog(
-            `Epoch Crucible: <span class="highlight">${TIER3_PER_TIER4}</span> Chrono Bars → <span class="success">1 Epoch Core</span>.`
+            `Temporal Fabrication: <span class="highlight">${TIER3_PER_TIER4}</span> Chrono Bars → <span class="success">1 Epoch Core</span>.`
           );
 
           checkMilestones();
@@ -1448,7 +1750,7 @@
           surge.cooldown = 0;
 
           appendLog(
-            `<span class="highlight">Time Surge activated.</span> Ore flow increased by <span class="success">+300%</span> for ${SURGE_DURATION} seconds.`
+            `<span class="highlight">Time Surge activated.</span> Aeon Dust flow increased by <span class="success">+300%</span> for ${SURGE_DURATION} seconds.`
           );
           updateTimeSurgeUI();
           saveState();
@@ -1456,10 +1758,11 @@
 
         function toggleAutoSmelter() {
           const level = state.upgrades.tier2automation || 0;
-          if (level <= 0) return;
+          if (level <= 0 || !state.machines.fluxPress.unlocked) return;
+
           state.tier2AutomationEnabled = !state.tier2AutomationEnabled;
           appendLog(
-            `Auto Smelter ${
+            `Flux Press Automation ${
               state.tier2AutomationEnabled
                 ? '<span class="success">enabled</span>.'
                 : '<span class="danger">disabled</span>.'
@@ -1471,6 +1774,7 @@
 
         function purchaseUpgrade(id) {
           const def = upgradeDefs[id];
+          if (!def) return;
           const level = state.upgrades[id] || 0;
           const cost = Math.round(
             def.baseCost * Math.pow(def.costScale, level)
@@ -1479,11 +1783,9 @@
           if (def.currency === "tier1") {
             if (state.tier1resource < cost) return;
             state.tier1resource -= cost;
-          }
-          if (def.currency === "tier2") {
+          } else if (def.currency === "tier2") {
             if (state.tier2resource < cost) return;
             state.tier2resource -= cost;
-            if (state.tier2resource < 0) state.tier2resource = 0;
           }
 
           state.upgrades[id] = level + 1;
@@ -1491,7 +1793,7 @@
           if (id === "tier1generation") {
             state.tier1BonusRate += def.bonusPerLevel;
             appendLog(
-              `Upgrade: <span class="success">Faster Drilling</span> → Ore rate boosted by <span class="highlight">${def.bonusPerLevel.toFixed(
+              `Upgrade: <span class="success">Faster Collector</span> → Dust rate boosted by <span class="highlight">${def.bonusPerLevel.toFixed(
                 2
               )}/s</span>.`
             );
@@ -1503,19 +1805,19 @@
             ) {
               state.tier2AutomationEnabled = true;
               appendLog(
-                `Upgrade: <span class="success">Auto Smelter</span> unlocked and <span class="highlight">enabled</span>. It now auto-smelts Ore into Alloys.`
+                `Upgrade: <span class="success">Flux Press Automation</span> unlocked and <span class="highlight">enabled</span>. It now auto-presses Dust into Flux.`
               );
             } else {
               appendLog(
-                `Upgrade: <span class="success">Auto Smelter</span> → Auto smelt boosted by <span class="highlight">${def.bonusPerLevel.toFixed(
+                `Upgrade: <span class="success">Flux Press Automation</span> → Automation boosted by <span class="highlight">${def.bonusPerLevel.toFixed(
                   2
-                )} Alloys/s</span>.`
+                )} Flux/s</span>.`
               );
             }
           } else if (id === "tier3efficiency") {
             state.tier3Multiplier += def.bonusPerLevel;
             appendLog(
-              `Upgrade: <span class="success">Efficient Forge</span> → Forge multiplier increased by <span class="highlight">${def.bonusPerLevel.toFixed(
+              `Upgrade: <span class="success">Chrono Forge Tuning</span> → Forge multiplier increased by <span class="highlight">${def.bonusPerLevel.toFixed(
                 1
               )}x</span>.`
             );
@@ -1525,53 +1827,109 @@
           saveState();
         }
 
+        function unlockMachine(id) {
+          if (id === "fluxPress") {
+            if (state.machines.fluxPress.unlocked) return;
+            if (state.tier1resource < FLUX_PRESS_UNLOCK_DUST) {
+              appendLog(
+                `<span class="danger">Not enough Aeon Dust</span> — need ${formatNumber(
+                  FLUX_PRESS_UNLOCK_DUST
+                )} Dust to unlock the Flux Press.`
+              );
+              return;
+            }
+            state.tier1resource -= FLUX_PRESS_UNLOCK_DUST;
+            state.machines.fluxPress.unlocked = true;
+            flashPill(pillFlux);
+            appendLog(
+              `<span class="success">Flux Press unlocked.</span> You can now manually and automatically press Aeon Dust into Flux.`
+            );
+          } else if (id === "chronoForge") {
+            if (state.machines.chronoForge.unlocked) return;
+            if (state.tier2resource < CHRONO_FORGE_UNLOCK_FLUX) {
+              appendLog(
+                `<span class="danger">Not enough Pressed Flux</span> — need ${formatNumber(
+                  CHRONO_FORGE_UNLOCK_FLUX
+                )} Flux to unlock the Chrono Forge.`
+              );
+              return;
+            }
+            state.tier2resource -= CHRONO_FORGE_UNLOCK_FLUX;
+            state.machines.chronoForge.unlocked = true;
+            flashPill(pillBar);
+            appendLog(
+              `<span class="success">Chrono Forge unlocked.</span> Pressed Flux can now be forged into Chrono Bars.`
+            );
+          } else if (id === "temporalArray") {
+            if (state.machines.temporalArray.unlocked) return;
+            if (state.tier3resource < TEMP_ARRAY_UNLOCK_BARS) {
+              appendLog(
+                `<span class="danger">Not enough Chrono Bars</span> — need ${formatNumber(
+                  TEMP_ARRAY_UNLOCK_BARS
+                )} Bars to unlock the Temporal Fabrication Array.`
+              );
+              return;
+            }
+            state.tier3resource -= TEMP_ARRAY_UNLOCK_BARS;
+            state.machines.temporalArray.unlocked = true;
+            flashPill(pillEpoch);
+            appendLog(
+              `<span class="success">Temporal Fabrication Array unlocked.</span> Chrono Bars can now be cast into Epoch Cores.`
+            );
+          }
+
+          updateUI();
+          saveState();
+        }
+
         // Events
-        btnSmelt.addEventListener("click", smeltOre);
+        btnPress.addEventListener("click", pressFlux);
         btnForge.addEventListener("click", forgeBars);
         btnEpoch.addEventListener("click", forgeEpochCore);
         btnTimeSurge.addEventListener("click", activateTimeSurge);
         btnToggleAuto.addEventListener("click", toggleAutoSmelter);
 
+        machinesListEl.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-machine-button]");
+          if (!btn) return;
+          const id = btn.getAttribute("data-machine-button");
+          if (!id) return;
+          unlockMachine(id);
+        });
+
         document.addEventListener("keydown", (e) => {
-          // Don't hijack typing into inputs/textareas
           if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
             return;
 
           const key = e.key.toLowerCase();
-          const code = e.code; // handles numpad vs top-row
+          const code = e.code;
 
-          // =========================
-          // DEV CHEATS (DEV_MODE only)
-          // =========================
+          // DEV CHEATS
           if (DEV_MODE) {
             let cheated = false;
 
-            // Treat top row and numpad the same
             const is1 = key === "1" || code === "Digit1" || code === "Numpad1";
             const is2 = key === "2" || code === "Digit2" || code === "Numpad2";
             const is3 = key === "3" || code === "Digit3" || code === "Numpad3";
             const is4 = key === "4" || code === "Digit4" || code === "Numpad4";
 
             if (is1) {
-              // +1,000 Time Ore
               state.tier1resource += 1000;
               state.totals.tier1Generated += 1000;
               appendLog(
-                `<span class="success">DEV:</span> Added <span class="highlight">1,000</span> Time Ore.`
+                `<span class="success">DEV:</span> Added <span class="highlight">1,000</span> Aeon Dust.`
               );
-              flashPill(pillOre);
+              flashPill(pillAeon);
               cheated = true;
             } else if (is2) {
-              // +100 Alloys
               state.tier2resource += 100;
               state.totals.tier2Generated += 100;
               appendLog(
-                `<span class="success">DEV:</span> Added <span class="highlight">100</span> Alloys.`
+                `<span class="success">DEV:</span> Added <span class="highlight">100</span> Pressed Flux.`
               );
-              flashPill(pillAlloy);
+              flashPill(pillFlux);
               cheated = true;
             } else if (is3) {
-              // +10 Chrono Bars
               state.tier3resource += 10;
               state.totals.tier3Generated += 10;
               appendLog(
@@ -1580,7 +1938,6 @@
               flashPill(pillBar);
               cheated = true;
             } else if (is4) {
-              // +1 Epoch Core
               state.tier4resource += 1;
               state.totals.tier4Generated += 1;
               appendLog(
@@ -1589,7 +1946,6 @@
               flashPill(pillEpoch);
               cheated = true;
             } else if (key === "b") {
-              // Toggle Time Surge on/off, ignoring cooldown
               const surge = state.boosts.timeSurge;
               if (!surge.active) {
                 surge.active = true;
@@ -1614,35 +1970,24 @@
               checkMilestones();
               updateUI();
               saveState();
-              return; // don't also trigger normal hotkeys
+              return;
             }
           }
 
-          // =========================
           // Normal gameplay hotkeys
-          // =========================
           if (key === "s") {
             e.preventDefault();
-            smeltOre();
+            pressFlux();
           } else if (key === "f") {
             e.preventDefault();
             forgeBars();
           }
         });
 
-        upgradesListEl.addEventListener("click", (e) => {
-          const btn = e.target.closest("[data-upgrade-button]");
-          if (!btn) return;
-          const upgradeEl = btn.closest(".upgrade");
-          if (!upgradeEl) return;
-          const id = upgradeEl.getAttribute("data-upgrade-id");
-          purchaseUpgrade(id);
-        });
-
         resetBtn.addEventListener("click", () => {
           if (
             confirm(
-              "Reset Temporal Forge? This clears all resources, milestones, and upgrades."
+              "Reset Temporal Forge? This clears all resources, milestones, upgrades, and machines."
             )
           ) {
             resetState();

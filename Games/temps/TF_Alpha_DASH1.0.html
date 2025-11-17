@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      Temporal Forge | Aeon Dust → Pressed Flux → Chrono Bars → Epoch Cores
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg: #05070a;
+        --panel: #0b0f16;
+        --accent: #00ffff;
+        --accent-soft: rgba(0, 255, 255, 0.15);
+        --text: #e0e7ff;
+        --muted: #7c86a4;
+        --danger: #ff4d6a;
+        --success: #9be15d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 16px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at top, #111827, #020617);
+        color: var(--text);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0 0 8px;
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .subtitle {
+        margin-bottom: 16px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .card {
+        background: var(--panel);
+        border-radius: 10px;
+        padding: 12px 14px;
+        box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9),
+          0 18px 35px rgba(0, 0, 0, 0.6);
+        flex: 1 1 260px;
+        min-width: 0;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 6px;
+      }
+
+      .pill-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+
+      .pill-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--accent);
+      }
+
+      .resource-amount {
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+
+      .resource-sub {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .rate-line {
+        font-size: 0.85rem;
+        margin-top: 4px;
+        color: var(--muted);
+      }
+
+      .rate-line span.boosted {
+        color: var(--accent);
+        margin-left: 6px;
+        font-weight: 500;
+      }
+
+      .flash {
+        animation: flash 0.4s ease-out;
+      }
+
+      @keyframes flash {
+        0% {
+          box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.6),
+            0 0 18px rgba(0, 255, 255, 0.3);
+        }
+        100% {
+          box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9),
+            0 18px 35px rgba(0, 0, 0, 0.6);
+        }
+      }
+
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      button {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: linear-gradient(to bottom, #020617, #020617);
+        color: var(--text);
+        font-size: 0.85rem;
+        padding: 4px 10px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: background 0.15s ease, border-color 0.15s ease,
+          transform 0.08s ease;
+      }
+
+      button:hover {
+        background: radial-gradient(circle at top, #0f172a, #020617);
+        border-color: var(--accent);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+        border-style: dashed;
+      }
+
+      button.primary {
+        border-color: var(--accent);
+        background: radial-gradient(circle at top, #0f172a, #020617);
+      }
+
+      .tag {
+        font-size: 0.7rem;
+        padding: 1px 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        color: var(--muted);
+      }
+
+      .tag.ready {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .tag.cooldown {
+        border-color: #f97316;
+        color: #fed7aa;
+      }
+
+      .tag.active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .history {
+        font-size: 0.8rem;
+        color: var(--muted);
+        max-height: 220px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+
+      .history-entry {
+        margin-bottom: 2px;
+        line-height: 1.25;
+      }
+
+      .history-entry .success {
+        color: var(--success);
+      }
+
+      .history-entry .danger {
+        color: var(--danger);
+      }
+
+      .history-entry .highlight {
+        color: var(--accent);
+      }
+
+      .surge-main {
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+
+      .surge-meta {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .small {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .row-tight {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 6px;
+      }
+
+      .toggle-row {
+        font-size: 0.8rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 6px;
+      }
+
+      input[type="checkbox"] {
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+
+      .upgrade-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.85rem;
+      }
+
+      .upgrade-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+
+      .upgrade-left {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .upgrade-title {
+        font-weight: 500;
+      }
+
+      .upgrade-desc {
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      .upgrade-meta {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .footer-note {
+        margin-top: 8px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Temporal Forge</h1>
+    <div class="subtitle">
+      Refine <strong>Aeon Dust</strong> into <strong>Pressed Flux</strong>,
+      forge <strong>Chrono Bars</strong>, and condense
+      <strong>Epoch Cores</strong>.
+    </div>
+
+    <!-- RESOURCE PILL ROW -->
+    <div class="row">
+      <div class="card" id="card-aeon">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Tier 1 Resource</div>
+            <div class="pill-title">Aeon Dust</div>
+          </div>
+        </div>
+        <div class="resource-amount" id="aeon-amount">0</div>
+        <div class="resource-sub">
+          Raw particulate debris from ancient timelines.
+        </div>
+        <div class="rate-line">
+          Generation:
+          <span id="aeon-rate">0 /s</span>
+          <span id="aeon-rate-boost" class="boosted"></span>
+        </div>
+      </div>
+
+      <div class="card" id="card-flux">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Tier 2 Resource</div>
+            <div class="pill-title">Pressed Flux</div>
+          </div>
+        </div>
+        <div class="resource-amount" id="flux-amount">0</div>
+        <div class="resource-sub">
+          Compressed temporal mass from the Flux Press.
+        </div>
+        <div class="rate-line">
+          From Flux Press:
+          <span id="flux-rate">0 /s</span>
+        </div>
+      </div>
+
+      <div class="card" id="card-chrono">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Tier 3 Resource</div>
+            <div class="pill-title">Chrono Bars</div>
+          </div>
+        </div>
+        <div class="resource-amount" id="chrono-amount">0</div>
+        <div class="resource-sub">Forged rods of stabilized time-metal.</div>
+      </div>
+
+      <div class="card" id="card-epoch">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Tier 4 Resource</div>
+            <div class="pill-title">Epoch Cores</div>
+          </div>
+        </div>
+        <div class="resource-amount" id="epoch-amount">0</div>
+        <div class="resource-sub">Ultra-dense anchors of compressed eras.</div>
+      </div>
+    </div>
+
+    <!-- MACHINES ROW -->
+    <div class="row">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Machine</div>
+            <div class="pill-title">Dust Collector</div>
+          </div>
+          <span class="tag">T1 Generator</span>
+        </div>
+        <div class="small">
+          Continuously harvests Aeon Dust from ambient temporal drift.
+        </div>
+        <div class="rate-line" id="dust-collector-info">
+          Base rate: <span id="aeon-base-rate">1</span> /s
+        </div>
+        <div class="btn-row">
+          <button id="btn-upgrade-t1gen" class="primary">
+            Upgrade Dust Collector
+          </button>
+        </div>
+        <div class="small" id="t1gen-cost-line">
+          Cost: <span id="t1gen-cost">50</span> Aeon Dust &middot; Level
+          <span id="t1gen-level">0</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Machine</div>
+            <div class="pill-title">Flux Press</div>
+          </div>
+          <span class="tag">T2 Conversion</span>
+        </div>
+        <div class="small">
+          Compress Aeon Dust into Pressed Flux. 60 Aeon Dust → 1 Pressed Flux.
+        </div>
+        <div class="btn-row">
+          <button id="btn-press-flux" class="primary">Press Aeon Dust</button>
+        </div>
+        <div class="small">Manual press uses 60 Aeon Dust per activation.</div>
+        <div class="toggle-row">
+          <label>
+            <input type="checkbox" id="chk-auto-flux" />
+            Auto-press when possible
+          </label>
+          <span class="small" id="auto-flux-status"
+            >(requires automation upgrade)</span
+          >
+        </div>
+        <div class="small">
+          Auto Flux rate: <span id="auto-flux-rate">0</span> presses /s
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Machine</div>
+            <div class="pill-title">Chrono Forge</div>
+          </div>
+          <span class="tag">T3 &amp; T4</span>
+        </div>
+        <div class="small">
+          Forge Pressed Flux into Chrono Bars, then cast Epoch Cores.
+        </div>
+        <div class="btn-row">
+          <button id="btn-forge-bar" class="primary">Forge Chrono Bar</button>
+          <button id="btn-cast-core">Cast Epoch Core</button>
+        </div>
+        <div class="small">
+          Costs: 60 Pressed Flux per Chrono Bar, 12 Chrono Bars per Epoch Core.
+        </div>
+        <div class="small">
+          Forge multiplier: <span id="forge-mult">1.0</span>x
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOSTS & UPGRADES -->
+    <div class="row">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Boost</div>
+            <div class="pill-title">Time Surge</div>
+          </div>
+          <span id="surge-tag" class="tag">Ready</span>
+        </div>
+        <div class="surge-main">
+          Temporarily amplifies Aeon Dust generation.
+        </div>
+        <div class="row-tight">
+          <button id="btn-surge" class="primary">Trigger Time Surge</button>
+          <span class="small">
+            Multiplier: <span id="surge-mult-label">3x</span> &middot; Duration:
+            <span id="surge-duration-label">15s</span>
+          </span>
+        </div>
+        <div class="surge-meta" id="surge-status">Surge ready.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Upgrades</div>
+            <div class="pill-title">Core Paths</div>
+          </div>
+        </div>
+        <ul class="upgrade-list">
+          <li>
+            <div class="upgrade-left">
+              <div class="upgrade-title">Dust Collector Overhaul</div>
+              <div class="upgrade-desc">
+                Increases Aeon Dust generation rate by +1 /s per level.
+              </div>
+              <div class="upgrade-meta">
+                Level <span id="u-t1gen-lvl">0</span> &middot; Cost:
+                <span id="u-t1gen-cost">50</span> Aeon Dust
+              </div>
+            </div>
+            <button data-upgrade="tier1generation" class="primary">
+              Upgrade
+            </button>
+          </li>
+
+          <li>
+            <div class="upgrade-left">
+              <div class="upgrade-title">Flux Press Automation</div>
+              <div class="upgrade-desc">
+                Enables Flux Press auto-press and increases its speed.
+              </div>
+              <div class="upgrade-meta">
+                Level <span id="u-t2auto-lvl">0</span> &middot; Cost:
+                <span id="u-t2auto-cost">20</span> Pressed Flux
+              </div>
+            </div>
+            <button data-upgrade="tier2automation" class="primary">
+              Upgrade
+            </button>
+          </li>
+
+          <li>
+            <div class="upgrade-left">
+              <div class="upgrade-title">Chrono Forge Tuning</div>
+              <div class="upgrade-desc">
+                Increases Chrono Bar output multiplier (+0.1x per level).
+              </div>
+              <div class="upgrade-meta">
+                Level <span id="u-t3eff-lvl">0</span> &middot; Cost:
+                <span id="u-t3eff-cost">10</span> Chrono Bars
+              </div>
+            </div>
+            <button data-upgrade="tier3efficiency" class="primary">
+              Upgrade
+            </button>
+          </li>
+        </ul>
+        <div class="footer-note">
+          Hotkeys: <strong>S</strong> = Press Flux, <strong>F</strong> = Forge
+          Bar.
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="row">
+      <div class="card" style="flex: 2 1 360px">
+        <div class="card-header">
+          <div>
+            <div class="pill-label">Log</div>
+            <div class="pill-title">Forge History</div>
+          </div>
+        </div>
+        <div id="history-log" class="history"></div>
+        <div class="footer-note">
+          DEV cheats (DEV_MODE=true): keys 1/2/3/4 to add resources, B to toggle
+          Time Surge.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const SAVE_KEY = "TemporalForgeSave_v4";
+        const DEV_MODE = true; // flip to false when you ship
+
+        const SURGE_MULTIPLIER = 3;
+        const SURGE_DURATION = 15; // seconds
+        const SURGE_COOLDOWN = 60; // seconds
+
+        const PRESS_COST_AEON = 60;
+        const BAR_COST_FLUX = 60;
+        const CORE_COST_BAR = 12;
+
+        // Resource elements
+        const aeonAmountEl = document.getElementById("aeon-amount");
+        const fluxAmountEl = document.getElementById("flux-amount");
+        const chronoAmountEl = document.getElementById("chrono-amount");
+        const epochAmountEl = document.getElementById("epoch-amount");
+
+        const aeonRateEl = document.getElementById("aeon-rate");
+        const aeonRateBoostEl = document.getElementById("aeon-rate-boost");
+        const aeonBaseRateEl = document.getElementById("aeon-base-rate");
+        const fluxRateEl = document.getElementById("flux-rate");
+        const autoFluxRateEl = document.getElementById("auto-flux-rate");
+        const forgeMultEl = document.getElementById("forge-mult");
+
+        const cardAeon = document.getElementById("card-aeon");
+        const cardFlux = document.getElementById("card-flux");
+        const cardChrono = document.getElementById("card-chrono");
+        const cardEpoch = document.getElementById("card-epoch");
+
+        const btnPressFlux = document.getElementById("btn-press-flux");
+        const btnForgeBar = document.getElementById("btn-forge-bar");
+        const btnCastCore = document.getElementById("btn-cast-core");
+        const chkAutoFlux = document.getElementById("chk-auto-flux");
+        const autoFluxStatusEl = document.getElementById("auto-flux-status");
+
+        const btnSurge = document.getElementById("btn-surge");
+        const surgeTagEl = document.getElementById("surge-tag");
+        const surgeStatusEl = document.getElementById("surge-status");
+        const surgeMultLabelEl = document.getElementById("surge-mult-label");
+        const surgeDurationLabelEl = document.getElementById(
+          "surge-duration-label"
+        );
+
+        // Upgrades
+        const btnUpgradeT1Gen = document.getElementById("btn-upgrade-t1gen");
+        const t1GenCostLine = document.getElementById("t1gen-cost-line");
+        const t1GenCostEl = document.getElementById("t1gen-cost");
+        const t1GenLevelEl = document.getElementById("t1gen-level");
+
+        const uT1GenLvlEl = document.getElementById("u-t1gen-lvl");
+        const uT1GenCostEl = document.getElementById("u-t1gen-cost");
+        const uT2AutoLvlEl = document.getElementById("u-t2auto-lvl");
+        const uT2AutoCostEl = document.getElementById("u-t2auto-cost");
+        const uT3EffLvlEl = document.getElementById("u-t3eff-lvl");
+        const uT3EffCostEl = document.getElementById("u-t3eff-cost");
+
+        const upgradeButtons = document.querySelectorAll(
+          "button[data-upgrade]"
+        );
+
+        const historyLogEl = document.getElementById("history-log");
+
+        // State
+        let state = {
+          tier1resource: 0, // Aeon Dust
+          tier2resource: 0, // Pressed Flux
+          tier3resource: 0, // Chrono Bars
+          tier4resource: 0, // Epoch Cores
+
+          tier1baseRate: 1,
+          tier1bonusRate: 0,
+
+          tier2automationEnabled: false,
+          tier2automationLevel: 0,
+          tier2automationPressesPerSec: 0,
+          tier2automationProgress: 0,
+
+          tier3forgeMult: 1.0,
+          tier3effLevel: 0,
+
+          upgrades: {
+            tier1generation: 0,
+            tier2automation: 0,
+            tier3efficiency: 0,
+          },
+
+          boosts: {
+            timeSurge: {
+              active: false,
+              remaining: 0,
+              cooldown: 0,
+            },
+          },
+
+          totals: {
+            tier1Generated: 0,
+            tier2Generated: 0,
+            tier3Generated: 0,
+            tier4Generated: 0,
+          },
+        };
+
+        function formatInt(value) {
+          if (!isFinite(value)) return "0";
+          const v = Math.floor(value + 1e-9);
+          if (v < 1000) return String(v);
+          return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function appendLog(html) {
+          const div = document.createElement("div");
+          div.className = "history-entry";
+          div.innerHTML = html;
+          historyLogEl.appendChild(div);
+          historyLogEl.scrollTop = historyLogEl.scrollHeight;
+        }
+
+        function flashCard(el) {
+          el.classList.remove("flash");
+          void el.offsetWidth;
+          el.classList.add("flash");
+        }
+
+        function saveState() {
+          try {
+            const data = JSON.stringify(state);
+            localStorage.setItem(SAVE_KEY, data);
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        function loadState() {
+          try {
+            const raw = localStorage.getItem(SAVE_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+              state = {
+                ...state,
+                ...parsed,
+                boosts: {
+                  timeSurge: {
+                    active: false,
+                    remaining: 0,
+                    cooldown: parsed.boosts?.timeSurge?.cooldown ?? 0,
+                  },
+                },
+              };
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        function getSurgeMultiplier() {
+          return state.boosts.timeSurge.active ? SURGE_MULTIPLIER : 1;
+        }
+
+        function updateBoosts(delta) {
+          const surge = state.boosts.timeSurge;
+          if (surge.active) {
+            surge.remaining -= delta;
+            if (surge.remaining <= 0) {
+              surge.active = false;
+              surge.remaining = 0;
+              appendLog(`<span class="highlight">Time Surge</span> has ended.`);
+            }
+          } else if (surge.cooldown > 0) {
+            surge.cooldown -= delta;
+            if (surge.cooldown < 0) surge.cooldown = 0;
+          }
+        }
+
+        function canTriggerSurge() {
+          const surge = state.boosts.timeSurge;
+          return !surge.active && surge.cooldown <= 0;
+        }
+
+        function triggerSurge(devForced = false) {
+          const surge = state.boosts.timeSurge;
+          surge.active = true;
+          surge.remaining = SURGE_DURATION;
+          surge.cooldown = devForced ? 0 : SURGE_COOLDOWN;
+          if (devForced) {
+            appendLog(
+              `<span class="highlight">DEV:</span> Time Surge <span class="success">forced ON</span>.`
+            );
+          } else {
+            appendLog(`<span class="highlight">Time Surge</span> activated!`);
+          }
+        }
+
+        function stopSurgeDev() {
+          const surge = state.boosts.timeSurge;
+          surge.active = false;
+          surge.remaining = 0;
+          surge.cooldown = 0;
+          appendLog(
+            `<span class="highlight">DEV:</span> Time Surge <span class="danger">forced OFF</span>.`
+          );
+        }
+
+        function updateAutomation(delta) {
+          if (
+            !state.tier2automationEnabled ||
+            state.tier2automationPressesPerSec <= 0
+          )
+            return;
+          state.tier2automationProgress +=
+            state.tier2automationPressesPerSec * delta;
+
+          const pressesWhole = Math.floor(state.tier2automationProgress);
+          if (pressesWhole <= 0) return;
+
+          let performed = 0;
+          for (let i = 0; i < pressesWhole; i++) {
+            if (state.tier1resource >= PRESS_COST_AEON) {
+              state.tier1resource -= PRESS_COST_AEON;
+              state.tier2resource += 1;
+              state.totals.tier2Generated += 1;
+              performed++;
+            } else {
+              break;
+            }
+          }
+
+          state.tier2automationProgress -= performed;
+          if (performed > 0) {
+            flashCard(cardFlux);
+          }
+        }
+
+        function checkMilestones() {
+          // Placeholder for future milestone logic
+        }
+
+        function pressFlux(manual = true) {
+          if (state.tier1resource < PRESS_COST_AEON) {
+            if (manual) {
+              appendLog(
+                `<span class="danger">Not enough Aeon Dust</span> to press. Need ${PRESS_COST_AEON}.`
+              );
+            }
+            return false;
+          }
+          state.tier1resource -= PRESS_COST_AEON;
+          state.tier2resource += 1;
+          state.totals.tier2Generated += 1;
+          flashCard(cardFlux);
+          if (manual) {
+            appendLog(
+              `Pressed <span class="highlight">${PRESS_COST_AEON}</span> Aeon Dust into <span class="highlight">1</span> Pressed Flux.`
+            );
+          }
+          return true;
+        }
+
+        function forgeBar(manual = true) {
+          const effectiveMult = state.tier3forgeMult;
+          if (state.tier2resource < BAR_COST_FLUX) {
+            if (manual) {
+              appendLog(
+                `<span class="danger">Not enough Pressed Flux</span> to forge. Need ${BAR_COST_FLUX}.`
+              );
+            }
+            return false;
+          }
+          state.tier2resource -= BAR_COST_FLUX;
+          const barsGained = 1 * effectiveMult;
+          state.tier3resource += barsGained;
+          state.totals.tier3Generated += barsGained;
+          flashCard(cardChrono);
+          if (manual) {
+            appendLog(
+              `Forged <span class="highlight">${BAR_COST_FLUX}</span> Pressed Flux into ` +
+                `<span class="highlight">${barsGained.toFixed(
+                  1
+                )}</span> Chrono Bars.`
+            );
+          }
+          return true;
+        }
+
+        function castCore(manual = true) {
+          if (state.tier3resource < CORE_COST_BAR) {
+            if (manual) {
+              appendLog(
+                `<span class="danger">Not enough Chrono Bars</span> to cast. Need ${CORE_COST_BAR}.`
+              );
+            }
+            return false;
+          }
+          state.tier3resource -= CORE_COST_BAR;
+          state.tier4resource += 1;
+          state.totals.tier4Generated += 1;
+          flashCard(cardEpoch);
+          if (manual) {
+            appendLog(
+              `Cast <span class="highlight">${CORE_COST_BAR}</span> Chrono Bars into ` +
+                `<span class="highlight">1</span> Epoch Core.`
+            );
+          }
+          return true;
+        }
+
+        function upgradeCost(id, level) {
+          switch (id) {
+            case "tier1generation":
+              // Aeon Dust; grows quickly
+              return 50 * Math.pow(1.8, level);
+            case "tier2automation":
+              // Pressed Flux
+              return 20 * Math.pow(1.9, level);
+            case "tier3efficiency":
+              // Chrono Bars
+              return 10 * Math.pow(2.0, level);
+            default:
+              return 0;
+          }
+        }
+
+        function purchaseUpgrade(id) {
+          const currentLevel = state.upgrades[id] || 0;
+          const cost = upgradeCost(id, currentLevel);
+
+          if (id === "tier1generation") {
+            if (state.tier1resource < cost) {
+              appendLog(
+                `<span class="danger">Not enough Aeon Dust</span> for Dust Collector upgrade.`
+              );
+              return;
+            }
+            state.tier1resource -= cost;
+            state.upgrades[id] = currentLevel + 1;
+            state.tier1baseRate += 1;
+            appendLog(
+              `Upgraded <span class="highlight">Dust Collector</span> to level ` +
+                `<span class="highlight">${state.upgrades[id]}</span>.`
+            );
+          } else if (id === "tier2automation") {
+            if (state.tier2resource < cost) {
+              appendLog(
+                `<span class="danger">Not enough Pressed Flux</span> for Flux Press Automation.`
+              );
+              return;
+            }
+            state.tier2resource -= cost;
+            state.upgrades[id] = currentLevel + 1;
+            state.tier2automationEnabled = true;
+            state.tier2automationLevel = state.upgrades[id];
+            state.tier2automationPressesPerSec =
+              0.2 * state.tier2automationLevel;
+            appendLog(
+              `Upgraded <span class="highlight">Flux Press Automation</span> to level ` +
+                `<span class="highlight">${state.upgrades[id]}</span>.`
+            );
+          } else if (id === "tier3efficiency") {
+            if (state.tier3resource < cost) {
+              appendLog(
+                `<span class="danger">Not enough Chrono Bars</span> for Chrono Forge Tuning.`
+              );
+              return;
+            }
+            state.tier3resource -= cost;
+            state.upgrades[id] = currentLevel + 1;
+            state.tier3effLevel = state.upgrades[id];
+            state.tier3forgeMult = 1.0 + 0.1 * state.tier3effLevel;
+            appendLog(
+              `Tuned <span class="highlight">Chrono Forge</span> to level ` +
+                `<span class="highlight">${state.upgrades[id]}</span> ` +
+                `(Forge mult ${state.tier3forgeMult.toFixed(1)}x).`
+            );
+          }
+
+          checkMilestones();
+          updateUI();
+          saveState();
+        }
+
+        function updateUI() {
+          // Resources
+          aeonAmountEl.textContent = formatInt(state.tier1resource);
+          fluxAmountEl.textContent = formatInt(state.tier2resource);
+          chronoAmountEl.textContent = formatInt(state.tier3resource);
+          epochAmountEl.textContent = formatInt(state.tier4resource);
+
+          // Aeon Dust rate
+          const baseRate = state.tier1baseRate + state.tier1bonusRate;
+          const surgeMult = getSurgeMultiplier();
+          const boostedRate = baseRate * surgeMult;
+
+          aeonBaseRateEl.textContent = baseRate.toFixed(1);
+          aeonRateEl.textContent = `${baseRate.toFixed(1)} /s`;
+          if (state.boosts.timeSurge.active) {
+            aeonRateBoostEl.textContent = `(BOOSTED → ${boostedRate.toFixed(
+              1
+            )} /s)`;
+          } else {
+            aeonRateBoostEl.textContent = "";
+          }
+
+          // Flux rate (auto)
+          autoFluxRateEl.textContent =
+            state.tier2automationPressesPerSec.toFixed(2);
+          fluxRateEl.textContent = `${state.tier2automationPressesPerSec.toFixed(
+            2
+          )} /s`;
+
+          // Forge multiplier
+          forgeMultEl.textContent = state.tier3forgeMult.toFixed(1);
+
+          // Auto flux toggle
+          chkAutoFlux.checked = state.tier2automationEnabled;
+          if (state.upgrades.tier2automation > 0) {
+            chkAutoFlux.disabled = false;
+            autoFluxStatusEl.textContent = "(automation unlocked)";
+          } else {
+            chkAutoFlux.disabled = true;
+            autoFluxStatusEl.textContent = "(requires automation upgrade)";
+          }
+
+          // Time Surge UI
+          const surge = state.boosts.timeSurge;
+          surgeMultLabelEl.textContent = `${SURGE_MULTIPLIER}x`;
+          surgeDurationLabelEl.textContent = `${SURGE_DURATION}s`;
+
+          if (surge.active) {
+            surgeTagEl.textContent = "Active";
+            surgeTagEl.className = "tag active";
+            surgeStatusEl.textContent = `Surge active: ${surge.remaining.toFixed(
+              1
+            )}s remaining.`;
+            btnSurge.disabled = true;
+          } else if (surge.cooldown > 0) {
+            surgeTagEl.textContent = "Cooldown";
+            surgeTagEl.className = "tag cooldown";
+            surgeStatusEl.textContent = `Cooldown: ${surge.cooldown.toFixed(
+              1
+            )}s remaining.`;
+            btnSurge.disabled = true;
+          } else {
+            surgeTagEl.textContent = "Ready";
+            surgeTagEl.className = "tag ready";
+            surgeStatusEl.textContent = "Surge ready.";
+            btnSurge.disabled = false;
+          }
+
+          // Upgrades UI
+          const t1Lvl = state.upgrades.tier1generation || 0;
+          const t1Cost = upgradeCost("tier1generation", t1Lvl);
+          t1GenLevelEl.textContent = t1Lvl;
+          t1GenCostEl.textContent = formatInt(t1Cost);
+          uT1GenLvlEl.textContent = t1Lvl;
+          uT1GenCostEl.textContent = formatInt(t1Cost);
+
+          const t2Lvl = state.upgrades.tier2automation || 0;
+          const t2Cost = upgradeCost("tier2automation", t2Lvl);
+          uT2AutoLvlEl.textContent = t2Lvl;
+          uT2AutoCostEl.textContent = formatInt(t2Cost);
+
+          const t3Lvl = state.upgrades.tier3efficiency || 0;
+          const t3Cost = upgradeCost("tier3efficiency", t3Lvl);
+          uT3EffLvlEl.textContent = t3Lvl;
+          uT3EffCostEl.textContent = formatInt(t3Cost);
+        }
+
+        function gameStep(delta) {
+          const surgeMult = getSurgeMultiplier();
+          const aeonGain =
+            (state.tier1baseRate + state.tier1bonusRate) * surgeMult * delta;
+          state.tier1resource += aeonGain;
+          state.totals.tier1Generated += aeonGain;
+
+          updateAutomation(delta);
+          updateBoosts(delta);
+          checkMilestones();
+          updateUI();
+        }
+
+        // Event wiring
+        btnPressFlux.addEventListener("click", () => {
+          pressFlux(true);
+          checkMilestones();
+          updateUI();
+          saveState();
+        });
+
+        btnForgeBar.addEventListener("click", () => {
+          forgeBar(true);
+          checkMilestones();
+          updateUI();
+          saveState();
+        });
+
+        btnCastCore.addEventListener("click", () => {
+          castCore(true);
+          checkMilestones();
+          updateUI();
+          saveState();
+        });
+
+        chkAutoFlux.addEventListener("change", () => {
+          if (
+            !state.upgrades.tier2automation ||
+            state.upgrades.tier2automation <= 0
+          ) {
+            chkAutoFlux.checked = false;
+            return;
+          }
+          state.tier2automationEnabled = chkAutoFlux.checked;
+          appendLog(
+            `Flux Press auto-press <span class="highlight">${
+              state.tier2automationEnabled ? "enabled" : "disabled"
+            }</span>.`
+          );
+          saveState();
+        });
+
+        btnSurge.addEventListener("click", () => {
+          if (!canTriggerSurge()) return;
+          triggerSurge(false);
+          updateUI();
+          saveState();
+        });
+
+        btnUpgradeT1Gen.addEventListener("click", () => {
+          purchaseUpgrade("tier1generation");
+        });
+
+        upgradeButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-upgrade");
+            if (!id) return;
+            purchaseUpgrade(id);
+          });
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+            return;
+
+          const key = e.key.toLowerCase();
+          const code = e.code;
+
+          // DEV cheats
+          if (DEV_MODE) {
+            let cheated = false;
+
+            const is1 = key === "1" || code === "Digit1" || code === "Numpad1";
+            const is2 = key === "2" || code === "Digit2" || code === "Numpad2";
+            const is3 = key === "3" || code === "Digit3" || code === "Numpad3";
+            const is4 = key === "4" || code === "Digit4" || code === "Numpad4";
+
+            if (is1) {
+              state.tier1resource += 1000;
+              state.totals.tier1Generated += 1000;
+              appendLog(
+                `<span class="success">DEV:</span> Added <span class="highlight">1,000</span> Aeon Dust.`
+              );
+              flashCard(cardAeon);
+              cheated = true;
+            } else if (is2) {
+              state.tier2resource += 100;
+              state.totals.tier2Generated += 100;
+              appendLog(
+                `<span class="success">DEV:</span> Added <span class="highlight">100</span> Pressed Flux.`
+              );
+              flashCard(cardFlux);
+              cheated = true;
+            } else if (is3) {
+              state.tier3resource += 10;
+              state.totals.tier3Generated += 10;
+              appendLog(
+                `<span class="success">DEV:</span> Added <span class="highlight">10</span> Chrono Bars.`
+              );
+              flashCard(cardChrono);
+              cheated = true;
+            } else if (is4) {
+              state.tier4resource += 1;
+              state.totals.tier4Generated += 1;
+              appendLog(
+                `<span class="success">DEV:</span> Added <span class="highlight">1</span> Epoch Core.`
+              );
+              flashCard(cardEpoch);
+              cheated = true;
+            } else if (key === "b") {
+              const surge = state.boosts.timeSurge;
+              if (!surge.active) {
+                triggerSurge(true);
+              } else {
+                stopSurgeDev();
+              }
+              cheated = true;
+            }
+
+            if (cheated) {
+              e.preventDefault();
+              checkMilestones();
+              updateUI();
+              saveState();
+              return;
+            }
+          }
+
+          // Normal hotkeys
+          if (key === "s") {
+            e.preventDefault();
+            pressFlux(true);
+            checkMilestones();
+            updateUI();
+            saveState();
+          } else if (key === "f") {
+            e.preventDefault();
+            forgeBar(true);
+            checkMilestones();
+            updateUI();
+            saveState();
+          }
+        });
+
+        // Main loop
+        let lastTime = performance.now();
+
+        function loop(now) {
+          const delta = Math.min((now - lastTime) / 1000, 0.25);
+          lastTime = now;
+          gameStep(delta);
+          saveState();
+          requestAnimationFrame(loop);
+        }
+
+        // Init
+        loadState();
+        appendLog(
+          `Temporal Forge initialized. Aeon Dust → Pressed Flux → Chrono Bars → Epoch Cores.`
+        );
+        updateUI();
+        requestAnimationFrame(loop);
+      })();
+    </script>
+  </body>
+</html>
