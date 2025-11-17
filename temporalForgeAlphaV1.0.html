@@ -365,8 +365,8 @@
         font-size: 0.72rem;
         color: var(--muted);
         max-height: 96px;
-        overflow-y: auto; /* 🔹 allow vertical scroll */
-        overflow-x: hidden; /* 🔹 hide horizontal scroll */
+        overflow-y: auto;
+        overflow-x: hidden;
       }
 
       .smelt-log-line {
@@ -534,20 +534,21 @@
             <div class="res-pill" id="pill-ore">
               <div class="res-label">
                 <span class="key">Time Ore</span>
-                <span class="badge">Base Resource</span>
+                <span class="badge">Tier I</span>
               </div>
               <div class="res-value">
                 <strong id="ore-count">0</strong>
               </div>
               <div class="res-rate">
                 Generation: <span id="ore-rate">0 /s</span>
+                <span id="ore-rate-boost"></span>
               </div>
             </div>
 
             <div class="res-pill" id="pill-alloy">
               <div class="res-label">
                 <span class="key">Alloys</span>
-                <span class="badge">Refined</span>
+                <span class="badge">Tier II</span>
               </div>
               <div class="res-value">
                 <strong id="alloy-count">0</strong>
@@ -636,7 +637,7 @@
               <button
                 id="btn-toggle-auto"
                 class="secondary"
-                title="Toggle automatic smelting of Ore into Alloys. Unlocks with Auto Smelter upgrade."
+                title="Toggle automatic smelting of Ore into Alloys. Unlocks with tier2automation upgrade."
               >
                 Auto Smelter: Locked
               </button>
@@ -680,12 +681,12 @@
           >
 
           <div class="upgrades-list" id="upgrades-list">
-            <article class="upgrade" data-upgrade-id="hotterFurnace">
+            <article class="upgrade" data-upgrade-id="tier1generation">
               <div>
                 <div class="upgrade-header">
                   <strong>Faster Drilling</strong>
                   <span class="desc"
-                    >Boosts Time Ore generation per second.</span
+                    >Boosts Time Ore (Tier I) generation per second.</span
                   >
                 </div>
                 <div class="upgrade-meta">
@@ -698,12 +699,12 @@
               </div>
             </article>
 
-            <article class="upgrade" data-upgrade-id="autoSmelter">
+            <article class="upgrade" data-upgrade-id="tier2automation">
               <div>
                 <div class="upgrade-header">
                   <strong>Auto Smelter</strong>
                   <span class="desc"
-                    >Automatically smelts Ore into Alloys over time.</span
+                    >Automatically smelts Time Ore into Alloys over time.</span
                   >
                 </div>
                 <div class="upgrade-meta">
@@ -716,7 +717,7 @@
               </div>
             </article>
 
-            <article class="upgrade" data-upgrade-id="efficientForge">
+            <article class="upgrade" data-upgrade-id="tier3efficiency">
               <div>
                 <div class="upgrade-header">
                   <strong>Efficient Forge</strong>
@@ -751,13 +752,16 @@
 
     <script>
       (function () {
-        const SAVE_KEY = "TemporalForgeSave_v2";
+        const SAVE_KEY = "TemporalForgeSave_v3";
+        const DEV_MODE = true; // Set to false for production
 
+        // Resource UI elements (still named after lore terms)
         const oreEl = document.getElementById("ore-count");
         const alloyEl = document.getElementById("alloy-count");
         const barEl = document.getElementById("bar-count");
         const epochEl = document.getElementById("epoch-count");
         const oreRateEl = document.getElementById("ore-rate");
+        const oreRateBoostEl = document.getElementById("ore-rate-boost");
         const alloyRateEl = document.getElementById("alloy-rate");
         const barMultEl = document.getElementById("bar-mult");
         const logEl = document.getElementById("log");
@@ -788,60 +792,63 @@
         const pillBar = document.getElementById("pill-bar");
         const pillEpoch = document.getElementById("pill-epoch");
 
-        // Economy constants
-        const ORE_PER_ALLOY = 60;
-        const ALLOYS_PER_BAR = 60;
-        const BARS_PER_EPOCH = 12;
+        // Generic tier economy
+        const TIER1_PER_TIER2 = 60; // 60 Time Ore → 1 Alloy
+        const TIER2_PER_TIER3 = 60; // 60 Alloys → 1 Chrono Bar (before multipliers)
+        const TIER3_PER_TIER4 = 12; // 12 Bars → 1 Epoch Core
 
         // Crit chances
-        const CRIT_SMELT_CHANCE = 0.05; // 5%
-        const CRIT_FORGE_CHANCE = 0.05; // 5%
+        const CRIT_SMELT_CHANCE = 0.05;
+        const CRIT_FORGE_CHANCE = 0.05;
         const CRIT_SMELT_MULTIPLIER = 3;
         const CRIT_FORGE_MULTIPLIER = 3;
 
         // Time Surge
         const SURGE_MULTIPLIER = 3;
         const SURGE_DURATION = 20; // seconds
-        const SURGE_COOLDOWN = 300; // seconds (5 minutes)
+        const SURGE_COOLDOWN = 300; // seconds
 
         let state = {
-          ore: 0,
-          alloys: 0,
-          bars: 0,
-          epochs: 0,
-          orePerSecondBase: 1,
-          orePerSecondBonus: 0,
-          autoSmeltRate: 0,
-          autoSmelterEnabled: false,
-          forgeMultiplier: 1,
+          // Tiers: internal generic bones
+          tier1resource: 0, // Time Ore
+          tier2resource: 0, // Alloys
+          tier3resource: 0, // Chrono Bars
+          tier4resource: 0, // Epoch Cores
+
+          tier1BaseRate: 1,
+          tier1BonusRate: 0,
+          tier2AutomationRate: 0, // alloys/sec if enabled and enough tier1
+          tier2AutomationEnabled: false,
+          tier3Multiplier: 1,
+
           upgrades: {
-            hotterFurnace: 0,
-            autoSmelter: 0,
-            efficientForge: 0,
+            tier1generation: 0,
+            tier2automation: 0,
+            tier3efficiency: 0,
           },
-          // Totals for milestones
+
           totals: {
-            oreGenerated: 0,
-            alloysSmelted: 0,
-            barsForged: 0,
-            epochsCast: 0,
+            tier1Generated: 0,
+            tier2Generated: 0,
+            tier3Generated: 0,
+            tier4Generated: 0,
           },
-          // Milestone flags (true = already granted)
+
           milestones: {
-            ore10k: false,
-            ore100k: false,
-            ore1m: false,
-            alloys100: false,
-            alloys500: false,
-            alloys2k: false,
-            bars10: false,
-            bars50: false,
-            bars200: false,
-            epochs1: false,
-            epochs3: false,
-            epochs10: false,
+            tier1_10k: false,
+            tier1_100k: false,
+            tier1_1m: false,
+            tier2_100: false,
+            tier2_500: false,
+            tier2_2k: false,
+            tier3_10: false,
+            tier3_50: false,
+            tier3_200: false,
+            tier4_1: false,
+            tier4_3: false,
+            tier4_10: false,
           },
-          // Time Surge boost
+
           boosts: {
             timeSurge: {
               active: false,
@@ -849,38 +856,42 @@
               cooldown: 0,
             },
           },
+
           lastUpdate: Date.now(),
         };
 
         const upgradeDefs = {
-          hotterFurnace: {
+          tier1generation: {
             baseCost: 120,
             costScale: 1.65,
-            currency: "ore",
-            bonusPerLevel: 0.4,
+            currency: "tier1", // Time Ore
+            bonusPerLevel: 0.4, // +0.4 tier1/s
             label: "Time Ore",
           },
-          autoSmelter: {
+          tier2automation: {
             baseCost: 5,
             costScale: 2,
-            currency: "alloys",
-            bonusPerLevel: 0.2,
+            currency: "tier2", // Alloys
+            bonusPerLevel: 0.2, // +0.2 Alloys/s
             label: "Alloys",
           },
-          efficientForge: {
+          tier3efficiency: {
             baseCost: 10,
             costScale: 2.1,
-            currency: "alloys",
-            bonusPerLevel: 0.3,
+            currency: "tier2", // Alloys
+            bonusPerLevel: 0.3, // +0.3x forge multiplier
             label: "Alloys",
           },
         };
 
         function formatNumber(value) {
-          if (value < 1000) return value.toFixed(0);
-          if (value < 1000000)
-            return value.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          return value.toExponential(2);
+          // Always show, at most, what you actually have
+          const v = Math.floor(value + 1e-9); // tiny epsilon to calm float noise
+
+          if (v < 1000) return v.toString();
+          if (v < 1000000)
+            return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          return v.toExponential(2);
         }
 
         function formatTime(h, m, s) {
@@ -902,7 +913,7 @@
           line.className = "smelt-log-line";
           line.innerHTML = messageHtml;
           logEl.insertBefore(line, logEl.firstChild);
-          while (logEl.children.length > 6) {
+          while (logEl.children.length > 10) {
             logEl.removeChild(logEl.lastChild);
           }
         }
@@ -933,15 +944,8 @@
               upgrades: { ...state.upgrades, ...(data.upgrades || {}) },
               totals: { ...state.totals, ...(data.totals || {}) },
               milestones: { ...state.milestones, ...(data.milestones || {}) },
-              boosts: {
-                ...state.boosts,
-                ...(data.boosts || {}),
-              },
+              boosts: { ...state.boosts, ...(data.boosts || {}) },
             };
-            // Backwards-compat: if autoSmelterEnabled missing but we have Auto Smelter, default to true
-            if (data.autoSmelterEnabled === undefined) {
-              state.autoSmelterEnabled = (state.upgrades.autoSmelter || 0) > 0;
-            }
             appendLog(
               `<span class="success">Loaded existing forge state.</span> You kept earning <span class="highlight">Time Ore</span> since your last visit.`
             );
@@ -958,39 +962,39 @@
         function resetState() {
           localStorage.removeItem(SAVE_KEY);
           state = {
-            ore: 0,
-            alloys: 0,
-            bars: 0,
-            epochs: 0,
-            orePerSecondBase: 1,
-            orePerSecondBonus: 0,
-            autoSmeltRate: 0,
-            autoSmelterEnabled: false,
-            forgeMultiplier: 1,
+            tier1resource: 0,
+            tier2resource: 0,
+            tier3resource: 0,
+            tier4resource: 0,
+            tier1BaseRate: 1,
+            tier1BonusRate: 0,
+            tier2AutomationRate: 0,
+            tier2AutomationEnabled: false,
+            tier3Multiplier: 1,
             upgrades: {
-              hotterFurnace: 0,
-              autoSmelter: 0,
-              efficientForge: 0,
+              tier1generation: 0,
+              tier2automation: 0,
+              tier3efficiency: 0,
             },
             totals: {
-              oreGenerated: 0,
-              alloysSmelted: 0,
-              barsForged: 0,
-              epochsCast: 0,
+              tier1Generated: 0,
+              tier2Generated: 0,
+              tier3Generated: 0,
+              tier4Generated: 0,
             },
             milestones: {
-              ore10k: false,
-              ore100k: false,
-              ore1m: false,
-              alloys100: false,
-              alloys500: false,
-              alloys2k: false,
-              bars10: false,
-              bars50: false,
-              bars200: false,
-              epochs1: false,
-              epochs3: false,
-              epochs10: false,
+              tier1_10k: false,
+              tier1_100k: false,
+              tier1_1m: false,
+              tier2_100: false,
+              tier2_500: false,
+              tier2_2k: false,
+              tier3_10: false,
+              tier3_50: false,
+              tier3_200: false,
+              tier4_1: false,
+              tier4_3: false,
+              tier4_10: false,
             },
             boosts: {
               timeSurge: {
@@ -1038,105 +1042,105 @@
           const t = state.totals;
           const m = state.milestones;
 
-          // Ore milestones
-          if (!m.ore10k && t.oreGenerated >= 10000) {
-            m.ore10k = true;
-            state.orePerSecondBonus += 0.5;
+          // Tier1 (Time Ore) milestones
+          if (!m.tier1_10k && t.tier1Generated >= 10000) {
+            m.tier1_10k = true;
+            state.tier1BonusRate += 0.5;
             flashPill(pillOre);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Smelted 10,000 Time Ore. Permanent Ore rate +<span class="highlight">0.5/s</span>.`
             );
           }
-          if (!m.ore100k && t.oreGenerated >= 100000) {
-            m.ore100k = true;
-            state.orePerSecondBonus += 1.0;
+          if (!m.tier1_100k && t.tier1Generated >= 100000) {
+            m.tier1_100k = true;
+            state.tier1BonusRate += 1.0;
             flashPill(pillOre);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Smelted 100,000 Time Ore. Permanent Ore rate +<span class="highlight">1.0/s</span>.`
             );
           }
-          if (!m.ore1m && t.oreGenerated >= 1000000) {
-            m.ore1m = true;
-            state.orePerSecondBonus += 2.0;
+          if (!m.tier1_1m && t.tier1Generated >= 1000000) {
+            m.tier1_1m = true;
+            state.tier1BonusRate += 2.0;
             flashPill(pillOre);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Smelted 1,000,000 Time Ore. Permanent Ore rate +<span class="highlight">2.0/s</span>.`
             );
           }
 
-          // Alloy milestones
-          if (!m.alloys100 && t.alloysSmelted >= 100) {
-            m.alloys100 = true;
-            state.autoSmeltRate += 0.1;
+          // Tier2 (Alloys) milestones
+          if (!m.tier2_100 && t.tier2Generated >= 100) {
+            m.tier2_100 = true;
+            state.tier2AutomationRate += 0.1;
             flashPill(pillAlloy);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Smelted 100 Alloys. Auto Smelt +<span class="highlight">0.10/s</span>.`
             );
           }
-          if (!m.alloys500 && t.alloysSmelted >= 500) {
-            m.alloys500 = true;
-            state.autoSmeltRate += 0.2;
+          if (!m.tier2_500 && t.tier2Generated >= 500) {
+            m.tier2_500 = true;
+            state.tier2AutomationRate += 0.2;
             flashPill(pillAlloy);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Smelted 500 Alloys. Auto Smelt +<span class="highlight">0.20/s</span>.`
             );
           }
-          if (!m.alloys2k && t.alloysSmelted >= 2000) {
-            m.alloys2k = true;
-            state.autoSmeltRate += 0.4;
+          if (!m.tier2_2k && t.tier2Generated >= 2000) {
+            m.tier2_2k = true;
+            state.tier2AutomationRate += 0.4;
             flashPill(pillAlloy);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Smelted 2,000 Alloys. Auto Smelt +<span class="highlight">0.40/s</span>.`
             );
           }
 
-          // Bar milestones
-          if (!m.bars10 && t.barsForged >= 10) {
-            m.bars10 = true;
-            state.forgeMultiplier += 0.3;
+          // Tier3 (Bars) milestones
+          if (!m.tier3_10 && t.tier3Generated >= 10) {
+            m.tier3_10 = true;
+            state.tier3Multiplier += 0.3;
             flashPill(pillBar);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Forged 10 Chrono Bars. Forge multiplier +<span class="highlight">0.3x</span>.`
             );
           }
-          if (!m.bars50 && t.barsForged >= 50) {
-            m.bars50 = true;
-            state.forgeMultiplier += 0.5;
+          if (!m.tier3_50 && t.tier3Generated >= 50) {
+            m.tier3_50 = true;
+            state.tier3Multiplier += 0.5;
             flashPill(pillBar);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Forged 50 Chrono Bars. Forge multiplier +<span class="highlight">0.5x</span>.`
             );
           }
-          if (!m.bars200 && t.barsForged >= 200) {
-            m.bars200 = true;
-            state.forgeMultiplier += 1.0;
+          if (!m.tier3_200 && t.tier3Generated >= 200) {
+            m.tier3_200 = true;
+            state.tier3Multiplier += 1.0;
             flashPill(pillBar);
             appendLog(
               `<span class="success">Milestone unlocked:</span> Forged 200 Chrono Bars. Forge multiplier +<span class="highlight">1.0x</span>.`
             );
           }
 
-          // Epoch milestones
-          if (!m.epochs1 && t.epochsCast >= 1) {
-            m.epochs1 = true;
-            state.orePerSecondBase += 0.5;
+          // Tier4 (Epoch Cores) milestones
+          if (!m.tier4_1 && t.tier4Generated >= 1) {
+            m.tier4_1 = true;
+            state.tier1BaseRate += 0.5;
             flashPill(pillEpoch);
             appendLog(
               `<span class="success">Epoch Milestone:</span> 1 Epoch Core forged. Base Ore rate +<span class="highlight">0.5/s</span>.`
             );
           }
-          if (!m.epochs3 && t.epochsCast >= 3) {
-            m.epochs3 = true;
-            state.orePerSecondBase += 1.0;
-            state.autoSmeltRate += 0.2;
+          if (!m.tier4_3 && t.tier4Generated >= 3) {
+            m.tier4_3 = true;
+            state.tier1BaseRate += 1.0;
+            state.tier2AutomationRate += 0.2;
             flashPill(pillEpoch);
             appendLog(
               `<span class="success">Epoch Milestone:</span> 3 Epoch Cores forged. Base Ore rate +<span class="highlight">1.0/s</span>, Auto Smelt +<span class="highlight">0.2/s</span>.`
             );
           }
-          if (!m.epochs10 && t.epochsCast >= 10) {
-            m.epochs10 = true;
-            state.forgeMultiplier += 1.5;
+          if (!m.tier4_10 && t.tier4Generated >= 10) {
+            m.tier4_10 = true;
+            state.tier3Multiplier += 1.5;
             flashPill(pillEpoch);
             appendLog(
               `<span class="success">Epoch Milestone:</span> 10 Epoch Cores forged. Forge multiplier +<span class="highlight">1.5x</span>.`
@@ -1145,13 +1149,13 @@
         }
 
         function updateAutoSmelterToggleUI() {
-          const level = state.upgrades.autoSmelter || 0;
+          const level = state.upgrades.tier2automation || 0;
           if (level <= 0) {
             btnToggleAuto.disabled = true;
             btnToggleAuto.textContent = "Auto Smelter: Locked";
           } else {
             btnToggleAuto.disabled = false;
-            btnToggleAuto.textContent = state.autoSmelterEnabled
+            btnToggleAuto.textContent = state.tier2AutomationEnabled
               ? "Auto Smelter: ON"
               : "Auto Smelter: OFF";
           }
@@ -1176,43 +1180,66 @@
             levelLabel.textContent = level;
 
             let affordable = false;
-            if (def.currency === "ore") {
-              affordable = state.ore >= cost;
-            } else if (def.currency === "alloys") {
-              affordable = state.alloys >= cost;
+            if (def.currency === "tier1") {
+              affordable = state.tier1resource >= cost;
+            } else if (def.currency === "tier2") {
+              affordable = state.tier2resource >= cost;
             }
 
             button.disabled = !affordable;
           });
 
-          const orePerSec = state.orePerSecondBase + state.orePerSecondBonus;
-          oreRateEl.textContent = orePerSec.toFixed(2) + " /s";
+          const baseOrePerSec = state.tier1BaseRate + state.tier1BonusRate;
 
-          const effectiveAutoRate = state.autoSmelterEnabled
-            ? state.autoSmeltRate
+          // Check if Time Surge is active
+          const surgeActive = state.boosts.timeSurge?.active;
+          const surgeMult = surgeActive ? SURGE_MULTIPLIER : 1;
+          const boostedOrePerSec = baseOrePerSec * surgeMult;
+
+          // Show base rate, and boosted info when active
+          oreRateEl.textContent = baseOrePerSec.toFixed(2) + " /s";
+
+          if (oreRateBoostEl) {
+            if (surgeActive) {
+              oreRateBoostEl.textContent = ` (BOOSTED → ${boostedOrePerSec.toFixed(
+                2
+              )} /s)`;
+              oreRateBoostEl.style.color = "#00ffff";
+            } else {
+              oreRateBoostEl.textContent = "";
+            }
+          }
+
+          // Alloy auto-smelt rate (unchanged logic)
+          const effectiveAutoRate = state.tier2AutomationEnabled
+            ? state.tier2AutomationRate
             : 0;
           alloyRateEl.textContent = effectiveAutoRate.toFixed(2) + " /s";
 
-          barMultEl.textContent = "x" + state.forgeMultiplier.toFixed(1);
+          barMultEl.textContent = "x" + state.tier3Multiplier.toFixed(1);
           updateAutoSmelterToggleUI();
         }
 
         function updateForgeUI() {
-          const possibleForges = Math.floor(state.alloys / ALLOYS_PER_BAR);
+          const possibleForges = Math.floor(
+            state.tier2resource / TIER2_PER_TIER3
+          );
           forgeReadyEl.textContent = possibleForges;
           btnForge.disabled = possibleForges <= 0;
           btnForge.title = possibleForges
-            ? `Forge Chrono Bars using ${ALLOYS_PER_BAR} Alloys. You can forge ${possibleForges} time(s) now. Hotkey: F`
-            : `Not enough Alloys. Requires ${ALLOYS_PER_BAR} Alloys per Forge. Hotkey: F`;
+            ? `Forge Chrono Bars using ${TIER2_PER_TIER3} Alloys. You can forge ${possibleForges} time(s) now. Hotkey: F`
+            : `Not enough Alloys. Requires ${TIER2_PER_TIER3} Alloys per Forge. Hotkey: F`;
         }
 
         function updateEpochUI() {
-          const possibleEpochs = Math.floor(state.bars / BARS_PER_EPOCH);
+          const possibleEpochs = Math.floor(
+            state.tier3resource / TIER3_PER_TIER4
+          );
           epochReadyEl.textContent = possibleEpochs;
           btnEpoch.disabled = possibleEpochs <= 0;
           btnEpoch.title = possibleEpochs
-            ? `Cast an Epoch Core using ${BARS_PER_EPOCH} Chrono Bars. You can cast ${possibleEpochs} time(s) now.`
-            : `Not enough Chrono Bars. Requires ${BARS_PER_EPOCH} Bars per Epoch Core.`;
+            ? `Cast an Epoch Core using ${TIER3_PER_TIER4} Chrono Bars. You can cast ${possibleEpochs} time(s) now.`
+            : `Not enough Chrono Bars. Requires ${TIER3_PER_TIER4} Bars per Epoch Core.`;
         }
 
         function updateTimeSurgeUI() {
@@ -1232,10 +1259,12 @@
         }
 
         function updateUI() {
-          oreEl.textContent = formatNumber(state.ore);
-          alloyEl.textContent = formatNumber(state.alloys);
-          barEl.textContent = formatNumber(state.bars);
-          epochEl.textContent = formatNumber(state.epochs);
+          // Map tier fields to lore UI
+          oreEl.textContent = formatNumber(state.tier1resource);
+          alloyEl.textContent = formatNumber(state.tier2resource);
+          barEl.textContent = formatNumber(state.tier3resource);
+          epochEl.textContent = formatNumber(state.tier4resource);
+
           updateUpgradesUI();
           updateForgeUI();
           updateEpochUI();
@@ -1265,26 +1294,25 @@
             ? SURGE_MULTIPLIER
             : 1;
 
-          const baseOrePerSec =
-            state.orePerSecondBase + state.orePerSecondBonus;
+          const baseOrePerSec = state.tier1BaseRate + state.tier1BonusRate;
           const orePerSec = baseOrePerSec * surgeMult;
 
           const oreGain = orePerSec * deltaSeconds;
-          state.ore += oreGain;
-          state.totals.oreGenerated += oreGain;
+          state.tier1resource += oreGain;
+          state.totals.tier1Generated += oreGain;
 
-          const effectiveAutoRate = state.autoSmelterEnabled
-            ? state.autoSmeltRate
+          const effectiveAutoRate = state.tier2AutomationEnabled
+            ? state.tier2AutomationRate
             : 0;
 
-          if (effectiveAutoRate > 0 && state.ore > 0) {
-            const potentialAlloys = effectiveAutoRate * deltaSeconds;
-            const maxByOre = state.ore / ORE_PER_ALLOY;
-            const alloysProduced = Math.min(potentialAlloys, maxByOre);
-            if (alloysProduced > 0) {
-              state.ore -= alloysProduced * ORE_PER_ALLOY;
-              state.alloys += alloysProduced;
-              state.totals.alloysSmelted += alloysProduced;
+          if (effectiveAutoRate > 0 && state.tier1resource > 0) {
+            const potentialTier2 = effectiveAutoRate * deltaSeconds;
+            const maxByTier1 = state.tier1resource / TIER1_PER_TIER2;
+            const produced = Math.min(potentialTier2, maxByTier1);
+            if (produced > 0) {
+              state.tier1resource -= produced * TIER1_PER_TIER2;
+              state.tier2resource += produced;
+              state.totals.tier2Generated += produced;
             }
           }
 
@@ -1308,34 +1336,34 @@
         }
 
         function smeltOre() {
-          if (state.ore < ORE_PER_ALLOY) {
+          if (state.tier1resource < TIER1_PER_TIER2) {
             appendLog(
-              `<span class="danger">Not enough Ore</span> — need ${ORE_PER_ALLOY} Time Ore to smelt.`
+              `<span class="danger">Not enough Ore</span> — need ${TIER1_PER_TIER2} Time Ore to smelt.`
             );
             return;
           }
 
-          state.ore -= ORE_PER_ALLOY;
+          state.tier1resource -= TIER1_PER_TIER2;
 
-          let gainedAlloys = 1;
+          let gained = 1;
           let crit = false;
           if (randomChance(CRIT_SMELT_CHANCE)) {
             crit = true;
-            gainedAlloys = CRIT_SMELT_MULTIPLIER;
+            gained = CRIT_SMELT_MULTIPLIER;
           }
 
-          state.alloys += gainedAlloys;
-          state.totals.alloysSmelted += gainedAlloys;
+          state.tier2resource += gained;
+          state.totals.tier2Generated += gained;
 
           if (crit) {
             flashPill(pillAlloy);
             appendLog(
-              `<span class="crit">Critical smelt!</span> ${ORE_PER_ALLOY} Ore → <span class="success">${gainedAlloys} Alloys</span>.`
+              `<span class="crit">Critical smelt!</span> ${TIER1_PER_TIER2} Ore → <span class="success">${gained} Alloys</span>.`
             );
           } else {
             appendLog(
-              `Manual smelt: <span class="highlight">${ORE_PER_ALLOY}</span> Ore → <span class="success">${gainedAlloys} Alloy${
-                gainedAlloys > 1 ? "s" : ""
+              `Manual smelt: <span class="highlight">${TIER1_PER_TIER2}</span> Ore → <span class="success">${gained} Alloy${
+                gained > 1 ? "s" : ""
               }</span>.`
             );
           }
@@ -1346,38 +1374,38 @@
         }
 
         function forgeBars() {
-          if (state.alloys < ALLOYS_PER_BAR) {
+          if (state.tier2resource < TIER2_PER_TIER3) {
             appendLog(
-              `<span class="danger">Not enough Alloys</span> — need ${ALLOYS_PER_BAR} Alloys to forge.`
+              `<span class="danger">Not enough Alloys</span> — need ${TIER2_PER_TIER3} Alloys to forge.`
             );
             updateForgeUI();
             return;
           }
 
-          state.alloys -= ALLOYS_PER_BAR;
+          state.tier2resource -= TIER2_PER_TIER3;
 
-          const baseBars = 1 * state.forgeMultiplier;
-          let barsGained = baseBars;
+          const baseBars = 1 * state.tier3Multiplier;
+          let gained = baseBars;
           let crit = false;
 
           if (randomChance(CRIT_FORGE_CHANCE)) {
             crit = true;
-            barsGained = baseBars * CRIT_FORGE_MULTIPLIER;
+            gained = baseBars * CRIT_FORGE_MULTIPLIER;
           }
 
-          state.bars += barsGained;
-          state.totals.barsForged += barsGained;
+          state.tier3resource += gained;
+          state.totals.tier3Generated += gained;
 
           if (crit) {
             flashPill(pillBar);
             appendLog(
-              `<span class="crit">Critical forge!</span> ${ALLOYS_PER_BAR} Alloys → <span class="success">${barsGained.toFixed(
+              `<span class="crit">Critical forge!</span> ${TIER2_PER_TIER3} Alloys → <span class="success">${gained.toFixed(
                 1
               )} Chrono Bars</span>.`
             );
           } else {
             appendLog(
-              `Forge action: <span class="highlight">${ALLOYS_PER_BAR}</span> Alloys → <span class="success">${barsGained.toFixed(
+              `Forge action: <span class="highlight">${TIER2_PER_TIER3}</span> Alloys → <span class="success">${gained.toFixed(
                 1
               )} Chrono Bars</span>.`
             );
@@ -1389,20 +1417,21 @@
         }
 
         function forgeEpochCore() {
-          if (state.bars < BARS_PER_EPOCH) {
+          if (state.tier3resource < TIER3_PER_TIER4) {
             appendLog(
-              `<span class="danger">Not enough Chrono Bars</span> — need ${BARS_PER_EPOCH} Bars to cast an Epoch Core.`
+              `<span class="danger">Not enough Chrono Bars</span> — need ${TIER3_PER_TIER4} Bars to cast an Epoch Core.`
             );
             updateEpochUI();
             return;
           }
-          state.bars -= BARS_PER_EPOCH;
-          state.epochs += 1;
-          state.totals.epochsCast += 1;
+
+          state.tier3resource -= TIER3_PER_TIER4;
+          state.tier4resource += 1;
+          state.totals.tier4Generated += 1;
 
           flashPill(pillEpoch);
           appendLog(
-            `Epoch Crucible: <span class="highlight">${BARS_PER_EPOCH}</span> Chrono Bars → <span class="success">1 Epoch Core</span>.`
+            `Epoch Crucible: <span class="highlight">${TIER3_PER_TIER4}</span> Chrono Bars → <span class="success">1 Epoch Core</span>.`
           );
 
           checkMilestones();
@@ -1426,13 +1455,12 @@
         }
 
         function toggleAutoSmelter() {
-          const level = state.upgrades.autoSmelter || 0;
-          if (level <= 0) return; // still locked
-
-          state.autoSmelterEnabled = !state.autoSmelterEnabled;
+          const level = state.upgrades.tier2automation || 0;
+          if (level <= 0) return;
+          state.tier2AutomationEnabled = !state.tier2AutomationEnabled;
           appendLog(
             `Auto Smelter ${
-              state.autoSmelterEnabled
+              state.tier2AutomationEnabled
                 ? '<span class="success">enabled</span>.'
                 : '<span class="danger">disabled</span>.'
             }`
@@ -1448,29 +1476,32 @@
             def.baseCost * Math.pow(def.costScale, level)
           );
 
-          if (def.currency === "ore") {
-            if (state.ore < cost) return;
-            state.ore -= cost;
-          } else if (def.currency === "alloys") {
-            if (state.alloys < cost) return;
-            state.alloys -= cost;
+          if (def.currency === "tier1") {
+            if (state.tier1resource < cost) return;
+            state.tier1resource -= cost;
+          }
+          if (def.currency === "tier2") {
+            if (state.tier2resource < cost) return;
+            state.tier2resource -= cost;
+            if (state.tier2resource < 0) state.tier2resource = 0;
           }
 
           state.upgrades[id] = level + 1;
 
-          if (id === "hotterFurnace") {
-            state.orePerSecondBonus += def.bonusPerLevel;
+          if (id === "tier1generation") {
+            state.tier1BonusRate += def.bonusPerLevel;
             appendLog(
               `Upgrade: <span class="success">Faster Drilling</span> → Ore rate boosted by <span class="highlight">${def.bonusPerLevel.toFixed(
                 2
               )}/s</span>.`
             );
-          } else if (id === "autoSmelter") {
-            state.autoSmeltRate += def.bonusPerLevel;
-
-            // First time unlocking Auto Smelter: turn it ON by default
-            if (state.upgrades.autoSmelter === 1 && state.autoSmeltRate > 0) {
-              state.autoSmelterEnabled = true;
+          } else if (id === "tier2automation") {
+            state.tier2AutomationRate += def.bonusPerLevel;
+            if (
+              state.upgrades.tier2automation === 1 &&
+              state.tier2AutomationRate > 0
+            ) {
+              state.tier2AutomationEnabled = true;
               appendLog(
                 `Upgrade: <span class="success">Auto Smelter</span> unlocked and <span class="highlight">enabled</span>. It now auto-smelts Ore into Alloys.`
               );
@@ -1481,8 +1512,8 @@
                 )} Alloys/s</span>.`
               );
             }
-          } else if (id === "efficientForge") {
-            state.forgeMultiplier += def.bonusPerLevel;
+          } else if (id === "tier3efficiency") {
+            state.tier3Multiplier += def.bonusPerLevel;
             appendLog(
               `Upgrade: <span class="success">Efficient Forge</span> → Forge multiplier increased by <span class="highlight">${def.bonusPerLevel.toFixed(
                 1
@@ -1502,12 +1533,98 @@
         btnToggleAuto.addEventListener("click", toggleAutoSmelter);
 
         document.addEventListener("keydown", (e) => {
+          // Don't hijack typing into inputs/textareas
           if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
             return;
-          if (e.key === "s" || e.key === "S") {
+
+          const key = e.key.toLowerCase();
+          const code = e.code; // handles numpad vs top-row
+
+          // =========================
+          // DEV CHEATS (DEV_MODE only)
+          // =========================
+          if (DEV_MODE) {
+            let cheated = false;
+
+            // Treat top row and numpad the same
+            const is1 = key === "1" || code === "Digit1" || code === "Numpad1";
+            const is2 = key === "2" || code === "Digit2" || code === "Numpad2";
+            const is3 = key === "3" || code === "Digit3" || code === "Numpad3";
+            const is4 = key === "4" || code === "Digit4" || code === "Numpad4";
+
+            if (is1) {
+              // +1,000 Time Ore
+              state.tier1resource += 1000;
+              state.totals.tier1Generated += 1000;
+              appendLog(
+                `<span class="success">DEV:</span> Added <span class="highlight">1,000</span> Time Ore.`
+              );
+              flashPill(pillOre);
+              cheated = true;
+            } else if (is2) {
+              // +100 Alloys
+              state.tier2resource += 100;
+              state.totals.tier2Generated += 100;
+              appendLog(
+                `<span class="success">DEV:</span> Added <span class="highlight">100</span> Alloys.`
+              );
+              flashPill(pillAlloy);
+              cheated = true;
+            } else if (is3) {
+              // +10 Chrono Bars
+              state.tier3resource += 10;
+              state.totals.tier3Generated += 10;
+              appendLog(
+                `<span class="success">DEV:</span> Added <span class="highlight">10</span> Chrono Bars.`
+              );
+              flashPill(pillBar);
+              cheated = true;
+            } else if (is4) {
+              // +1 Epoch Core
+              state.tier4resource += 1;
+              state.totals.tier4Generated += 1;
+              appendLog(
+                `<span class="success">DEV:</span> Added <span class="highlight">1</span> Epoch Core.`
+              );
+              flashPill(pillEpoch);
+              cheated = true;
+            } else if (key === "b") {
+              // Toggle Time Surge on/off, ignoring cooldown
+              const surge = state.boosts.timeSurge;
+              if (!surge.active) {
+                surge.active = true;
+                surge.remaining = SURGE_DURATION;
+                surge.cooldown = 0;
+                appendLog(
+                  `<span class="highlight">DEV:</span> Time Surge <span class="success">forced ON</span>.`
+                );
+              } else {
+                surge.active = false;
+                surge.remaining = 0;
+                surge.cooldown = 0;
+                appendLog(
+                  `<span class="highlight">DEV:</span> Time Surge <span class="danger">forced OFF</span>.`
+                );
+              }
+              cheated = true;
+            }
+
+            if (cheated) {
+              e.preventDefault();
+              checkMilestones();
+              updateUI();
+              saveState();
+              return; // don't also trigger normal hotkeys
+            }
+          }
+
+          // =========================
+          // Normal gameplay hotkeys
+          // =========================
+          if (key === "s") {
             e.preventDefault();
             smeltOre();
-          } else if (e.key === "f" || e.key === "F") {
+          } else if (key === "f") {
             e.preventDefault();
             forgeBars();
           }
@@ -1525,7 +1642,7 @@
         resetBtn.addEventListener("click", () => {
           if (
             confirm(
-              "Reset Temporal Forge? This clears all Ore, Alloys, Bars, Epoch Cores, milestones, and upgrades."
+              "Reset Temporal Forge? This clears all resources, milestones, and upgrades."
             )
           ) {
             resetState();
