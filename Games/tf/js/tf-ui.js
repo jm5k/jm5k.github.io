@@ -1,0 +1,343 @@
+import {
+  computeBaseOrePerSec,
+  computeEffectiveOrePerSec,
+  computeEffectiveAutoRate,
+  updateMachineUnlocks,
+  TIER1_PER_TIER2,
+  TIER2_PER_TIER3,
+  TIER3_PER_TIER4,
+  SURGE_MULTIPLIER,
+} from "./tf-state.js";
+import { upgradeDefs, computeUpgradeCost } from "./tf-upgrades.js";
+
+export function bindElements() {
+  return {
+    // Resource UI
+    t1El: document.getElementById("t1-count"),
+    t2El: document.getElementById("t2-count"),
+    t3El: document.getElementById("t3-count"),
+    t4El: document.getElementById("t4-count"),
+    t1RateEl: document.getElementById("t1-rate"),
+    t1RateBoostEl: document.getElementById("t1-rate-boost"),
+    t2RateEl: document.getElementById("t2-rate"),
+    t3MultEl: document.getElementById("t3-mult"),
+    logEl: document.getElementById("log"),
+    saveStatusEl: document.getElementById("save-status"),
+
+    // Buttons
+    btnPress: document.getElementById("btn-press"),
+    btnForge: document.getElementById("btn-forge"),
+    btnEpoch: document.getElementById("btn-epoch"),
+    btnTimeSurge: document.getElementById("btn-time-surge"),
+    btnToggleAuto: document.getElementById("btn-toggle-auto"),
+    resetBtn: document.getElementById("reset-save"),
+
+    // Forge / Epoch stats
+    forgeReadyEl: document.getElementById("forge-ready-count"),
+    epochReadyEl: document.getElementById("epoch-ready-count"),
+    timeSurgeStatusEl: document.getElementById("time-surge-status"),
+
+    // Rail
+    railFill: document.getElementById("rail-fill"),
+    railMarker: document.getElementById("rail-marker"),
+    railTimeLabel: document.getElementById("rail-time-label"),
+    railDayPercent: document.getElementById("rail-day-percent"),
+    railRemaining: document.getElementById("rail-remaining"),
+
+    // Upgrades
+    upgradesListEl: document.getElementById("upgrades-list"),
+
+    // Resource pills
+    pillT1: document.getElementById("pill-t1"),
+    pillT2: document.getElementById("pill-t2"),
+    pillT3: document.getElementById("pill-t3"),
+    pillT4: document.getElementById("pill-t4"),
+
+    // Machines
+    machinePressTag: document.getElementById("machine-press-tag"),
+    machineForgeTag: document.getElementById("machine-forge-tag"),
+    machineArrayTag: document.getElementById("machine-array-tag"),
+  };
+}
+
+export function appendLog(el, html) {
+  if (!el) return;
+  const line = document.createElement("div");
+  line.className = "smelt-log-line";
+  line.innerHTML = html;
+  el.insertBefore(line, el.firstChild);
+  while (el.children.length > 20) {
+    el.removeChild(el.lastChild);
+  }
+}
+
+function flashPill(el) {
+  if (!el) return;
+  el.classList.add("celebrate");
+  setTimeout(() => el.classList.remove("celebrate"), 350);
+}
+
+function formatNumber(value) {
+  const v = Math.floor(value + 1e-9);
+  if (v < 1000) return v.toString();
+  if (v < 1000000) return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return v.toExponential(2);
+}
+
+export function updateAutoSmelterToggleUI(state, els) {
+  const level = state.upgrades.tier2automation || 0;
+  if (!els.btnToggleAuto) return;
+  if (level <= 0) {
+    els.btnToggleAuto.disabled = true;
+    els.btnToggleAuto.textContent = "Auto Press: Locked";
+  } else {
+    els.btnToggleAuto.disabled = false;
+    els.btnToggleAuto.textContent = state.tier2AutomationEnabled
+      ? "Auto Press: ON"
+      : "Auto Press: OFF";
+  }
+}
+
+export function updateUpgradesUI(state, els) {
+  const listEl = els.upgradesListEl;
+  if (!listEl) return;
+
+  const upgradeEls = listEl.querySelectorAll(".upgrade");
+  upgradeEls.forEach((el) => {
+    const id = el.getAttribute("data-upgrade-id");
+    const def = upgradeDefs[id];
+    if (!def) return;
+    const level = state.upgrades[id] || 0;
+
+    const cost = computeUpgradeCost(id, level);
+    const costLabel = el.querySelector("[data-cost-label]");
+    const levelLabel = el.querySelector("[data-level-label]");
+    const button = el.querySelector("[data-upgrade-button]");
+
+    if (costLabel) costLabel.textContent = `${cost} ${def.label}`;
+    if (levelLabel) levelLabel.textContent = level;
+
+    let affordable = false;
+    if (def.currency === "tier1") {
+      affordable = state.tier1resource >= cost;
+    } else if (def.currency === "tier2") {
+      affordable = state.tier2resource >= cost;
+    }
+    if (button) button.disabled = !affordable;
+  });
+
+  const baseOrePerSec = computeBaseOrePerSec(state);
+  const boostedOrePerSec = computeEffectiveOrePerSec(state);
+
+  if (els.t1RateEl) {
+    els.t1RateEl.textContent = baseOrePerSec.toFixed(2) + " /s";
+  }
+  if (els.t1RateBoostEl) {
+    if (state.boosts.timeSurge.active) {
+      els.t1RateBoostEl.textContent = ` (BOOSTED → ${boostedOrePerSec.toFixed(
+        2
+      )} /s)`;
+      els.t1RateBoostEl.style.color = "#00ffff";
+    } else {
+      els.t1RateBoostEl.textContent = "";
+    }
+  }
+
+  const autoRate = computeEffectiveAutoRate(state);
+  if (els.t2RateEl) {
+    els.t2RateEl.textContent = autoRate.toFixed(2) + " /s";
+  }
+  if (els.t3MultEl) {
+    els.t3MultEl.textContent = "x" + state.tier3Multiplier.toFixed(1);
+  }
+
+  updateAutoSmelterToggleUI(state, els);
+}
+
+export function updateForgeUI(state, els) {
+  const possibleForges = Math.floor(state.tier2resource / TIER2_PER_TIER3);
+  if (els.forgeReadyEl) {
+    els.forgeReadyEl.textContent = possibleForges;
+  }
+  if (els.btnForge) {
+    els.btnForge.disabled = possibleForges <= 0;
+    els.btnForge.title = possibleForges
+      ? `Forge Chrono Bars using ${TIER2_PER_TIER3} Pressed Flux. You can forge ${possibleForges} time(s) now. Hotkey: F`
+      : `Not enough Pressed Flux. Requires ${TIER2_PER_TIER3} Flux per Forge. Hotkey: F`;
+  }
+}
+
+export function updateEpochUI(state, els) {
+  const possibleEpochs = Math.floor(state.tier3resource / TIER3_PER_TIER4);
+  if (els.epochReadyEl) {
+    els.epochReadyEl.textContent = possibleEpochs;
+  }
+  if (els.btnEpoch) {
+    els.btnEpoch.disabled = possibleEpochs <= 0;
+    els.btnEpoch.title = possibleEpochs
+      ? `Cast an Epoch Core using ${TIER3_PER_TIER4} Chrono Bars. You can cast ${possibleEpochs} time(s) now.`
+      : `Not enough Chrono Bars. Requires ${TIER3_PER_TIER4} Bars per Epoch Core.`;
+  }
+}
+
+export function updateTimeSurgeUI(state, els) {
+  const surge = state.boosts.timeSurge;
+  if (!els.timeSurgeStatusEl || !els.btnTimeSurge) return;
+
+  if (surge.active) {
+    els.timeSurgeStatusEl.textContent =
+      "Active (" + Math.ceil(surge.remaining) + "s)";
+    els.btnTimeSurge.disabled = true;
+  } else if (surge.cooldown > 0) {
+    els.timeSurgeStatusEl.textContent =
+      "Cooldown (" + Math.ceil(surge.cooldown) + "s)";
+    els.btnTimeSurge.disabled = true;
+  } else {
+    els.timeSurgeStatusEl.textContent = "Ready";
+    els.btnTimeSurge.disabled = false;
+  }
+}
+
+export function updateMachineUI(state, els) {
+  updateMachineUnlocks(state);
+
+  if (els.machinePressTag) {
+    els.machinePressTag.textContent = state.machines.fluxPressUnlocked
+      ? "Unlocked"
+      : "Locked";
+    els.machinePressTag.className = "machine-tag " + (state.machines.fluxPressUnlocked ? "unlocked" : "locked");
+  }
+
+  if (els.machineForgeTag) {
+    els.machineForgeTag.textContent = state.machines.chronoForgeUnlocked
+      ? "Unlocked"
+      : "Locked";
+    els.machineForgeTag.className = "machine-tag " + (state.machines.chronoForgeUnlocked ? "unlocked" : "locked");
+  }
+
+  if (els.machineArrayTag) {
+    els.machineArrayTag.textContent = state.machines.arrayUnlocked
+      ? "Unlocked"
+      : "Locked";
+    els.machineArrayTag.className = "machine-tag " + (state.machines.arrayUnlocked ? "unlocked" : "locked");
+  }
+}
+
+export function updateAllUI(state, els) {
+  if (els.t1El) els.t1El.textContent = formatNumber(state.tier1resource);
+  if (els.t2El) els.t2El.textContent = formatNumber(state.tier2resource);
+  if (els.t3El) els.t3El.textContent = formatNumber(state.tier3resource);
+  if (els.t4El) els.t4El.textContent = formatNumber(state.tier4resource);
+
+  updateUpgradesUI(state, els);
+  updateForgeUI(state, els);
+  updateEpochUI(state, els);
+  updateTimeSurgeUI(state, els);
+  updateMachineUI(state, els);
+}
+
+export function checkMilestones(state, els, appendLogFn) {
+  const t = state.totals;
+  const m = state.milestones;
+
+  if (!m.tier1_10k && t.tier1Generated >= 10000) {
+    m.tier1_10k = true;
+    state.tier1BonusRate += 0.5;
+    flashPill(els.pillT1);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Generated 10,000 Aeon Dust. Permanent Dust rate +<span class="highlight">0.5/s</span>.`
+    );
+  }
+  if (!m.tier1_100k && t.tier1Generated >= 100000) {
+    m.tier1_100k = true;
+    state.tier1BonusRate += 1.0;
+    flashPill(els.pillT1);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Generated 100,000 Aeon Dust. Permanent Dust rate +<span class="highlight">1.0/s</span>.`
+    );
+  }
+  if (!m.tier1_1m && t.tier1Generated >= 1000000) {
+    m.tier1_1m = true;
+    state.tier1BonusRate += 2.0;
+    flashPill(els.pillT1);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Generated 1,000,000 Aeon Dust. Permanent Dust rate +<span class="highlight">2.0/s</span>.`
+    );
+  }
+
+  if (!m.tier2_100 && t.tier2Generated >= 100) {
+    m.tier2_100 = true;
+    state.tier2AutomationRate += 0.1;
+    flashPill(els.pillT2);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Pressed 100 Flux. Auto Press +<span class="highlight">0.10/s</span>.`
+    );
+  }
+  if (!m.tier2_500 && t.tier2Generated >= 500) {
+    m.tier2_500 = true;
+    state.tier2AutomationRate += 0.2;
+    flashPill(els.pillT2);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Pressed 500 Flux. Auto Press +<span class="highlight">0.20/s</span>.`
+    );
+  }
+  if (!m.tier2_2k && t.tier2Generated >= 2000) {
+    m.tier2_2k = true;
+    state.tier2AutomationRate += 0.4;
+    flashPill(els.pillT2);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Pressed 2,000 Flux. Auto Press +<span class="highlight">0.40/s</span>.`
+    );
+  }
+
+  if (!m.tier3_10 && t.tier3Generated >= 10) {
+    m.tier3_10 = true;
+    state.tier3Multiplier += 0.3;
+    flashPill(els.pillT3);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Forged 10 Chrono Bars. Forge multiplier +<span class="highlight">0.3x</span>.`
+    );
+  }
+  if (!m.tier3_50 && t.tier3Generated >= 50) {
+    m.tier3_50 = true;
+    state.tier3Multiplier += 0.5;
+    flashPill(els.pillT3);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Forged 50 Chrono Bars. Forge multiplier +<span class="highlight">0.5x</span>.`
+    );
+  }
+  if (!m.tier3_200 && t.tier3Generated >= 200) {
+    m.tier3_200 = true;
+    state.tier3Multiplier += 1.0;
+    flashPill(els.pillT3);
+    appendLogFn(
+      `<span class="success">Milestone unlocked:</span> Forged 200 Chrono Bars. Forge multiplier +<span class="highlight">1.0x</span>.`
+    );
+  }
+
+  if (!m.tier4_1 && t.tier4Generated >= 1) {
+    m.tier4_1 = true;
+    state.tier1BaseRate += 0.5;
+    flashPill(els.pillT4);
+    appendLogFn(
+      `<span class="success">Epoch Milestone:</span> 1 Epoch Core forged. Base Dust rate +<span class="highlight">0.5/s</span>.`
+    );
+  }
+  if (!m.tier4_3 && t.tier4Generated >= 3) {
+    m.tier4_3 = true;
+    state.tier1BaseRate += 1.0;
+    state.tier2AutomationRate += 0.2;
+    flashPill(els.pillT4);
+    appendLogFn(
+      `<span class="success">Epoch Milestone:</span> 3 Epoch Cores forged. Base Dust rate +<span class="highlight">1.0/s</span>, Auto Press +<span class="highlight">0.2/s</span>.`
+    );
+  }
+  if (!m.tier4_10 && t.tier4Generated >= 10) {
+    m.tier4_10 = true;
+    state.tier3Multiplier += 1.5;
+    flashPill(els.pillT4);
+    appendLogFn(
+      `<span class="success">Epoch Milestone:</span> 10 Epoch Cores forged. Forge multiplier +<span class="highlight">1.5x</span>.`
+    );
+  }
+}
