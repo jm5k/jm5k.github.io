@@ -289,10 +289,6 @@ function gameLoop() {
 
           state.tier1resource += dustRefund;
           state.tier2resource -= pressesToRefund;
-
-          appendLogBound(
-            `Auto reserve: refunded <span class="highlight">${pressesToRefund}</span> Pressed Flux to maintain your Dust floor.`
-          );
         }
       }
     }
