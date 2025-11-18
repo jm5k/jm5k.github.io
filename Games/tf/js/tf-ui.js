@@ -89,6 +89,35 @@ function formatNumber(value) {
   return v.toExponential(2);
 }
 
+/**
+ * Give the three core action buttons (Press / Forge / Epoch)
+ * a consistent cyan "core action" look, including dimming when disabled.
+ */
+function styleCoreActionButtons(els) {
+  const buttons = [els.btnPress, els.btnForge, els.btnEpoch];
+
+  buttons.forEach((btn) => {
+    if (!btn) return;
+
+    btn.style.borderRadius = "999px";
+    btn.style.boxSizing = "border-box";
+    btn.style.transition =
+      "box-shadow 0.18s ease, transform 0.12s ease, opacity 0.12s ease";
+
+    if (btn.disabled) {
+      btn.style.opacity = "0.45";
+      btn.style.boxShadow =
+        "0 0 0 1px rgba(0,255,255,0.18), 0 0 6px rgba(0,255,255,0.25)";
+      btn.style.transform = "none";
+    } else {
+      btn.style.opacity = "1";
+      btn.style.boxShadow =
+        "0 0 0 1px rgba(0,255,255,0.25), 0 0 12px rgba(0,255,255,0.45)";
+      // We leave hover to CSS, but this gives a solid base glow.
+    }
+  });
+}
+
 export function updateAutoSmelterToggleUI(state, els) {
   const level = state.upgrades.tier2automation || 0;
   if (!els.btnToggleAuto) return;
@@ -130,7 +159,27 @@ export function updateUpgradesUI(state, els) {
     } else if (def.currency === "tier2") {
       affordable = state.tier2resource >= cost;
     }
-    if (button) button.disabled = !affordable;
+
+    if (button) {
+      // Core enable/disable logic
+      button.disabled = !affordable;
+
+      // Make all upgrade buttons visually consistent:
+      // dim and soft when disabled, bright and glowy when affordable.
+      button.style.transition =
+        "opacity 0.16s ease, box-shadow 0.16s ease, transform 0.12s ease";
+
+      if (button.disabled) {
+        button.style.opacity = "0.45";
+        button.style.boxShadow = "none";
+        button.style.cursor = "default";
+      } else {
+        button.style.opacity = "1";
+        button.style.cursor = "pointer";
+        button.style.boxShadow =
+          "0 0 0 1px rgba(0,255,255,0.25), 0 0 10px rgba(0,255,255,0.45)";
+      }
+    }
 
     // Tier gating on upgrades themselves
     if (id === "tier2automation") {
@@ -178,8 +227,8 @@ export function updateForgeUI(state, els) {
   if (els.btnForge) {
     els.btnForge.disabled = possibleForges <= 0;
     els.btnForge.title = possibleForges
-      ? `Forge Chrono Bars using ${TIER2_PER_TIER3} Pressed Flux. You can forge ${possibleForges} time(s) now. Hotkey: F`
-      : `Not enough Pressed Flux. Requires ${TIER2_PER_TIER3} Flux per Forge. Hotkey: F`;
+      ? `Forge Chrono Bars using ${TIER2_PER_TIER3} Pressed Flux. You can forge ${possibleForges} time(s) now.`
+      : `Not enough Pressed Flux. Requires ${TIER2_PER_TIER3} Flux per Forge.`;
   }
 }
 
@@ -276,8 +325,18 @@ function updateTierVisibility(state, els) {
   const tier2Locked = !machines.fluxPressUnlocked;
   if (fluxRow) fluxRow.classList.toggle("tier-locked", tier2Locked);
   if (autoRow) autoRow.classList.toggle("tier-locked", tier2Locked);
-  if (tier2Locked && els.btnPress) els.btnPress.disabled = true;
-  if (tier2Locked && els.btnToggleAuto) els.btnToggleAuto.disabled = true;
+
+  // Press button is hard-locked by the tier gate
+  if (els.btnPress) {
+    els.btnPress.disabled = tier2Locked;
+  }
+
+  // For Auto Press, still hard-lock while the tier is locked.
+  // Once unlocked, updateAutoSmelterToggleUI() (called from updateUpgradesUI)
+  // will manage its enabled/disabled state based on upgrade level.
+  if (els.btnToggleAuto && tier2Locked) {
+    els.btnToggleAuto.disabled = true;
+  }
 
   // Tier III: Chrono Forge
   const tier3Locked = !machines.chronoForgeUnlocked;
@@ -320,6 +379,9 @@ export function updateAllUI(state, els) {
   updateTimeSurgeUI(state, els);
   updateMachineUI(state, els);
   updateTierVisibility(state, els);
+
+  // Ensure core action buttons share the same visual treatment
+  styleCoreActionButtons(els);
 }
 
 export function checkMilestones(state, els, appendLogFn) {

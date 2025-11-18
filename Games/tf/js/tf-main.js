@@ -39,6 +39,16 @@ function resetState() {
 }
 
 function pressFlux(manual = true) {
+  // ✅ NEW: Respect machine unlock state
+  if (!state.machines || !state.machines.fluxPressUnlocked) {
+    if (manual) {
+      appendLogBound(
+        `<span class="danger">Flux Press is still locked.</span> Tier II systems are not online yet.`
+      );
+    }
+    return false;
+  }
+
   if (state.tier1resource < TIER1_PER_TIER2) {
     if (manual) {
       appendLogBound(
