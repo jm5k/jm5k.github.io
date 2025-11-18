@@ -9,6 +9,8 @@ import {
   SURGE_MULTIPLIER,
 } from "./tf-state.js";
 import { upgradeDefs, computeUpgradeCost } from "./tf-upgrades.js";
+import { FEEDBACK_CONFIG } from "./tf-balance.js";
+import { SURGE_DURATION } from "./tf-constants.js";
 
 export function bindElements() {
   return {
@@ -113,9 +115,117 @@ function styleCoreActionButtons(els) {
       btn.style.opacity = "1";
       btn.style.boxShadow =
         "0 0 0 1px rgba(0,255,255,0.25), 0 0 12px rgba(0,255,255,0.45)";
-      // We leave hover to CSS, but this gives a solid base glow.
     }
   });
+}
+
+/**
+ * Cross-tier feedback loops driven by FEEDBACK_CONFIG in tf-balance.js
+ * Uses lifetime totals and milestone-like step tracking so bonuses
+ * are applied once per step, not every tick.
+ */
+function applyFeedbackLoops(state, els, appendLogFn) {
+  const t = state.totals;
+  const m = state.milestones;
+
+  // --- T2 (Flux) → T1 (Dust base rate) ---
+  if (FEEDBACK_CONFIG.fluxToDust?.enabled) {
+    const cfg = FEEDBACK_CONFIG.fluxToDust;
+    const stepSize = cfg.stepSize || 1;
+    const perStep = cfg.dustBonusPerStep || 0;
+
+    const previousSteps = m.fluxFeedbackSteps || 0;
+    const currentSteps = Math.floor((t.tier2Generated || 0) / stepSize);
+    const newSteps = currentSteps - previousSteps;
+
+    if (newSteps > 0 && perStep > 0) {
+      const bonus = newSteps * perStep;
+      state.tier1BaseRate += bonus;
+      m.fluxFeedbackSteps = currentSteps;
+
+      appendLogFn(
+        `<span class="success">Temporal feedback:</span> Pressed Flux has strengthened Aeon Dust flow. Base Dust rate +<span class="highlight">${bonus.toFixed(
+          2
+        )}/s</span>.`
+      );
+    }
+  }
+
+  // --- T3 (Chrono Bars) → T2 automation ---
+  if (FEEDBACK_CONFIG.barsToAuto?.enabled) {
+    const cfg = FEEDBACK_CONFIG.barsToAuto;
+    const stepSize = cfg.stepSize || 1;
+    const perStep = cfg.autoBonusPerStep || 0;
+
+    const previousSteps = m.barsFeedbackSteps || 0;
+    const currentSteps = Math.floor((t.tier3Generated || 0) / stepSize);
+    const newSteps = currentSteps - previousSteps;
+
+    if (newSteps > 0 && perStep > 0) {
+      const bonus = newSteps * perStep;
+      state.tier2AutomationRate += bonus;
+      m.barsFeedbackSteps = currentSteps;
+
+      appendLogFn(
+        `<span class="success">Chrono feedback:</span> Forged Bars have amplified Flux automation. Auto Press +<span class="highlight">${bonus.toFixed(
+          2
+        )}/s</span>.`
+      );
+    }
+  }
+  // --- T4 (Epoch Cores) → Time Surge duration (with cap) ---
+  if (FEEDBACK_CONFIG.epochsToSurge?.enabled) {
+    const cfg = FEEDBACK_CONFIG.epochsToSurge;
+    const stepSize = cfg.stepSize || 1;
+    const perStep = cfg.surgeDurationPerStep || 0;
+    const maxTotal = cfg.maxSurgeDuration || null;
+
+    const previousSteps = m.epochFeedbackSteps || 0;
+    const currentSteps = Math.floor((t.tier4Generated || 0) / stepSize);
+    const newSteps = currentSteps - previousSteps;
+
+    if (newSteps > 0 && perStep > 0) {
+      let bonusToAdd = newSteps * perStep;
+
+      // Store extra duration on the surge state
+      const surge = state.boosts.timeSurge || {};
+      const prevBonus = surge.bonusDuration || 0;
+
+      // If a cap is configured, clamp the total duration:
+      //   SURGE_DURATION + bonusDuration <= maxSurgeDuration
+      if (maxTotal) {
+        const baseDuration = SURGE_DURATION;
+        const maxBonus = Math.max(0, maxTotal - baseDuration);
+
+        // Target total bonus after this step
+        const uncappedBonus = prevBonus + bonusToAdd;
+        const cappedBonus = Math.min(uncappedBonus, maxBonus);
+
+        // Actual bonus we are really adding this time
+        bonusToAdd = cappedBonus - prevBonus;
+
+        // If already at cap, there's nothing new to add
+        if (bonusToAdd <= 0) {
+          m.epochFeedbackSteps = currentSteps;
+          state.boosts.timeSurge = surge;
+          return;
+        }
+
+        surge.bonusDuration = cappedBonus;
+      } else {
+        surge.bonusDuration = prevBonus + bonusToAdd;
+      }
+
+      state.boosts.timeSurge = surge;
+      m.epochFeedbackSteps = currentSteps;
+
+      appendLogFn(
+        `<span class="success">Epoch feedback:</span> Casting Epoch Cores has extended Time Surge by <span class="highlight">${bonusToAdd.toFixed(
+          1
+        )}s</span>.`
+      );
+    }
+  }
 }
 
 export function updateAutoSmelterToggleUI(state, els) {
@@ -249,16 +359,28 @@ export function updateTimeSurgeUI(state, els) {
   const surge = state.boosts.timeSurge;
   if (!els.timeSurgeStatusEl || !els.btnTimeSurge) return;
 
+  // Base Surge duration from constants + any bonus from Epoch feedback
+  const baseDuration = SURGE_DURATION;
+  const bonus = surge.bonusDuration || 0;
+  const effectiveDuration = baseDuration + bonus;
+
   if (surge.active) {
-    els.timeSurgeStatusEl.textContent =
-      "Active (" + Math.ceil(surge.remaining) + "s)";
+    // Show remaining vs max boosted duration
+    els.timeSurgeStatusEl.textContent = `Active — ${Math.ceil(
+      surge.remaining
+    )}s left / ${effectiveDuration.toFixed(1)}s max`;
     els.btnTimeSurge.disabled = true;
   } else if (surge.cooldown > 0) {
-    els.timeSurgeStatusEl.textContent =
-      "Cooldown (" + Math.ceil(surge.cooldown) + "s)";
+    // Show cooldown countdown plus what the boost duration will be next time
+    els.timeSurgeStatusEl.textContent = `Cooldown — ${Math.ceil(
+      surge.cooldown
+    )}s remaining (Boost ${effectiveDuration.toFixed(1)}s)`;
     els.btnTimeSurge.disabled = true;
   } else {
-    els.timeSurgeStatusEl.textContent = "Ready";
+    // Ready state: show the current boosted duration
+    els.timeSurgeStatusEl.textContent = `Ready — Boost ${effectiveDuration.toFixed(
+      1
+    )}s`;
     els.btnTimeSurge.disabled = false;
   }
 }
@@ -488,4 +610,7 @@ export function checkMilestones(state, els, appendLogFn) {
       `<span class="success">Epoch Milestone:</span> 10 Epoch Cores forged. Forge multiplier +<span class="highlight">1.5x</span>.`
     );
   }
+
+  // NEW: apply cross-tier feedback based on lifetime production
+  applyFeedbackLoops(state, els, appendLogFn);
 }

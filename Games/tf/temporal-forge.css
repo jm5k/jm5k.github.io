@@ -156,6 +156,7 @@ main {
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 18px;
 }
+
 /* Locked tier visual treatment */
 .tier-locked {
   filter: blur(2px) brightness(0.5);
@@ -181,7 +182,6 @@ main {
 .machine-pill.locked {
   filter: blur(2px);
   opacity: 0.35;
-  /* Allow hover so tooltips can appear */
 }
 
 .machine-pill.locked-machine {
@@ -246,6 +246,29 @@ main {
 .card small {
   font-size: 0.75rem;
   color: var(--muted);
+}
+/* ============================
+   Tier Hint – Forge System Tips
+   ============================ */
+
+.tier-hints {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 20, 30, 0.25); /* subtle cyan-black tint */
+  border: 1px solid rgba(0, 255, 255, 0.12);
+  box-shadow: inset 0 0 14px rgba(0, 255, 255, 0.15);
+}
+
+.tier-hints p {
+  font-family: var(--font-main);
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 6px 0;
+  padding-left: 8px;
+  border-left: 2px solid rgba(0, 255, 255, 0.35);
+  line-height: 1.45;
+  letter-spacing: 0.02em;
 }
 
 /* Resource pills */
@@ -603,7 +626,7 @@ button:disabled {
   color: var(--muted);
 }
 
-/* New: status-style tags so Unlocked doesn't look like a button */
+/* Status-style tags */
 .machine-tag {
   font-size: 0.7rem;
   border-radius: 999px;
@@ -613,7 +636,6 @@ button:disabled {
   color: var(--muted);
 }
 
-/* Unlocked = text status with checkmark, no pill/border */
 .machine-tag.unlocked {
   color: var(--success);
   font-weight: 500;
@@ -624,12 +646,9 @@ button:disabled {
   color: var(--success);
 }
 
-/* Locked = subtle muted text (no button look) */
 .machine-tag.locked {
   color: #777;
 }
-
-/* if you still had border styles, they are effectively gone now */
 
 /* Machine body */
 .machine-body {
@@ -672,6 +691,7 @@ footer {
   cursor: pointer;
   text-decoration: underline;
 }
+
 /* Core action buttons: consistent cyan ring */
 #btn-press,
 #btn-forge,
@@ -692,13 +712,118 @@ footer {
   transform: translateY(-1px);
 }
 
-/* Subtle dim when disabled so they still look present but inactive */
+/* Subtle dim when disabled */
 #btn-press:disabled,
 #btn-forge:disabled,
 #btn-epoch:disabled {
   opacity: 0.45;
   box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.18), 0 0 6px rgba(0, 255, 255, 0.25);
   transform: none;
+}
+
+/* ============================
+   Auto-Press Reserve Input Styling
+   ============================ */
+
+#auto-reserve-input {
+  background-color: #0b0f14; /* dark forge background */
+  color: #e0faff; /* soft cyan text */
+  border: 1px solid #00c8ff; /* cyan border */
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  width: 90px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#auto-reserve-input:focus {
+  border-color: #4de3ff;
+  box-shadow: 0 0 6px #00c8ff;
+}
+
+#auto-reserve-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+} /* Match "Dust reserve" line to Forge UI */
+label.auto-reserve {
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+label.auto-reserve .unit {
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================
+   THE FORGE SCROLLBAR (dark + cyan glow)
+   ========================================== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #00c8ff #0b0f14;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0f14; /* same as UI background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #003d52; /* dark cyan */
+  border-radius: 4px;
+  border: 1px solid #00c8ff; /* cyan outline */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00c8ff; /* cyan on hover */
+  box-shadow: 0 0 6px #00c8ff; /* glow, matches buttons */
+}
+
+/* =====================================================
+   REMOVE NUMBER INPUT SPINNER ARROWS (ALL BROWSERS)
+   ===================================================== */
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+/* ==========================================
+   Auto-Press Reserve Line (match Forge UI)
+   ========================================== */
+
+.auto-reserve-row {
+  font-family: var(--font-main);
+  font-size: 0.75rem; /* matches other action labels */
+  color: var(--muted); /* same subtle grey as Forge labels */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.auto-reserve-row .auto-reserve-unit {
+  color: var(--muted); /* same muted text tone */
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
 }
 
 @media (max-width: 600px) {
@@ -718,9 +843,10 @@ footer {
 }
 
 .footer-center .save-status {
-  margin-bottom: 4px; /* keeps spacing tidy when centered */
+  margin-bottom: 4px;
 }
 
+/* Footer override for centered layout */
 footer {
   display: block !important;
   text-align: center !important;

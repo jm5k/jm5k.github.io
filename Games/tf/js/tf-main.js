@@ -39,16 +39,6 @@ function resetState() {
 }
 
 function pressFlux(manual = true) {
-  // ✅ NEW: Respect machine unlock state
-  if (!state.machines || !state.machines.fluxPressUnlocked) {
-    if (manual) {
-      appendLogBound(
-        `<span class="danger">Flux Press is still locked.</span> Tier II systems are not online yet.`
-      );
-    }
-    return false;
-  }
-
   if (state.tier1resource < TIER1_PER_TIER2) {
     if (manual) {
       appendLogBound(
@@ -131,12 +121,18 @@ function activateTimeSurge() {
   const surge = state.boosts.timeSurge;
   if (surge.active || surge.cooldown > 0) return;
 
+  const baseDuration = SURGE_DURATION;
+  const extra = surge.bonusDuration || 0;
+  const effectiveDuration = baseDuration + extra;
+
   surge.active = true;
-  surge.remaining = SURGE_DURATION;
+  surge.remaining = effectiveDuration;
   surge.cooldown = 0;
 
   appendLogBound(
-    `<span class="highlight">Time Surge activated.</span> Dust flow increased by <span class="success">+300%</span> for ${SURGE_DURATION} seconds.`
+    `<span class="highlight">Time Surge activated.</span> Dust flow increased by <span class="success">+300%</span> for ${effectiveDuration.toFixed(
+      1
+    )} seconds.`
   );
   updateTimeSurgeUI(state, els);
   saveState(state, els.saveStatusEl);
@@ -261,9 +257,50 @@ function gameLoop() {
 
   const deltaSeconds = Math.max(0, deltaMs / 1000);
   if (deltaSeconds > 0) {
+    // 1) Passive generation + automation handled by tickResources
     tickResources(state, deltaSeconds);
+
+    // 2) Time Surge timers
     updateBoostTimers(state, deltaSeconds, appendLogBound);
+
+    // 3) Dust reserve protection for Auto Press (player-settable)
+    const reserveInput = document.getElementById("auto-reserve-input");
+    if (
+      reserveInput &&
+      state.tier2AutomationEnabled &&
+      state.tier2AutomationRate > 0
+    ) {
+      let reserveFloor = parseFloat(reserveInput.value);
+      if (!Number.isFinite(reserveFloor) || reserveFloor < 0) {
+        reserveFloor = 0;
+      }
+
+      if (reserveFloor > 0 && state.tier1resource < reserveFloor) {
+        const deficit = reserveFloor - state.tier1resource;
+
+        // How many Flux presses do we need to "undo" to restore the floor?
+        const pressesToRefund = Math.min(
+          Math.ceil(deficit / TIER1_PER_TIER2),
+          state.tier2resource
+        );
+
+        if (pressesToRefund > 0) {
+          const dustRefund = pressesToRefund * TIER1_PER_TIER2;
+
+          state.tier1resource += dustRefund;
+          state.tier2resource -= pressesToRefund;
+
+          appendLogBound(
+            `Auto reserve: refunded <span class="highlight">${pressesToRefund}</span> Pressed Flux to maintain your Dust floor.`
+          );
+        }
+      }
+    }
+
+    // 4) Milestones
     checkMilestones(state, els, appendLogBound);
+
+    // 5) UI + save
     updateAllUI(state, els);
     saveState(state, els.saveStatusEl);
     updateMachineUI();
@@ -316,6 +353,7 @@ document.addEventListener("keydown", (e) => {
   const is2 = key === "2" || code === "Digit2" || code === "Numpad2";
   const is3 = key === "3" || code === "Digit3" || code === "Numpad3";
   const is4 = key === "4" || code === "Digit4" || code === "Numpad4";
+  const is5 = key === "5" || code === "Digit5" || code === "Numpad5";
 
   let cheated = false;
 
@@ -349,6 +387,14 @@ document.addEventListener("keydown", (e) => {
     appendLog(
       els.logEl,
       `<span class="success">DEV:</span> Added <span class="highlight">1</span> Epoch Core.`
+    );
+    cheated = true;
+  } else if (is5) {
+    // DEV: force-activate Time Surge using current effective duration
+    activateTimeSurge();
+    appendLog(
+      els.logEl,
+      `<span class="success">DEV:</span> Forced <span class="highlight">Time Surge</span> boost (key 5).`
     );
     cheated = true;
   }

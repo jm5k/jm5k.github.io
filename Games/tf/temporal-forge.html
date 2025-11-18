@@ -54,10 +54,10 @@
         <!-- LEFT: Resources & Actions -->
         <section class="card">
           <h2>Forge Core</h2>
-          <small
-            >Time flows even when this tab is in the background. Your forge
-            catches up when you return.</small
-          >
+          <small>
+            Time flows even when this tab is in the background. Your forge
+            catches up when you return.
+          </small>
 
           <div class="resources">
             <div class="res-pill" id="pill-t1">
@@ -131,7 +131,7 @@
               <button
                 id="btn-forge"
                 class="primary"
-                title="Forge Chrono Bars by spending Pressed Flux
+                title="Forge Chrono Bars by spending Pressed Flux."
               >
                 🔨 Forge Chrono Bars (60 Flux)
               </button>
@@ -170,6 +170,17 @@
               >
                 Auto Press: Locked
               </button>
+              <label class="auto-reserve">
+                Dust reserve:
+                <input
+                  id="auto-reserve-input"
+                  type="number"
+                  min="0"
+                  step="100"
+                  value="0"
+                />
+                <span class="unit">Aeon</span>
+              </label>
             </div>
             <div class="auto-meta">
               Auto Press converts <span class="highlight">Aeon Dust</span> into
@@ -185,7 +196,7 @@
                 class="secondary"
                 title="Temporarily triples Aeon Dust generation."
               >
-                ⚡ Time Surge (+300% Dust/sec, 20s)
+                ⚡ Time Surge (+300% Dust/sec)
               </button>
             </div>
             <div class="boost-meta">
@@ -206,19 +217,18 @@
         <!-- RIGHT: Upgrades & Machines -->
         <section class="card">
           <h2>Upgrades & Machines</h2>
-          <small
-            >Tiered upgrades, automation, and tuning drive your forge
-            forward.</small
-          >
+          <small>
+            Tiered upgrades, automation, and tuning drive your forge forward.
+          </small>
 
           <div class="upgrades-list" id="upgrades-list">
             <article class="upgrade" data-upgrade-id="tier1generation">
               <div>
                 <div class="upgrade-header">
                   <strong>Dust Collector Overclock</strong>
-                  <span class="desc"
-                    >Boosts Aeon Dust (Tier I) generation per second.</span
-                  >
+                  <span class="desc">
+                    Boosts Aeon Dust (Tier I) generation per second.
+                  </span>
                 </div>
                 <div class="upgrade-meta">
                   Cost:
@@ -235,9 +245,9 @@
               <div>
                 <div class="upgrade-header">
                   <strong>Flux Press Automation</strong>
-                  <span class="desc"
-                    >Automatically presses Aeon Dust into Flux over time.</span
-                  >
+                  <span class="desc">
+                    Automatically presses Aeon Dust into Flux over time.
+                  </span>
                 </div>
                 <div class="upgrade-meta">
                   Cost:
@@ -254,9 +264,9 @@
               <div>
                 <div class="upgrade-header">
                   <strong>Chrono Forge Tuning</strong>
-                  <span class="desc"
-                    >Each forge action creates more Chrono Bars.</span
-                  >
+                  <span class="desc">
+                    Each forge action creates more Chrono Bars.
+                  </span>
                 </div>
                 <div class="upgrade-meta">
                   Cost:
@@ -290,16 +300,16 @@
             <div class="machine-pill unlocked" id="machine-dust">
               <div class="machine-header">
                 <span class="machine-name">Dust Collector</span>
-                <span class="machine-tag unlocked" id="machine-dust-tag"
-                  >Unlocked</span
-                >
+                <span class="machine-tag unlocked" id="machine-dust-tag">
+                  Unlocked
+                </span>
               </div>
 
               <div class="machine-body">
                 <span class="machine-resource-label">Aeon Dust:</span>
-                <span class="machine-resource-value" id="machine-dust-value"
-                  >∞</span
-                >
+                <span class="machine-resource-value" id="machine-dust-value">
+                  ∞
+                </span>
               </div>
             </div>
 
@@ -307,16 +317,16 @@
             <div class="machine-pill locked" id="machine-press">
               <div class="machine-header">
                 <span class="machine-name">Flux Press</span>
-                <span class="machine-tag locked" id="machine-press-tag"
-                  >Locked</span
-                >
+                <span class="machine-tag locked" id="machine-press-tag">
+                  Locked
+                </span>
               </div>
 
               <div class="machine-body">
                 <span class="machine-resource-label">Pressed Flux:</span>
-                <span class="machine-resource-value" id="machine-press-value"
-                  >--</span
-                >
+                <span class="machine-resource-value" id="machine-press-value">
+                  --
+                </span>
               </div>
 
               <div class="lock-tooltip">
@@ -328,16 +338,16 @@
             <div class="machine-pill locked" id="machine-forge">
               <div class="machine-header">
                 <span class="machine-name">Chrono Forge</span>
-                <span class="machine-tag locked" id="machine-forge-tag"
-                  >Locked</span
-                >
+                <span class="machine-tag locked" id="machine-forge-tag">
+                  Locked
+                </span>
               </div>
 
               <div class="machine-body">
                 <span class="machine-resource-label">Chrono Bars:</span>
-                <span class="machine-resource-value" id="machine-forge-value"
-                  >--</span
-                >
+                <span class="machine-resource-value" id="machine-forge-value">
+                  --
+                </span>
               </div>
 
               <div class="lock-tooltip">
@@ -349,16 +359,16 @@
             <div class="machine-pill locked" id="machine-array">
               <div class="machine-header">
                 <span class="machine-name">Temporal Fabrication Array</span>
-                <span class="machine-tag locked" id="machine-array-tag"
-                  >Locked</span
-                >
+                <span class="machine-tag locked" id="machine-array-tag">
+                  Locked
+                </span>
               </div>
 
               <div class="machine-body">
                 <span class="machine-resource-label">Epoch Cores:</span>
-                <span class="machine-resource-value" id="machine-array-value"
-                  >--</span
-                >
+                <span class="machine-resource-value" id="machine-array-value">
+                  --
+                </span>
               </div>
 
               <div class="lock-tooltip">
@@ -373,9 +383,9 @@
     <footer>
       <div class="save-status" id="save-status">Save: <span>Ready</span></div>
       <div>
-        <span
-          >© jm5k 2025 — Temporal Forge, a Linear Clock Lab experiment.</span
-        >
+        <span>
+          © jm5k 2025 — Temporal Forge, a Linear Clock Lab experiment.
+        </span>
         &nbsp;·&nbsp;
         <span class="danger-link" id="reset-save">Reset Forge</span>
       </div>
