@@ -21,7 +21,7 @@ export function createInitialState() {
     // Rates & multipliers
     tier1BaseRate: 1,
     tier1BonusRate: 0,
-    tier2AutomationRate: 0, // presses/sec if enabled & enough tier1
+    tier2AutomationRate: 0, // Pressed Flux/sec if enabled & enough Aeon Dust
     tier2AutomationEnabled: false,
     tier3Multiplier: 1,
 
@@ -65,11 +65,19 @@ export function createInitialState() {
       },
     },
 
-    // Machine unlocks based on lifetime totals
+    // Machine unlocks (UI-facing names)
     machines: {
+      // Aeon Dust Collector is online from the very start
+      dustUnlocked: true,
+
+      // These unlock based on lifetime totals
+      pressUnlocked: false, // Flux Press
+      forgeUnlocked: false, // Chrono Forge
+      arrayUnlocked: false, // Temporal Fabrication Array
+
+      // Back-compat aliases (if older code still reads these)
       fluxPressUnlocked: false,
       chronoForgeUnlocked: false,
-      arrayUnlocked: false,
     },
 
     lastUpdate: Date.now(),
@@ -113,11 +121,13 @@ export function updateBoostTimers(state, deltaSeconds, appendLog) {
 }
 
 export function tickResources(state, deltaSeconds) {
+  // Aeon Dust generation
   const orePerSec = computeEffectiveOrePerSec(state);
   const oreGain = orePerSec * deltaSeconds;
   state.tier1resource += oreGain;
   state.totals.tier1Generated += oreGain;
 
+  // Auto-pressing: Aeon Dust -> Pressed Flux
   const autoRate = computeEffectiveAutoRate(state);
 
   if (autoRate > 0 && state.tier1resource > 0) {
@@ -136,15 +146,34 @@ export function randomChance(p) {
   return Math.random() < p;
 }
 
+/**
+ * Machine unlock logic based on lifetime totals.
+ * - Flux Press: unlocked when total Aeon Dust >= UNLOCK_FLUX_PRESS_T1
+ * - Chrono Forge: unlocked when total Pressed Flux >= UNLOCK_CHRONO_FORGE_T2
+ * - Temporal Fabrication Array: unlocked when total Chrono Bars >= UNLOCK_ARRAY_T3
+ * Dust Collector is always unlocked.
+ */
 export function updateMachineUnlocks(state) {
   const totals = state.totals;
-  state.machines.fluxPressUnlocked =
-    totals.tier1Generated >= UNLOCK_FLUX_PRESS_T1;
-  state.machines.chronoForgeUnlocked =
-    totals.tier2Generated >= UNLOCK_CHRONO_FORGE_T2;
+
+  // Dust Collector is permanently unlocked
+  state.machines.dustUnlocked = true;
+
+  // Flux Press (Tier 2 machine) – driven by lifetime Aeon Dust
+  const pressUnlocked = totals.tier1Generated >= UNLOCK_FLUX_PRESS_T1;
+  state.machines.pressUnlocked = pressUnlocked;
+  state.machines.fluxPressUnlocked = pressUnlocked; // alias for older code
+
+  // Chrono Forge (Tier 3 machine) – driven by lifetime Pressed Flux
+  const forgeUnlocked = totals.tier2Generated >= UNLOCK_CHRONO_FORGE_T2;
+  state.machines.forgeUnlocked = forgeUnlocked;
+  state.machines.chronoForgeUnlocked = forgeUnlocked; // alias for older code
+
+  // Temporal Fabrication Array (Tier 4 machine) – driven by lifetime Chrono Bars
   state.machines.arrayUnlocked = totals.tier3Generated >= UNLOCK_ARRAY_T3;
 }
 
+// Re-export constants so callers can import from this module if convenient
 export {
   TIER1_PER_TIER2,
   TIER2_PER_TIER3,

@@ -270,54 +270,99 @@
             </article>
           </div>
 
+          <!-- Mystery tier descriptions (vanish when unlocked) -->
+          <div class="tier-hints">
+            <p id="tier2-hint">
+              Tier II systems hum beneath the surface, awaiting a critical mass
+              of Aeon Dust.
+            </p>
+            <p id="tier3-hint">
+              Tier III forges lie cold; only a flood of Flux will wake them.
+            </p>
+            <p id="tier4-hint">
+              Tier IV geometry is sketched in the dark, needing condensed Chrono
+              mass to take shape.
+            </p>
+          </div>
+
           <div class="machine-grid">
-            <div class="machine-pill" id="machine-dust">
+            <!-- Aeon Dust Collector (always unlocked) -->
+            <div class="machine-pill unlocked" id="machine-dust">
               <div class="machine-header">
                 <span class="machine-name">Dust Collector</span>
-                <span class="machine-tag">Unlocked</span>
+                <span class="machine-tag unlocked" id="machine-dust-tag"
+                  >Unlocked</span
+                >
               </div>
+
               <div class="machine-body">
-                <span class="machine-resource-label">Feeds:</span>
-                <span class="machine-resource-value">Aeon Dust</span>
+                <span class="machine-resource-label">Aeon Dust:</span>
+                <span class="machine-resource-value" id="machine-dust-value"
+                  >∞</span
+                >
               </div>
             </div>
 
-            <div class="machine-pill" id="machine-press">
+            <!-- Flux Press -->
+            <div class="machine-pill locked" id="machine-press">
               <div class="machine-header">
                 <span class="machine-name">Flux Press</span>
-                <span class="machine-tag" id="machine-press-tag">Locked</span>
-              </div>
-              <div class="machine-body">
-                <span class="machine-resource-label">Unlock:</span>
-                <span class="machine-resource-value"
-                  >10,000 Aeon Dust lifetime</span
+                <span class="machine-tag locked" id="machine-press-tag"
+                  >Locked</span
                 >
+              </div>
+
+              <div class="machine-body">
+                <span class="machine-resource-label">Pressed Flux:</span>
+                <span class="machine-resource-value" id="machine-press-value"
+                  >--</span
+                >
+              </div>
+
+              <div class="lock-tooltip">
+                Requires 10,000 Aeon Dust (lifetime)
               </div>
             </div>
 
-            <div class="machine-pill" id="machine-forge">
+            <!-- Chrono Forge -->
+            <div class="machine-pill locked" id="machine-forge">
               <div class="machine-header">
                 <span class="machine-name">Chrono Forge</span>
-                <span class="machine-tag" id="machine-forge-tag">Locked</span>
-              </div>
-              <div class="machine-body">
-                <span class="machine-resource-label">Unlock:</span>
-                <span class="machine-resource-value"
-                  >1,000 Pressed Flux lifetime</span
+                <span class="machine-tag locked" id="machine-forge-tag"
+                  >Locked</span
                 >
+              </div>
+
+              <div class="machine-body">
+                <span class="machine-resource-label">Chrono Bars:</span>
+                <span class="machine-resource-value" id="machine-forge-value"
+                  >--</span
+                >
+              </div>
+
+              <div class="lock-tooltip">
+                Requires 10,000 Pressed Flux (lifetime)
               </div>
             </div>
 
-            <div class="machine-pill" id="machine-array">
+            <!-- Temporal Fabrication Array -->
+            <div class="machine-pill locked" id="machine-array">
               <div class="machine-header">
                 <span class="machine-name">Temporal Fabrication Array</span>
-                <span class="machine-tag" id="machine-array-tag">Locked</span>
-              </div>
-              <div class="machine-body">
-                <span class="machine-resource-label">Unlock:</span>
-                <span class="machine-resource-value"
-                  >100 Chrono Bars lifetime</span
+                <span class="machine-tag locked" id="machine-array-tag"
+                  >Locked</span
                 >
+              </div>
+
+              <div class="machine-body">
+                <span class="machine-resource-label">Epoch Cores:</span>
+                <span class="machine-resource-value" id="machine-array-value"
+                  >--</span
+                >
+              </div>
+
+              <div class="lock-tooltip">
+                Requires 100 Chrono Bars (lifetime)
               </div>
             </div>
           </div>

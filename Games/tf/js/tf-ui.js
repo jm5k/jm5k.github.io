@@ -53,10 +53,15 @@ export function bindElements() {
     pillT3: document.getElementById("pill-t3"),
     pillT4: document.getElementById("pill-t4"),
 
-    // Machines
+    // Machines (tags only; pills are found via closest())
     machinePressTag: document.getElementById("machine-press-tag"),
     machineForgeTag: document.getElementById("machine-forge-tag"),
     machineArrayTag: document.getElementById("machine-array-tag"),
+
+    // Tier mystery hints
+    tier2Hint: document.getElementById("tier2-hint"),
+    tier3Hint: document.getElementById("tier3-hint"),
+    tier4Hint: document.getElementById("tier4-hint"),
   };
 }
 
@@ -102,6 +107,8 @@ export function updateUpgradesUI(state, els) {
   const listEl = els.upgradesListEl;
   if (!listEl) return;
 
+  const machines = state.machines || {};
+
   const upgradeEls = listEl.querySelectorAll(".upgrade");
   upgradeEls.forEach((el) => {
     const id = el.getAttribute("data-upgrade-id");
@@ -124,6 +131,15 @@ export function updateUpgradesUI(state, els) {
       affordable = state.tier2resource >= cost;
     }
     if (button) button.disabled = !affordable;
+
+    // Tier gating on upgrades themselves
+    if (id === "tier2automation") {
+      // Only visible/usable once Flux Press is unlocked
+      el.classList.toggle("tier-locked", !machines.fluxPressUnlocked);
+    } else if (id === "tier3efficiency") {
+      // Only visible/usable once Chrono Forge is unlocked
+      el.classList.toggle("tier-locked", !machines.chronoForgeUnlocked);
+    }
   });
 
   const baseOrePerSec = computeBaseOrePerSec(state);
@@ -199,27 +215,96 @@ export function updateTimeSurgeUI(state, els) {
 }
 
 export function updateMachineUI(state, els) {
+  // Recompute machine unlocks based on lifetime totals
   updateMachineUnlocks(state);
 
-  if (els.machinePressTag) {
-    els.machinePressTag.textContent = state.machines.fluxPressUnlocked
-      ? "Unlocked"
-      : "Locked";
-    els.machinePressTag.className = "machine-tag " + (state.machines.fluxPressUnlocked ? "unlocked" : "locked");
+  function wireMachine(unlocked, tagEl) {
+    if (!tagEl) return;
+
+    const pill = tagEl.closest(".machine-pill");
+
+    // Tag text + classes
+    tagEl.textContent = unlocked ? "Unlocked" : "Locked";
+    tagEl.classList.toggle("unlocked", unlocked);
+    tagEl.classList.toggle("locked", !unlocked);
+
+    // Pill blur/lock classes (aligned with CSS `.machine-pill.locked`)
+    if (pill) {
+      pill.classList.toggle("locked", !unlocked);
+      pill.classList.toggle("unlocked", unlocked);
+    }
   }
 
-  if (els.machineForgeTag) {
-    els.machineForgeTag.textContent = state.machines.chronoForgeUnlocked
-      ? "Unlocked"
-      : "Locked";
-    els.machineForgeTag.className = "machine-tag " + (state.machines.chronoForgeUnlocked ? "unlocked" : "locked");
+  wireMachine(state.machines.fluxPressUnlocked, els.machinePressTag);
+  wireMachine(state.machines.chronoForgeUnlocked, els.machineForgeTag);
+  wireMachine(state.machines.arrayUnlocked, els.machineArrayTag);
+}
+
+/**
+ * Tier-gate everything that isn't pure Dust:
+ *  - Resource pills (T2/T3/T4)
+ *  - Forge Core action rows + meta lines
+ *  - Tier mystery hint lines
+ */
+function updateTierVisibility(state, els) {
+  const machines = state.machines || {};
+
+  // Resource pills: only Dust is always visible
+  if (els.pillT2) {
+    els.pillT2.classList.toggle("tier-locked", !machines.fluxPressUnlocked);
+  }
+  if (els.pillT3) {
+    els.pillT3.classList.toggle("tier-locked", !machines.chronoForgeUnlocked);
+  }
+  if (els.pillT4) {
+    els.pillT4.classList.toggle("tier-locked", !machines.arrayUnlocked);
   }
 
-  if (els.machineArrayTag) {
-    els.machineArrayTag.textContent = state.machines.arrayUnlocked
-      ? "Unlocked"
-      : "Locked";
-    els.machineArrayTag.className = "machine-tag " + (state.machines.arrayUnlocked ? "unlocked" : "locked");
+  // Forge Core action rows
+  const fluxRow = els.btnPress ? els.btnPress.closest(".action-row") : null;
+  const forgeRow = els.btnForge ? els.btnForge.closest(".action-row") : null;
+  const epochRow = els.btnEpoch ? els.btnEpoch.closest(".action-row") : null;
+  const autoRow = els.btnToggleAuto
+    ? els.btnToggleAuto.closest(".action-row")
+    : null;
+
+  const forgeMeta = document.querySelector(".forge-meta");
+  const epochMeta = document.querySelector(".epoch-meta");
+  const autoMeta = document.querySelector(".auto-meta");
+
+  // Tier II: Flux Press + Flux Automation
+  const tier2Locked = !machines.fluxPressUnlocked;
+  if (fluxRow) fluxRow.classList.toggle("tier-locked", tier2Locked);
+  if (autoRow) autoRow.classList.toggle("tier-locked", tier2Locked);
+  if (tier2Locked && els.btnPress) els.btnPress.disabled = true;
+  if (tier2Locked && els.btnToggleAuto) els.btnToggleAuto.disabled = true;
+
+  // Tier III: Chrono Forge
+  const tier3Locked = !machines.chronoForgeUnlocked;
+  if (forgeRow) forgeRow.classList.toggle("tier-locked", tier3Locked);
+  if (forgeMeta) forgeMeta.style.display = tier3Locked ? "none" : "block";
+  if (tier3Locked && els.btnForge) els.btnForge.disabled = true;
+
+  // Tier IV: Temporal Fabrication Array
+  const tier4Locked = !machines.arrayUnlocked;
+  if (epochRow) epochRow.classList.toggle("tier-locked", tier4Locked);
+  if (epochMeta) epochMeta.style.display = tier4Locked ? "none" : "block";
+  if (tier4Locked && els.btnEpoch) els.btnEpoch.disabled = true;
+
+  // Auto-meta text only makes sense once Flux is a thing
+  if (autoMeta) autoMeta.style.display = tier2Locked ? "none" : "block";
+
+  // --- Tier mystery hints: hide once that tier is unlocked ---
+  if (els.tier2Hint) {
+    els.tier2Hint.style.display = machines.fluxPressUnlocked ? "none" : "block";
+  }
+  if (els.tier3Hint) {
+    els.tier3Hint.style.display = machines.chronoForgeUnlocked
+      ? "none"
+      : "block";
+  }
+  if (els.tier4Hint) {
+    els.tier4Hint.style.display = machines.arrayUnlocked ? "none" : "block";
   }
 }
 
@@ -234,6 +319,7 @@ export function updateAllUI(state, els) {
   updateEpochUI(state, els);
   updateTimeSurgeUI(state, els);
   updateMachineUI(state, els);
+  updateTierVisibility(state, els);
 }
 
 export function checkMilestones(state, els, appendLogFn) {

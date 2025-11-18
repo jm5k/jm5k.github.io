@@ -156,6 +156,70 @@ main {
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 18px;
 }
+/* Locked tier visual treatment */
+.tier-locked {
+  filter: blur(2px) brightness(0.5);
+  opacity: 0.4;
+  position: relative;
+}
+
+.tier-locked::after {
+  content: "LOCKED";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Machine lock styling */
+.machine-pill.locked {
+  filter: blur(2px);
+  opacity: 0.35;
+  /* Allow hover so tooltips can appear */
+}
+
+.machine-pill.locked-machine {
+  filter: blur(1.4px) brightness(0.5);
+  opacity: 0.6;
+  position: relative;
+}
+
+.machine-pill.locked-machine::after {
+  content: "Locked";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: inherit;
+  border: 1px dashed rgba(0, 255, 255, 0.35);
+}
+
+.machine-pill.unlocked-machine {
+  filter: none;
+  opacity: 1;
+}
+
+.machine-pill.unlocked {
+  filter: none;
+  opacity: 1;
+}
+
+.machine-tag.unlocked {
+  border-color: rgba(0, 255, 255, 0.7);
+  color: var(--muted); /* keeps text calm instead of bright cyan */
+}
 
 @media (max-width: 900px) {
   .grid {
@@ -212,6 +276,29 @@ main {
 .res-pill.celebrate {
   box-shadow: 0 0 18px rgba(0, 255, 255, 0.7);
   border-color: rgba(0, 255, 255, 0.9);
+}
+
+/* Locked resource tiers (blur/overlay until unlocked) */
+.res-pill.tier-locked {
+  filter: blur(2px);
+  opacity: 0.35;
+  position: relative;
+  pointer-events: none;
+}
+
+.res-pill.tier-locked::after {
+  content: "LOCKED";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #d0d0d0;
+  background: rgba(0, 0, 0, 0.72);
+  border-radius: inherit;
 }
 
 .res-label {
@@ -444,6 +531,63 @@ button:disabled {
   padding: 7px 9px;
   background: radial-gradient(circle at top left, #060812, #05060a);
   font-size: 0.78rem;
+  position: relative;
+}
+
+/* Blur / hide machines until unlocked */
+.machine-pill.locked {
+  filter: blur(2px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.machine-pill.locked::after {
+  content: "LOCKED";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #d0d0d0;
+  background: rgba(0, 0, 0, 0.72);
+  border-radius: inherit;
+}
+
+/* Tooltips for locked machines */
+.machine-pill {
+  position: relative; /* anchor tooltips to the pill */
+}
+
+.lock-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translate(-50%, 8px);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid var(--card-border);
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  z-index: 5;
+}
+
+/* Only show on hover while locked */
+.machine-pill.locked:hover .lock-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Once unlocked, hide tooltip entirely */
+.machine-pill.unlocked .lock-tooltip {
+  display: none;
 }
 
 .machine-header {
@@ -459,24 +603,35 @@ button:disabled {
   color: var(--muted);
 }
 
+/* New: status-style tags so Unlocked doesn't look like a button */
 .machine-tag {
   font-size: 0.7rem;
-  padding: 2px 6px;
   border-radius: 999px;
-  border: 1px solid var(--card-border);
+  padding: 0;
+  border: none;
+  background: transparent;
   color: var(--muted);
 }
 
+/* Unlocked = text status with checkmark, no pill/border */
 .machine-tag.unlocked {
-  border-color: var(--accent);
-  color: var(--accent);
+  color: var(--success);
+  font-weight: 500;
 }
 
+.machine-tag.unlocked::before {
+  content: "✔ ";
+  color: var(--success);
+}
+
+/* Locked = subtle muted text (no button look) */
 .machine-tag.locked {
-  border-color: #444;
   color: #777;
 }
 
+/* if you still had border styles, they are effectively gone now */
+
+/* Machine body */
 .machine-body {
   display: flex;
   gap: 4px;
@@ -529,6 +684,7 @@ footer {
     align-items: flex-start;
   }
 }
+
 .footer-center {
   text-align: center;
 }
@@ -536,6 +692,7 @@ footer {
 .footer-center .save-status {
   margin-bottom: 4px; /* keeps spacing tidy when centered */
 }
+
 footer {
   display: block !important;
   text-align: center !important;
