@@ -1,0 +1,5 @@
+html, body { background: var(--bg) !important; color: var(--fg) !important; }
+html { color-scheme: dark !important; }
+@media (forced-colors: active) {
+    * { forced-color-adjust: none !important; }
+}
