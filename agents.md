@@ -222,6 +222,17 @@ Plus:
 Scripts:  
 Placed at the bottom of `<body>`.
 
+## Head/Meta Smoke Checklist
+
+- Charset = UTF-8 and viewport present.
+- color-scheme = dark light, theme-color = #000000.
+- lcl.css linked in head.
+- Title + description + keywords + author + robots + canonical.
+- OG/Twitter cards present; images point to https://linearclocklab.com/profile.png.
+- Icons (favicon/apple-touch/manifest) set.
+- No duplicate or missing core meta entries; no light-mode media queries.
+- Scripts live at end of body.
+
 ---
 
 # 4. Expanded System: Theming

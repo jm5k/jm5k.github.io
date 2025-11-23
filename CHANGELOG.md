@@ -1,4 +1,26 @@
 Date: 2025-11-22
+Short Title: Add head/meta checklist
+Summary:
+- Documented a quick smoke checklist to keep head/meta blocks consistent across future pages.
+
+LCL Technical Details:
+- Documentation: AGENTS.md gained a head/meta smoke checklist covering charset, viewport, color-scheme/theme-color, lcl.css link, SEO/OG/Twitter, icons, and script placement.
+- HTML/CSS/JS: No changes.
+
+Files Touched:
+- AGENTS.md
+- CHANGELOG.md
+
+Testing Notes:
+- Docs-only change; no runtime testing required.
+
+Risks & Edge Cases:
+- None; informational addition only.
+
+Follow-Up Suggestions (Optional):
+- Use the checklist during code reviews for new or updated pages.
+
+Date: 2025-11-22
 Short Title: Enforce dark theme assets
 Summary:
 - Added unified dark-theme head entries across tool pages, introduced shared lcl.css for global background/foreground enforcement, removed light-mode overrides, documented current design/architecture, and refreshed badges.
