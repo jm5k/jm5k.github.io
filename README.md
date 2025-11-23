@@ -1,5 +1,5 @@
 # 🧭 Linear Clock Lab
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Build: Static HTML5](https://img.shields.io/badge/Build-Static%20HTML5-lightgrey.svg)](https://linearclocklab.com/) [![Made by jm5k](https://img.shields.io/badge/Made%20by-jm5k-00ffff.svg)](https://linearclocklab.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Build: Static HTML5](https://img.shields.io/badge/Build-Static%20HTML5-lightgrey.svg)](https://linearclocklab.com/) [![CSS](https://img.shields.io/badge/CSS-1572B6.svg?logo=css3&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS) [![Made by jm5k](https://img.shields.io/badge/Made%20by-jm5k-00ffff.svg)](https://linearclocklab.com/)
 
 A suite of minimalist, client-side time tools that visualize your day as a single continuous line — extended with timers, stopwatches, multi-timezone support, themes, and focus-tracking utilities.  
 Built by **[jm5k](https://linearclocklab.com/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
