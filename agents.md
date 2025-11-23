@@ -505,7 +505,8 @@ Each entry must contain the following fields:
 3. Codex must NEVER modify older entries unless explicitly instructed.
 4. All entries must reflect actual changes performed during the task.
 5. No task is considered “complete” until its changelog entry is created and validated.
-6. If a task results in _no_ file modifications, a short note entry must still be added indicating “No changes required”.
+6. If a task results in _no_ file modifications, a short note entry must still be added indicating "No changes required".
+7. Separate each entry with a `---` divider for readability.
 
 This section establishes the authoritative logging rules for all future modifications within LCL.
 

@@ -1,4 +1,49 @@
 Date: 2025-11-22
+Short Title: Clarify changelog separators
+Summary:
+- Updated agent rules to mandate `---` dividers between changelog entries for readability; log reflects this guidance.
+
+LCL Technical Details:
+- Documentation: AGENTS.md now requires separator lines between changelog entries; CHANGELOG.md entry added to record the rule change.
+- HTML/CSS/JS: No changes.
+
+Files Touched:
+- AGENTS.md
+- CHANGELOG.md
+
+Testing Notes:
+- Docs-only change; no runtime testing required.
+
+Risks & Edge Cases:
+- None.
+
+Follow-Up Suggestions (Optional):
+- Continue using `---` separators when adding future entries.
+
+---
+Date: 2025-11-22
+Short Title: Add changelog separators
+Summary:
+- Inserted visual separators between changelog entries to improve readability.
+
+LCL Technical Details:
+- Documentation: Added `---` divider lines between entries in CHANGELOG.md.
+- HTML/CSS/JS: No changes.
+
+Files Touched:
+- CHANGELOG.md
+
+Testing Notes:
+- Docs-only change; no runtime testing required.
+
+Risks & Edge Cases:
+- None.
+
+Follow-Up Suggestions (Optional):
+- Keep using divider lines when adding future entries for clarity.
+
+---
+Date: 2025-11-22
 Short Title: Add head/meta checklist
 Summary:
 - Documented a quick smoke checklist to keep head/meta blocks consistent across future pages.
