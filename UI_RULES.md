@@ -190,7 +190,8 @@ All schedule zones must use one of:
 --zone-evening  
 --zone-night  
 --zone-sleep  
---zone-focus
+--zone-focus  
+--zone-workend
 
 ---
 
@@ -206,19 +207,20 @@ Their values are defined in the root theme.
 --zone-work: #a5f3fc; /_ Soft electric cyan — stable attention _/
 --zone-break: #fb923c; /_ Peach — high visibility _/
 --zone-travel: #f97316; /_ Citrus orange — urgency for movement _/
---zone-event: #ff4d6d; /_ Neon rose — high-importance _/
---zone-evening: #d946ef; /_ Magenta-purple — evening tone _/
---zone-night: #6d28d9; /_ Deep royal purple — nighttime _/
---zone-sleep: #3b0764; /_ Deep violet — sleep _/
---zone-focus: #38bdf8; /_ Electric blue — concentrated work _/
+--zone-event: #ff4d6d; /_ Neon rose - high-importance _/
+--zone-evening: #d946ef; /_ Magenta-purple - evening tone _/
+--zone-night: #6d28d9; /_ Deep royal purple - nighttime _/
+--zone-sleep: #3b0764; /_ Deep violet - sleep _/
+--zone-focus: #38bdf8; /_ Electric blue - concentrated work _/
+--zone-workend: #34d399; /_ Workday boundary - stepping out of work into personal time _/
 
 ---
 
 Rules:
 
-- Codex must not create new zone tokens.
-- Codex must not use raw hex values for zones except inside this definition.
-- Tokens must be applied directly to timeline segment fills.
+ - Codex must not create new zone tokens beyond the approved set (including `--zone-workend`).
+ - Codex must not use raw hex values for zones except inside this definition.
+ - Tokens must be applied directly to timeline segment fills.
 
 ## 3.4.2 Token Usage Guidelines
 
@@ -572,3 +574,4 @@ Following them ensures all pages remain:
 Any new UI element must obey these rules exactly.
 
 ---
+

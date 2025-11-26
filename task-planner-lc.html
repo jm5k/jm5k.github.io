@@ -86,6 +86,7 @@
         --zone-night: #6d28d9;
         --zone-sleep: #3b0764;
         --zone-focus: #38bdf8;
+        --zone-workend: #34d399; /* Workday boundary — stepping out of work into personal time */
       }
 
       * {
@@ -598,6 +599,7 @@
         "--zone-night",
         "--zone-sleep",
         "--zone-focus",
+        "--zone-workend",
       ];
 
       const defaultTemplates = () => ({
@@ -615,17 +617,9 @@
             colorToken: "--zone-work",
             startMinutes: 750,
           },
-          {
-            name: "workday ends",
-            colorToken: "--zone-evening",
-            startMinutes: 1020,
-          },
-          { name: "dinner", colorToken: "--zone-evening", startMinutes: 1050 },
-          {
-            name: "evening activities",
-            colorToken: "--zone-evening",
-            startMinutes: 1110,
-          },
+          { name: "workday ends", colorToken: "--zone-workend", startMinutes: 1020 },
+          { name: "dinner", colorToken: "--zone-break", startMinutes: 1050 },
+          { name: "evening activities", colorToken: "--zone-evening", startMinutes: 1110 },
           {
             name: "nighttime routine",
             colorToken: "--zone-night",
@@ -957,7 +951,7 @@
           },
           {
             label: "Break / Travel / Event",
-            tokens: ["--zone-break", "--zone-travel", "--zone-event"],
+            tokens: ["--zone-break", "--zone-travel", "--zone-event", "--zone-workend"],
           },
           {
             label: "Evening / Night / Sleep",

@@ -371,6 +371,31 @@ Follow-Up Suggestions (Optional):
 
 ---
 Date: 2025-11-26
+Short Title: Add dedicated workday end zone color
+Summary:
+- Introduced a `--zone-workend` token and applied it to the Workday “workday ends” block so evening transitions no longer reuse neighboring colors.
+
+LCL Technical Details:
+- Added `--zone-workend` token to task-planner-lc.html :root palette and to UI_RULES.md zone palette spec with guidance.
+- Updated defaultTemplates().Workday to assign `--zone-workend` to “workday ends” while keeping other evening blocks on break/evening tokens.
+- Documented approved palette expansion and usage guidelines for work-to-personal boundaries.
+
+Files Touched:
+- task-planner-lc.html
+- UI_RULES.md
+- CHANGELOG.md
+
+Testing Notes:
+- Clear `lcl-taskplanner-templates` in localStorage or use a fresh profile; open task-planner-lc.html, select Workday, and confirm “workday ends” displays a distinct color between work and dinner.
+- Verify Now/Next and rail markers still identify current/next zones correctly.
+
+Risks & Edge Cases:
+- Users with customized templates retain their stored colors until reset/import.
+- Palette expansion is limited to the documented `--zone-workend`; no other new tokens should be introduced.
+
+---
+
+Date: 2025-11-26
 Short Title: Add JSON Export/Import for Task Planner
 Summary:
 - Added backup/restore controls so Task Planner templates can be exported to and imported from JSON without changing other planner behavior.
@@ -391,5 +416,28 @@ Testing Notes:
 Risks & Edge Cases:
 - Malformed or non-hex token colors are sanitized; invalid JSON aborts import without saving.
 - Missing/extra templates or empty imports fall back to existing defaults; active template may switch to Workday or first valid entry if current is absent.
+
+---
+Date: 2025-11-26
+Short Title: Break up Workday evening color wall
+Summary:
+- Recolored Workday evening defaults so “workday ends,” “dinner,” and “evening activities” no longer form a single color wall, improving visual clarity per palette rules.
+
+LCL Technical Details:
+- Updated defaultTemplates().Workday colorToken assignments: “dinner” now uses --zone-break while neighboring blocks remain --zone-evening to avoid triple repetition.
+- Ensured no three consecutive distinct zones share the same token in Workday defaults; other templates already avoided color walls.
+- Confirmed adherence to approved Zone Color Palette tokens without changing times or structures.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Clear lcl-taskplanner-templates in localStorage or use a fresh profile; load task-planner-lc.html and select Workday to verify distinct colors for “workday ends,” “dinner,” and “evening activities.”
+- Confirm Now/Next highlights still track the correct zones and marker behavior is unchanged.
+
+Risks & Edge Cases:
+- Users with customized templates in localStorage will retain their colors until they reset or import defaults.
+- No logic changes; only default color assignments adjusted.
 
 ---
