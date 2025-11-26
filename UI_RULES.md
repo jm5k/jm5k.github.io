@@ -1,7 +1,7 @@
 # UI_RULES.md — Linear Clock Lab
 
-This document defines the exact, enforceable UI rules for all pages and components in Linear Clock Lab (LCL).  
-These rules govern spacing, margins, typography, glow behaviors, token usage, interaction patterns, line widths, and layout density.  
+This document defines the exact, enforceable UI rules for all pages and components in Linear Clock Lab (LCL).
+These rules govern spacing, margins, typography, glow behaviors, token usage, interaction patterns, line widths, and layout density.
 They ensure the entire suite retains its unified, minimalist, neon-accented dark theme.
 
 These rules are binding for all agents.
@@ -14,24 +14,30 @@ These rules are binding for all agents.
 
 LCL uses a tightly controlled spacing system:
 
-    XS = 0.25rem
-    S  = 0.5rem
-    M  = 1rem
-    L  = 1.5rem
-    XL = 2rem
+---
+
+XS = 0.25rem  
+S = 0.5rem  
+M = 1rem  
+L = 1.5rem  
+XL = 2rem
+
+---
 
 Rules:
 
 - All elements must use these increments.
 - No arbitrary pixel spacing unless matching existing code.
-- Vertical spacing defaults to M (1rem) unless the page uses denser layouts (FocusLine, timers).
+- Vertical spacing defaults to M (1rem) unless the page uses denser layouts.
 - Horizontal spacing typically S to M.
 
 ## 1.2 Page Padding
 
 Every main wrapper (`.wrap`, `.lcl-main`, dashboard containers) must use:
 
-    padding: 1rem–1.2rem
+---
+
+## padding: 1rem–1.2rem
 
 Rules:
 
@@ -43,7 +49,7 @@ Rules:
 Sections should be separated using:
 
 - Margin-top: L (1.5rem)
-- Or a hairline divider (see separators below)
+- Or a hairline divider
 
 Never stack large empty blocks.
 
@@ -53,13 +59,19 @@ Never stack large empty blocks.
 
 ## 2.1 Font Families
 
-Two approved font stacks:
+Approved font stacks:
 
-Monospace pages (clock, stopwatch, timer):
-ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace
+**Monospace pages (clock, stopwatch, timer)**
 
-System UI pages:
-system-ui, "Segoe UI", sans-serif
+---
+
+## ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace
+
+**System UI pages**
+
+---
+
+## system-ui, "Segoe UI", sans-serif
 
 Rules:
 
@@ -68,27 +80,28 @@ Rules:
 
 ## 2.2 Font Sizes
 
-Standard font sizes:
+---
 
-    h1 = 2.0rem
-    h2 = 1.6rem
-    h3 = 1.25rem
-    body = 1rem
-    small/muted = 0.85rem
+h1 = 2.0rem  
+h2 = 1.6rem  
+h3 = 1.25rem  
+body = 1rem  
+small/muted = 0.85rem
+
+---
 
 Rules:
 
-- All headings scale down on mobile using clamp where needed.
+- Headings scale down on mobile with clamp().
 - No text smaller than 0.8rem.
-- No exaggerated sizes unless part of a numeric display (clock, timers).
+- No exaggerated sizes unless part of a numeric display.
 
 ## 2.3 Numeric Displays
 
-Time displays (clock rails, timers, stopwatch):
-
 - Must use monospace fonts.
-- Must have high contrast (var(--fg)).
-- No blurs or shadows.
+- Must have high contrast (`var(--fg)`).
+- No blurs.
+- No shadows.
 - No gradients.
 
 ---
@@ -99,33 +112,40 @@ Time displays (clock rails, timers, stopwatch):
 
 All UI must use these tokens:
 
-    --bg
-    --fg
-    --muted
-    --accent
-    --line
-    --chip
-    --chip-brd
-    --glow
+---
+
+--bg  
+--fg  
+--muted  
+--accent  
+--line  
+--chip  
+--chip-brd  
+--glow
+
+---
 
 Rules:
 
-- No hard-coded colors except #000 for fallback blocks.
-- Accent must always be neon-cyan in its variants.
-- Muted must always remain neutral gray.
+- No hard-coded colors except `#000` for fallback blocks.
+- Accent must be neon-cyan.
+- Muted must remain neutral gray.
 
 ## 3.2 Glow Standards
 
-Glow behavior must follow:
+Glow behavior:
 
-    box-shadow: 0 0 10px var(--glow);
+---
+
+## box-shadow: 0 0 10px var(--glow);
 
 Rules:
 
-- Glow must always use var(--glow).
-- Glow radius <= 15px.
-- No multi-layer glow stacks.
+- Glow must use `var(--glow)`.
+- Glow radius ≤ 15px.
+- No multi-layer glows.
 - Glow appears only on:
+
   - card hovers
   - markers
   - UI focus rings
@@ -135,16 +155,113 @@ Glow must never:
 
 - Shift layout
 - Increase element size
-- Spill bright enough to overpower background
+- Overpower background
 
 ## 3.3 Accent Hover Rules
 
-Any interactive item must:
+Interactive items must:
 
-- Change underline/border color to var(--accent) OR
+- Change underline/border color to `var(--accent)`
+  **OR**
 - Receive a subtle glow
 
-Never both at the same time.
+Never both.
+
+---
+
+# 3.4 Zone Color Palette (Required for Task Planner Clock)
+
+The Task Planner Clock uses time-based zones (wake, routine, work, travel, event, rest, sleep).
+Zones must never use arbitrary colors.
+All zone colors must come from the approved palette below and must be used via CSS variables.
+
+## 3.4.1 Zone Color Tokens
+
+All schedule zones must use one of:
+
+---
+
+--zone-wake  
+--zone-routine  
+--zone-work  
+--zone-break  
+--zone-travel  
+--zone-event  
+--zone-evening  
+--zone-night  
+--zone-sleep  
+--zone-focus
+
+---
+
+These represent color families, not single shades.
+Their values are defined in the root theme.
+
+### Recommended Base Values (Vaporwave Expanded)
+
+---
+
+--zone-wake: #7fffd4; /_ Mint aqua — uplifting green-blue _/
+--zone-routine: #c084fc; /_ Pastel vaporwave lavender _/
+--zone-work: #a5f3fc; /_ Soft electric cyan — stable attention _/
+--zone-break: #fb923c; /_ Peach — high visibility _/
+--zone-travel: #f97316; /_ Citrus orange — urgency for movement _/
+--zone-event: #ff4d6d; /_ Neon rose — high-importance _/
+--zone-evening: #d946ef; /_ Magenta-purple — evening tone _/
+--zone-night: #6d28d9; /_ Deep royal purple — nighttime _/
+--zone-sleep: #3b0764; /_ Deep violet — sleep _/
+--zone-focus: #38bdf8; /_ Electric blue — concentrated work _/
+
+---
+
+Rules:
+
+- Codex must not create new zone tokens.
+- Codex must not use raw hex values for zones except inside this definition.
+- Tokens must be applied directly to timeline segment fills.
+
+## 3.4.2 Token Usage Guidelines
+
+- Wake-up / energizing → `--zone-wake`
+- Morning/evening routines → `--zone-routine`
+- Work / focus tasks → `--zone-work` or `--zone-focus`
+- Breaks / lunch → `--zone-break`
+- Travel / leaving / commute → `--zone-travel`
+- Critical events / appointments → `--zone-event`
+- Downtime / relaxation → `--zone-evening`
+- Nighttime wind-down → `--zone-night`
+- Sleep → `--zone-sleep`
+
+Warm/orange/rose tones must remain restricted to urgent or high-salience tasks.
+
+## 3.4.3 Color Reuse Rules
+
+- Same task type → same token.
+- Tokens may repeat if the zones are separated by at least two other zones.
+- Adjacent zones must not share a token unless the type is continuous.
+- Only one `--zone-event` per schedule.
+- Night and sleep must only use the night/sleep tokens.
+
+## 3.4.4 Contrast & Accessibility
+
+- All tokens must maintain 4.5:1 contrast on `--bg`.
+- Zone labels must use `var(--fg)`.
+- Glows must follow §3.2.
+
+## 3.4.5 Allowed Transformations
+
+Allowed:
+
+- Opacity 0.8–1.0
+- ±10% desaturation
+- Standard LCL border/glow patterns
+
+Forbidden:
+
+- Gradients
+- Hue shifts
+- Multi-glow stacks
+- Over-bright neon bloom
 
 ---
 
@@ -152,10 +269,15 @@ Never both at the same time.
 
 ## 4.1 Standard Border
 
-    border: 1px solid rgba(255,255,255,0.15)
+---
+
+## border: 1px solid rgba(255,255,255,0.15)
 
 Accent border variant:
-border: 1px solid var(--accent)
+
+---
+
+## border: 1px solid var(--accent)
 
 Rules:
 
@@ -165,28 +287,33 @@ Rules:
 
 ## 4.2 Hairline Divider
 
-Structure:
+---
 
-<hr aria-hidden="true">
+## <hr aria-hidden="true">
 
 Styling:
-height: 1px
-background: rgba(255,255,255,0.1)
-border: none
+
+---
+
+height: 1px  
+background: rgba(255,255,255,0.1)  
+border: none  
 margin: 1rem 0
+
+---
 
 Rules:
 
 - Must be subtle.
 - Must not use accent color.
-- Must not interrupt flow or create large gaps.
+- Must not introduce large gaps.
 
 ## 4.3 Time Rails & Tick Marks
 
-- Tick width <= 2px
-- Ticks use a muted tone unless representing a major division
-- Marker uses accent + glow
-- Percent-based placement only
+- Tick width ≤ 2px.
+- Ticks use muted tones unless major divisions.
+- Marker uses accent + glow.
+- Placement must be percent-based.
 
 ---
 
@@ -196,40 +323,42 @@ Rules:
 
 Standard button:
 
-    <button class="btn">...</button>
+---
+
+## <button class="btn">...</button>
 
 Rules:
 
-- Background: #111
-- Border: 1px solid rgba(255,255,255,0.15)
-- Padding: 0.4rem 0.8rem
-- Font: monospace or system-ui based on page
-- Hover: accent underline OR subtle glow
-- Active: no displacement (no depress animations)
+- Background: `#111`
+- Border: `1px solid rgba(255,255,255,0.15)`
+- Padding: `0.4rem 0.8rem`
+- Font: follow page family
+- Hover: accent underline **or** subtle glow
+- Active: no displacement
 
 Prohibited:
 
-- Large radii > 8px
+- Radii > 8px
 - Multi-layer shadows
-- Bright colored fills
-- Animation unless explicitly requested
+- Bright filled buttons
+- Unrequested animations
 
 ## 5.2 Text Inputs
 
 Rules:
 
-- Background #111
+- Background `#111`
 - Border muted
 - Accent focus ring
-- Tight spacing: 0.45–0.6rem
+- Tight spacing (0.45–0.6rem)
 
 ## 5.3 Range Inputs
 
 Rules:
 
-- Must use accent-color: var(--accent)
-- Track dark
-- Thumb visible but minimal
+- Must use `accent-color: var(--accent)`
+- Dark track
+- Minimal thumb
 
 ---
 
@@ -237,45 +366,55 @@ Rules:
 
 ## 6.1 Flex Rules
 
-Patterns must follow:
+---
 
-    display: flex
-    gap: 0.5–1rem
-    align-items: center
+display: flex  
+gap: 0.5–1rem  
+align-items: center
+
+---
 
 Rules:
 
-- No flex usage for large sections unless necessary.
-- Flex used for toolbars, row-style settings, and top-level controls.
+- Use flex only when appropriate.
+- Good for toolbars and row-style settings.
 
 ## 6.2 Grid Rules
 
-Grid patterns must follow:
+---
 
-    display: grid
-    gap: 1rem
+display: grid  
+gap: 1rem
 
-On index:
-repeat(auto-fit, minmax(220px, 1fr))
+---
 
-On dashboard:
-repeat(auto-fit, minmax(250px, 1fr))
+Index:
+
+---
+
+## repeat(auto-fit, minmax(220px, 1fr))
+
+Dashboard:
+
+---
+
+## repeat(auto-fit, minmax(250px, 1fr))
 
 Rules:
 
-- Cards remain consistent width.
+- Cards consistent width.
 - No asymmetric grids.
 
 ## 6.3 Wrapper Widths
 
-Wrappers must use:
+---
 
-    width: min(1000px, 92vw)
+## width: min(1000px, 92vw)
 
 Rules:
 
-- Index grid expects wider layouts.
-- Clock pages use tighter width (same pattern).
+- Index may be wider.
+- Tools maintain clock-style tighter width.
 
 ---
 
@@ -285,24 +424,23 @@ Rules:
 
 Rules:
 
-- Only one full directory list.
-- Uses .grid + .card.
-- Cards must use accent glow on hover.
+- One directory grid only.
+- Cards use accent glow on hover.
 
 ## 7.2 Back Navigation
 
-On all tool pages:
+---
 
-    <nav class="lcl-back-nav">
-        <a href="index.html">← Home</a>
-    </nav>
+<nav class="lcl-back-nav">
+  <a href="index.html">← Home</a>
+</nav>
+---
 
 Rules:
 
 - Placed near top.
-- Only one link.
+- One link only.
 - Accent underline on hover.
-- Minimal footprint.
 
 ---
 
@@ -310,24 +448,22 @@ Rules:
 
 ## 8.1 Hover Behavior
 
-All hover interactions:
-
-- Must be subtle
-- Must not shift layout
-- Must not add transitions longer than 0.15–0.2s
+- Must be subtle.
+- Must not shift layout.
+- Transitions ≤ 0.15–0.2s.
 
 ## 8.2 Active States
 
-Active states can:
+Allowed:
 
-- Change text weight
-- Change underline
-- Show glow
+- Weight change
+- Underline
+- Glow
 
-They must not:
+Not allowed:
 
-- Push elements
-- Resize components
+- Layout shifts
+- Size changes
 
 ---
 
@@ -335,25 +471,43 @@ They must not:
 
 ## 9.1 DOM Access
 
-Rules:
-
-- Use document.getElementById for key elements.
-- Keep script at bottom of <body>.
-- No JS modifying layout structure beyond existing patterns.
+- Use `document.getElementById`.
+- Script at bottom of `<body>`.
+- No layout rewrites beyond existing patterns.
 
 ## 9.2 Updates
 
 - Keep DOM writes minimal.
-- Use requestAnimationFrame only when necessary.
-- Timers & clocks use setInterval with safe frequency.
+- Use `requestAnimationFrame` only when needed.
+- Timers/clocks use safe `setInterval`.
 
 ## 9.3 LocalStorage
 
 Keys must follow:
 
-    lcl-<tool>-<setting>
+---
+
+## lcl-<tool>-<setting>
 
 Never store UI-only temporary state.
+
+## 9.4 Task Planner Clock – Storage Keys
+
+All Task Planner state must use:
+
+---
+
+lcl-taskplanner-templates
+lcl-taskplanner-active-template
+lcl-taskplanner-timeformat
+
+---
+
+Rules:
+
+- No additional keys.
+- Template names must match visible labels.
+- Times stored as minutes since midnight (0–1439).
 
 ---
 
@@ -361,52 +515,50 @@ Never store UI-only temporary state.
 
 ## 10.1 Scaling
 
-- Font scaling may use clamp().
-- Grid auto-fit must handle narrow devices gracefully.
-- Cards must remain readable on phones.
+- Use clamp() where appropriate.
+- Grids must handle narrow screens.
+- Cards must remain readable.
 
 ## 10.2 No Horizontal Scroll
 
-Rules:
-
-- No component may overflow horizontally.
-- Timescale rails must scale to container width.
+- No horizontal overflow.
+- Time rails must scale to width.
 
 ## 10.3 Touch Targets
 
-Minimum height for touch targets:
-40–44px
+- Minimum height: 40–44px.
 
 ---
 
 # 11. Accessibility Rules
 
-- aria-label required for icon-only elements.
-- aria-hidden used for decorative separators.
-- High contrast must be preserved.
-- No flashing effects.
-- Focus indicators must use accent.
+- Use `aria-label` for icon-only elements.
+- Use `aria-hidden` for decorative items.
+- Maintain high contrast.
+- No flashing.
+- Focus indicators use accent.
 
 ---
 
 # 12. Prohibited UI Patterns
 
-These are **never** allowed:
+Never allowed:
 
-- Light themes or light backgrounds.
-- Multi-link tool navigation bars (only index may list tools).
-- Hamburger menus or JS nav menus.
-- Heavy shadows or skeuomorphic visuals.
+- Light themes.
+- Multi-link navbars (only index lists tools).
+- Hamburger menus.
+- Heavy shadows.
+- Skeuomorphic elements.
 - Multi-layer glows.
-- External fonts or CDNs.
-- Huge paddings or overly spaced layouts.
-- White/bright UI elements that break dark aesthetic.
+- External fonts/CDNs.
+- Excessive padding.
+- Bright/white UI elements that break dark mode.
 
 ---
 
 # 13. Summary
 
-These UI rules define the precise visual language of Linear Clock Lab.  
+These UI rules define the precise visual language of Linear Clock Lab.
 Following them ensures all pages remain:
 
 - Minimal
@@ -415,6 +567,8 @@ Following them ensures all pages remain:
 - Consistent
 - Predictable
 - Lightweight
-- Cohesive across tools
+- Cohesive
 
-Any new UI element must obey these rules exactly to preserve the user experience and brand identity.
+Any new UI element must obey these rules exactly.
+
+---

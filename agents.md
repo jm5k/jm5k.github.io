@@ -20,46 +20,68 @@ All agents must adhere to this guide strictly.
 
 LCL conforms to these universal rules:
 
-1. **Dark-only design**  
-   No light mode. No OS theme inheritance. No `prefers-color-scheme: light`.  
-   All pages enforce dark colors and must remain consistent across browsers.
+1. **Dark-only design**
 
-2. **Static HCJ only**  
-   No frameworks, build systems, bundlers, preprocessors, TypeScript, or external libraries.
+   - No light mode.
+   - No OS theme inheritance.
+   - No `prefers-color-scheme: light`.
+   - All pages enforce dark colors and must remain consistent across browsers.
 
-3. **Offline-first**  
-   No CDNs, no analytics, no imports from remote URLs.
+2. **Static HCJ only**
 
-4. **Tool pages are independent**  
+   - No frameworks, build systems, bundlers, preprocessors, TypeScript, or external libraries.
+
+3. **Offline-first**
+
+   - No CDNs.
+   - No analytics.
+   - No imports from remote URLs.
+
+4. **Tool pages are independent**
    Each page contains:
 
-   - Inline `<style>` with feature tokens
-   - Inline `<script>` (bottom of `<body>`)
-   - A “Home” link back to `index.html`  
-     Index is the only multi-link hub.
+   - Inline `<style>` with feature tokens.
+   - Inline `<script>` (bottom of `<body>`).
+   - A “Home” link back to `index.html`.
+   - `index.html` is the only multi-link hub.
 
-5. **Design tokens rule everything**  
-   All new UI must use CSS variables. No hard-coded colors except pure black (#000) in hard-fallback blocks.
+5. **Design tokens rule everything**
 
-6. **Neon accent identity**  
-   Accent is consistent across tools. Glows, markers, ticks, focus rings, etc. must follow the existing accent usage patterns.
+   - All new UI must use CSS variables.
+   - No hard-coded colors except pure black (`#000`) in hard-fallback blocks.
 
-7. **SEO consistency**  
+6. **Neon accent identity**
+
+   - Accent is consistent across tools.
+   - Glows, markers, ticks, focus rings, etc. must follow existing accent usage patterns.
+
+7. **SEO consistency**
    All pages follow a canonical head structure with:
 
-   - Core meta tags
-   - Color scheme locks
-   - Social previews
-   - Icons from `https://linearclocklab.com/profile.png`
+   - Core meta tags.
+   - Color scheme locks.
+   - Social previews.
+   - Icons from `https://linearclocklab.com/profile.png`.
 
-8. **Responsiveness via CSS only**  
-   Percent widths, `min()` patterns, flex/grid auto-fit layouts, and occasional `clamp()`. No JS for layout.
+8. **Responsiveness via CSS only**
 
-9. **Index.html is the hub**  
-   Tool pages do not cross-link; they only return to Home.
+   - Percent widths.
+   - `min()` patterns.
+   - Flex/grid auto-fit layouts.
+   - Occasional `clamp()`.
+   - No JS for layout.
 
-10. **User trust and clarity**  
-    Small scripts, small UIs, simple patterns, predictable behavior.
+9. **Index.html is the hub**
+
+   - Tool pages do not cross-link each other.
+   - Each tool page only returns to Home.
+
+10. **User trust and clarity**
+
+    - Small scripts.
+    - Small UIs.
+    - Simple patterns.
+    - Predictable behavior.
 
 ---
 
@@ -67,8 +89,7 @@ LCL conforms to these universal rules:
 
 ## 2.1 Codex Agent (Primary Engineering Agent)
 
-This is the authoritative code-editing agent.  
-It modifies HTML, CSS, and JavaScript within strict constraints.
+Authoritative code-editing agent for HTML, CSS, and JavaScript.
 
 ### Responsibilities
 
@@ -84,10 +105,10 @@ It modifies HTML, CSS, and JavaScript within strict constraints.
 
 - Deterministic edits; no speculation.
 - Adhere to token names (`--bg`, `--fg`, `--muted`, `--accent`, `--line`, etc.).
-- Inline CSS stays inline unless rule must be truly global.
+- Inline CSS stays inline unless a rule must be truly global.
 - Inline JS stays at bottom of `<body>`.
 - No refactoring into modules unless explicitly requested.
-- No altering of time logic or calculations unless instructed.
+- No altering of time logic or calculations unless explicitly instructed.
 
 ### Typical Tasks
 
@@ -96,35 +117,39 @@ It modifies HTML, CSS, and JavaScript within strict constraints.
 - Add missing design tokens to `:root`.
 - Normalize tick/rail/marker styles.
 - Ensure responsive patterns match existing layout patterns.
-- Synchronize global behaviors (e.g., scroll bars, accent hover states).
+- Synchronize global behaviors (scroll bars, accent hover states).
 - Enforce placement of script blocks and back-nav links.
 
 ---
 
 ## 2.2 LCL Architect Agent (Design & UX Consistency)
 
-Ensures design integrity.
+Ensures design and UX integrity.
 
 ### Responsibilities
 
 - Verify CSS variable naming consistency.
-- Validate color choices, glows, gradients, and accent patterns.
+- Validate color choices, glows, and accent patterns.
 - Protect the neon-on-dark visual identity.
 - Confirm typography stacks match page-specific patterns.
 - Maintain component consistency (cards, grids, rails, inputs, buttons).
 
 ### Behavioral Rules
 
-- No color drift: new features must use existing tokens or extend them using aligned naming.
-- No layout innovations unless explicitly greenlit.
-- No nav bar except index hub and one “Home” link on all other pages.
-- No light backgrounds — ever.
+- No color drift: new features must use existing tokens or extend them with aligned naming.
+- No layout innovations unless explicitly requested.
+- No nav bars except:
+
+  - Index hub grid.
+  - Single “Home” link on all other pages.
+
+- No light backgrounds.
 
 ### Example Checks
 
 - `.wrap` consistency on clock pages.
 - `.grid` + `.card` layout uniformity on index hub.
-- Cards maintain subtle borders and glow-on-hover.
+- Card borders and glow-on-hover behavior.
 - Tick/marker rail visuals remain consistent across clock tools.
 
 ---
@@ -135,12 +160,12 @@ Detects problems. Never modifies code.
 
 ### Responsibilities
 
-- Validate correctness, accessibility, rendering, contrast.
+- Validate correctness, accessibility, and rendering.
 - Check for missing design tokens.
 - Detect broken responsive behavior.
 - Confirm absence of undesirable CSS (e.g., `prefers-color-scheme: light`).
-- Ensure no inline scripts cause global namespace pollution beyond existing patterns.
-- Confirm Home link exists on every tool page.
+- Ensure inline scripts avoid excessive global namespace pollution.
+- Confirm “Home” link exists on every tool page.
 
 ### Categories for Findings
 
@@ -154,23 +179,23 @@ Detects problems. Never modifies code.
 
 ## 2.4 Documentation Agent (Writer)
 
-Creates consistent Markdown files.
+Creates consistent Markdown documentation.
 
 ### Responsibilities
 
 - Produce readable, organized Markdown.
 - Use monolithic code blocks for code examples (4-space indentation).
 - Convert architectural details into maintainable docs.
-- Never mix prose and code inside a block.
+- Never mix prose and code inside the same block.
 - Respect the project voice: direct, clear, professional.
 
 ### Deliverables
 
-- README sections
-- Feature guides
-- UX descriptions
-- Style, component, and theming docs
-- Change logs (when requested)
+- README sections.
+- Feature guides.
+- UX descriptions.
+- Style, component, and theming docs.
+- Changelogs (when requested).
 
 ---
 
@@ -181,339 +206,389 @@ Transforms UI/UX/code requests into Codex-ready instructions.
 ### Responsibilities
 
 - Write precise, deterministic prompts.
-- Enforce guardrails.
+- Enforce guardrails in prompts.
 - Prevent accidental file destruction or unwanted refactors.
 - Provide repo-wide batch-update prompts.
 - Include rollback instructions when required.
 
 ### Example Tasks
 
-- “Remove all light-mode CSS from every HTML file”
-- “Normalize all `<head>` blocks”
-- “Inject new back-nav pattern into all tool pages”
-- “Add/update SEO metadata across all pages”
+- “Remove all light-mode CSS from every HTML file.”
+- “Normalize all `<head>` blocks.”
+- “Inject new back-nav pattern into all tool pages.”
+- “Add/update SEO metadata across all pages.”
 
 ---
 
-# 3. Expanded System: Page Structures
+# 3. Page Structures
 
-## Standard Head
+## 3.1 Standard Head
 
 Every page must contain:
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="dark light">
-    <meta name="theme-color" content="#000000">
-    <link rel="stylesheet" href="lcl.css">
+---
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="lcl.css">
+---
 
 Plus:
 
-- title
-- description
-- keywords
-- author
-- robots
-- canonical URL
-- OG tags
+- `<title>`
+- Description
+- Keywords
+- Author
+- Robots
+- Canonical URL
+- Open Graph tags
 - Twitter cards
-- favicons that point to https://linearclocklab.com/profile.png
+- Favicon / apple-touch icon pointing to `https://linearclocklab.com/profile.png`
 
-Scripts:  
-Placed at the bottom of `<body>`.
+Scripts must be placed at the bottom of `<body>`.
 
-## Head/Meta Smoke Checklist
+## 3.2 Head/Meta Checklist
 
-- Charset = UTF-8 and viewport present.
-- color-scheme = dark light, theme-color = #000000.
-- lcl.css linked in head.
-- Title + description + keywords + author + robots + canonical.
-- OG/Twitter cards present; images point to https://linearclocklab.com/profile.png.
-- Icons (favicon/apple-touch/manifest) set.
-- No duplicate or missing core meta entries; no light-mode media queries.
-- Scripts live at end of body.
+- `charset="UTF-8"` present.
+- `viewport` present.
+- `color-scheme="dark light"` and `theme-color="#000000"`.
+- `lcl.css` linked in `<head>`.
+- Title, description, keywords, author, robots, canonical present.
+- OG/Twitter cards present; images use `https://linearclocklab.com/profile.png`.
+- Icons set correctly.
+- No duplicate or missing core meta entries.
+- No light-mode media queries.
+- Scripts live at end of `<body>`.
 
 ---
 
-# 4. Expanded System: Theming
+# 4. Theming
 
-## Design Tokens
+## 4.1 Design Tokens
 
 Each page includes local tokens inside `<style>`:
 
-    :root {
-        --bg: #000;
-        --fg: #e0e0e0;
-        --muted: #5a5a5a;
-        --accent: #00eaff;
-        --line: #00eaff;  /* clock rails */
-        --chip: #111;
-        --chip-brd: #222;
-        --glow: rgba(0, 234, 255, 0.5);
-        /* additional tokens per tool as needed */
-    }
+---
+
+:root {
+--bg: #000;
+--fg: #e0e0e0;
+--muted: #5a5a5a;
+--accent: #00eaff;
+--line: #00eaff; /_ clock rails _/
+--chip: #111;
+--chip-brd: #222;
+--glow: rgba(0, 234, 255, 0.5);
+/_ additional tokens per tool as needed _/
+}
+
+---
 
 Rules:
 
-- All new variables must follow existing naming patterns.
+- New variables must follow existing naming patterns.
 - Token sets must not redefine light-mode values.
 - Tools like `clock_presets.html` may use `data-theme` with alternate token dictionaries.
 - Accent glow must remain subtle and consistent across tools.
 
-## Global Dark Enforcement
+## 4.2 Global Dark Enforcement
 
-Stored in lcl.css:
-
-    html, body { background: var(--bg) !important; color: var(--fg) !important; }
-    html { color-scheme: dark !important; }
-    @media (forced-colors: active) {
-        * { forced-color-adjust: none !important; }
-    }
-
-Never expand lcl.css unless the rule must apply globally.
+Stored in `lcl.css`:
 
 ---
 
-# 5. Layout & Typography System
+html, body { background: var(--bg) !important; color: var(--fg) !important; }
+html { color-scheme: dark !important; }
+@media (forced-colors: active) { \* { forced-color-adjust: none !important; }
+}
 
-## Layout Patterns
+---
+
+Rules:
+
+- Only truly global dark-mode behavior lives in `lcl.css`.
+- Do not add page-specific tokens or layout rules to `lcl.css`.
+
+---
+
+# 5. Layout & Typography
+
+## 5.1 Layout Patterns
 
 - Use flex and grid.
 - Width constraints:
-  - min/max patterns: min(1000px, 92vw)
-  - Generous padding around wrappers.
+
+  - `width: min(1000px, 92vw);` for primary wrappers.
+
 - Common classes:
-  - `.wrap` — clocks
-  - `.grid` + `.card` — index hub
-  - `.toolbar`, `.header` — dashboard & tool UIs
 
-## Typography
+  - `.wrap` — clocks and linear tools.
+  - `.grid` + `.card` — index hub.
+  - `.toolbar`, `.header` — dashboard & tool UIs.
 
-- Monospace stacks for clocks and precision views:
-  ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace
+## 5.2 Typography
 
-- System UI stacks for more general tools:
-  system-ui, "Segoe UI", sans-serif
+**Monospace (clock, timers, stopwatch):**
+
+---
+
+## ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace
+
+**System UI (dashboards, other tools):**
+
+---
+
+## system-ui, "Segoe UI", sans-serif
 
 Rules:
 
 - Follow the font family already used on the page.
-- Size adjustments must use clamp() where appropriate.
+- Size adjustments may use `clamp()` where appropriate.
 - Hairline separators use low-opacity strokes.
 
 ---
 
 # 6. Component System
 
-### Rails & Ticks
+## 6.1 Rails & Ticks
 
 - Percent-based positioning.
-- Light glows, accent markers.
-- No heavy borders; minimalistic.
+- Accent markers and light glows.
+- Minimal borders.
 
-### Cards
+## 6.2 Cards
 
-- Background around #0a0a0a
-- 1px border using accent or muted tones
-- Small radii
-- Hover: glow shift, not structural shift
+- Background around `#0a0a0a`.
+- 1px border using accent or muted tones.
+- Small radii.
+- Hover: glow shift, not structural shift.
 
-### Inputs / Controls
+## 6.3 Inputs / Controls
 
-- Dark backgrounds (#111)
-- Light 1px borders
-- Accent hover/focus rings
-- Compact spacing and monospace text
+- Dark backgrounds (`#111`).
+- Light 1px borders.
+- Accent hover/focus rings.
+- Compact spacing, monospace text where appropriate.
 
-### Back Navigation
+## 6.4 Back Navigation
 
 Each non-index page includes:
 
-    <nav class="lcl-back-nav">
-        <a href="index.html">← Home</a>
-    </nav>
+---
 
-No other navigation allowed.
+<nav class="lcl-back-nav">
+    <a href="index.html">← Home</a>
+</nav>
+---
+
+Rules:
+
+- Only one back link.
+- No additional nav bars.
 
 ---
 
 # 7. JavaScript Patterns
 
 - Vanilla JS only (no libraries).
-- Inline `<script>` tags at bottom of body.
-- Query via ID for main controls.
-- Attach event listeners once.
+- Inline `<script>` at bottom of `<body>`.
+- Query via `document.getElementById` for main controls.
+- Attach event listeners once per element.
 - Keep scopes narrow.
-- Persist preferences using localStorage.
-- Intervals for clock/timers must remain lightweight and avoid layout thrashing.
-- No globals except small state objects when already established.
+- Persist preferences using `localStorage`.
+- Intervals for clocks/timers must be lightweight and avoid layout thrashing.
+- No large global objects beyond existing patterns.
 
 ---
 
 # 8. Responsiveness & Accessibility
 
 - Use percentage widths, flex-wrap, and auto-fit grids.
-- Apply clamp() for text on visually dense tools.
-- Use aria-label for controls.
-- Use aria-hidden on decorative items.
-- Maintain high contrast always (dark + accent).
-- Avoid purely color-based indicators when possible (accent + shape preferred).
+- Apply `clamp()` for text on visually dense tools.
+- Use `aria-label` for controls.
+- Use `aria-hidden` on decorative items.
+- Maintain high contrast (dark background + accent + readable text).
+- Avoid purely color-based indicators when possible; use shape/position plus color.
 
 ---
 
-# 9. File-Specific Rules (Expanded)
+# 9. File-Specific Rules
 
-## index.html
+## 9.1 index.html
 
-- The hub.
+- Acts as the hub.
 - Uses a `.grid` of `.card` links.
 - Card hover = accent glow.
-- New tools added only in index, not cross-linked elsewhere.
+- Only index lists tools; tools do not cross-link each other.
 
-## clock.html, multi-clock.html, clock_presets.html
+## 9.2 clock.html, multi-clock.html, clock_presets.html
 
 - Use `.wrap`.
 - Monospace themes.
-- Ticks, rails, markers follow consistent alignment patterns.
-- `clock_presets` uses `<html data-theme>` as a pattern for extensible theming.
+- Ticks, rails, markers share alignment patterns.
+- `clock_presets.html` may use `<html data-theme>` as a pattern for extensible theming.
 
-## focus.html, stopwatch.html, timer.html
+## 9.3 focus.html, stopwatch.html, timer.html
 
-- Tools with compact UIs and dark cards.
+- Compact UIs with dark cards.
 - Inputs/buttons consistent with accent and dark backgrounds.
-- Keep visual minimalism.
+- Maintain visual minimalism.
 
-## dashboard.html
+## 9.4 dashboard.html
 
 - Composite tile-based layout.
 - Must preserve spacing consistency with other tools.
 
-## lcl.css
+## 9.5 lcl.css
 
-- Holds only the enforced dark-mode rules.
-- Do not add page-specific tokens or layout rules here.
+- Holds only global dark-mode rules.
+- No page-specific tokens or layout rules.
 
 ---
 
-# 10. Authoring Checklist (Expanded)
+# 10. Authoring Checklist
 
-1. Start by copying a correct head/meta block.
+1. Copy a correct head/meta block.
 2. Declare local design tokens via `:root`.
-3. Keep all CSS and JS inline unless a rule belongs in lcl.css.
-4. Add a top-left “Home” back link.
+3. Keep CSS and JS inline unless a rule belongs in `lcl.css`.
+4. Add a top “Home” back link (`.lcl-back-nav`).
 5. Build UI with flex/grid following existing page patterns.
 6. Persist user settings with `localStorage`.
-7. Validate responsiveness with min()/max()/clamp().
+7. Validate responsiveness with `min()`, `max()`, and `clamp()`.
 8. Confirm no light-mode media queries remain.
-9. Test in Chrome, Firefox, Edge, and Safari.
-10. Confirm dark enforcement works on system-light machines.
+9. Test in Chrome, Firefox, Edge, Safari.
+10. Confirm dark enforcement on system-light machines.
 
 ---
 
-# 11. Enforcement Rules for All Agents
+# 11. Clock-Family Time Standard
 
-- Maintain dark-only rendering.
-- Maintain neon accent and token consistency.
-- Never redesign UI unless explicitly asked.
-- Never introduce external dependencies.
-- Never restructure JS unless requested.
-- Always preserve formatting and code style.
-- Any global change must be mirrored in all affected pages.
-- Limit changes in lcl.css to global dark enforcement.
-- Output must remain deterministic and safe.
+For all clock-like tools (e.g., `clock.html`, `task-planner-lc.html`, future timeline tools):
+
+- Internal “time of day” must use one of:
+
+  - **Seconds since midnight** (`0–86399`) for pure display clocks.
+  - **Minutes since midnight** (`0–1439`) for schedule/planner logic.
+
+The Task Planner Clock must:
+
+- Store zone start times as **minutes since midnight**.
+- Derive all human-readable times from those minutes using a single formatting helper that respects 12h/24h mode.
+
+Rules:
+
+- New tools must not introduce alternative encodings in storage.
+- Do not store `Date` objects or raw `"HH:MM"` strings in `localStorage`.
+- New time-visualization tools must clone layout + typography patterns from `clock.html`, including:
+
+  - `.wrap` width and padding.
+  - Monospace font stack.
+  - 24h rail placement and tick behavior.
+
+- Variations must be minimal and purpose-driven (additional overlays, labels, panels only).
+
+---
 
 # 12. CHANGELOG.md Rules
 
-For every completed task that modifies any part of Linear Clock Lab (HTML, CSS, JS, metadata, tokens, navigation, or documentation), an agent must append a new entry at the TOP of `CHANGELOG.md`.
+For every completed task that modifies any part of LCL (HTML, CSS, JS, metadata, tokens, navigation, or documentation), an agent must append a new entry at the **top** of `CHANGELOG.md`.
 
-The changelog is a permanent truth record of all AI-performed changes and must always reflect EXACTLY what was done.
+The changelog is a permanent truth record of all AI-performed changes and must always reflect exactly what was done.
 
-Each entry must contain the following fields:
+Each entry must contain:
 
-#### • Date
+## 12.1 Date
 
-    Format: YYYY-MM-DD
+- Format: `YYYY-MM-DD`.
 
-#### • Short Title
+## 12.2 Short Title
 
-    A 3–8 word summary capturing the purpose of the update
-    (e.g., “Remove Light-Mode Overrides”, “Standardize Head Blocks”, “Add Token Set for Clock Presets”)
+- 3–8 word summary capturing the purpose of the update.
 
-#### • Summary
+  - Examples:
 
-    1–3 sentences describing:
-    - What changed
-    - Why it was changed
-    - What part of the system it affects
+    - “Remove Light-Mode Overrides”
+    - “Standardize Head Blocks”
+    - “Add Token Set for Clock Presets”
 
-#### • LCL Technical Details (Bullet List)
+## 12.3 Summary
 
-    - HTML pages updated (names + purpose)
-    - CSS blocks added/removed/modified
-    - JavaScript logic added/updated (IDs touched, functions affected)
-    - Tokens created, renamed, or removed (`--bg`, `--fg`, `--accent`, etc.)
-    - Navigation changes (hub or back-nav updates)
-    - SEO/meta block updates
-    - Accessibility improvements (aria labels, roles, etc.)
-    - Responsive layout fixes (grid/flex/wrapper changes)
-    - Dark-mode enforcement changes (e.g., removing prefers-color-scheme blocks)
+- 1–3 sentences describing:
 
-#### • Files Touched
+  - What changed.
+  - Why it was changed.
+  - What part of the system it affects.
 
-    List **every** affected file:
-    - HTML pages
-    - Inline `<style>` or `<script>` changes
-    - `lcl.css` (if touched)
-    - JS blocks inside pages
-    - Markdown/documentation files (AGENTS.md, STYLEGUIDE.md, ARCHITECTURE.md, etc.)
+## 12.4 LCL Technical Details (Bulleted)
 
-#### • Testing Notes
+Include bullets for:
 
-    Specify:
-    - Manual tests to run (e.g., “Load clock.html on light-mode systems”)
-    - Browser compatibility checks (Chrome, Firefox, Edge, Safari)
-    - Responsive checks (mobile/desktop)
-    - Behavior tests (rails, markers, timers, presets, dashboard)
-    - LocalStorage persistence checks
-    - Accessibility tests (screen reader, keyboard navigation)
+- HTML pages updated (names + purpose).
+- CSS blocks added/removed/modified.
+- JavaScript logic added/updated (IDs, functions).
+- Tokens created, renamed, or removed (`--bg`, `--fg`, `--accent`, etc.).
+- Navigation changes (hub or back-nav updates).
+- SEO/meta block updates.
+- Accessibility improvements (ARIA labels, roles, etc.).
+- Responsive layout fixes (grid/flex/wrapper changes).
+- Dark-mode enforcement changes.
 
-#### • Risks & Edge Cases
+## 12.5 Files Touched
 
-    Identify:
-    - Potential regressions
-    - Cross-page styling impacts
-    - Token collisions or overrides
-    - Dark-mode enforcement pitfalls
-    - JS timing risks (setInterval sensitivity)
-    - Navigation consistency issues
+List every affected file:
 
-#### • Follow-Up Suggestions (Optional)
+- HTML pages.
+- Inline `<style>` / `<script>` changes.
+- `lcl.css` (if touched).
+- JS blocks inside pages.
+- Markdown/docs (e.g., `AGENTS.md`, `UI_RULES.md`, `STYLEGUIDE.md`, etc.).
 
-    Small, targeted improvements for future updates:
-    - Token normalization
-    - Additional accessibility labeling
-    - Code cleanup
-    - Documentation corrections
-    - Performance improvements
+## 12.6 Testing Notes
 
----
+Specify:
 
-#### CHANGELOG.md Operational Rules
+- Manual tests to run (e.g., “Load `clock.html` on light-mode systems”).
+- Browser compatibility checks (Chrome, Firefox, Edge, Safari).
+- Responsive checks (mobile/desktop).
+- Behavior tests (rails, markers, timers, presets, dashboard).
+- `localStorage` persistence checks.
+- Accessibility tests (screen reader, keyboard navigation).
+
+## 12.7 Risks & Edge Cases
+
+Identify:
+
+- Potential regressions.
+- Cross-page styling impacts.
+- Token collisions or overrides.
+- Dark-mode enforcement pitfalls.
+- JS timing risks (e.g., `setInterval` sensitivity).
+- Navigation consistency issues.
+
+## 12.8 Follow-Up Suggestions (Optional)
+
+Small, targeted improvements for future updates:
+
+- Token normalization.
+- Additional accessibility labeling.
+- Code cleanup.
+- Documentation corrections.
+- Performance improvements.
+
+## 12.9 Operational Rules
 
 1. The newest entry is always added at the **top**.
-2. Entries must be factual, concise, and specific—no speculation.
-3. Codex must NEVER modify older entries unless explicitly instructed.
+2. Entries must be factual, concise, and specific.
+3. Codex must not modify older entries unless explicitly instructed.
 4. All entries must reflect actual changes performed during the task.
-5. No task is considered “complete” until its changelog entry is created and validated.
-6. If a task results in _no_ file modifications, a short note entry must still be added indicating "No changes required".
+5. No task is considered complete until its changelog entry is created and validated.
+6. If a task results in no file modifications, a short note entry must still be added indicating “No changes required”.
 7. Separate each entry with a `---` divider for readability.
-
-This section establishes the authoritative logging rules for all future modifications within LCL.
 
 ---
 
 # 13. Final Notes
 
-This AGENTS.md is the authoritative specification for all code, design, UX, JS, and documentation operations inside Linear Clock Lab. All future work must follow this guide to preserve the suite’s identity, consistency, performance, and maintainability.
-
-The Codex-generated design system has been fully expanded into actionable rules for every agent.
+This `AGENTS.md` is the authoritative specification for all code, design, UX, JS, and documentation operations inside Linear Clock Lab. All future work must follow this guide to preserve the suite’s identity, consistency, performance, and maintainability.

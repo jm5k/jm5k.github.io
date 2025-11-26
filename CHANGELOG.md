@@ -1,3 +1,61 @@
+Date: 2025-11-26
+Short Title: Fix planner rail and labels
+Summary:
+- Adjusted Task Planner rail width and label formatting to match the main clock style, ensuring even spacing and clean hour markers.
+
+LCL Technical Details:
+- HTML/CSS: task-planner-lc.html bar height tuned to clock-standard sizing; label row uses evenly spaced spans over 95% width.
+- JavaScript: Added hour-label formatter respecting 12h/24h toggle and renderLabels now outputs whole-hour markers (0/24 or 1-12) without :00.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: Label spacing now mirrors clock layout for clarity.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Manual: Open task-planner-lc.html; confirm bar spans the expected width; labels are evenly spaced numbers (12h/24h) without :00; rail marker still tracks current time.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+- Label density may compress on very narrow screens; rail still scales via 95% width.
+- No logic changes to zones; existing localStorage data should remain unaffected.
+
+Follow-Up Suggestions (Optional):
+- Consider responsive font-size clamp for labels if further density tuning is needed.
+
+---
+Date: 2025-11-26
+Short Title: Add Task Planner Linear Clock
+Summary:
+- Added a dedicated task-planner-lc page with 24-hour zone rail, template switching, now/next summaries, and per-template editing with persistence.
+
+LCL Technical Details:
+- HTML: New task-planner-lc.html mirrors clock layout with intro, template selector, time-format toggle, rail + ticks, now/next panel, zone list, and zone editor.
+- CSS: Inline :root includes existing core tokens plus required --zone-* palette; rail/segment/marker styles follow clock-family patterns with subtle glow highlighting.
+- JavaScript: Inline logic loads/saves templates via lcl-taskplanner-templates/active-template/timeformat keys, formats minutes-based times for 12h/24h, renders contiguous zone segments, computes now/next summaries, and supports add/edit/delete with normalization.
+- Navigation: Includes LCL back link to index.html.
+- SEO/meta: Standard head block with canonical/social tags and dark-mode enforcement link to lcl.css.
+- Accessibility/Responsive: Uses aria labels on controls, percent-based rail width, auto-fit grids for summaries and editor rows, and minute-level ticker for updates.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Manual: Load task-planner-lc.html on desktop/mobile; switch templates and confirm zones render and persist after reload; toggle 12h/24h and verify labels, zone list, and now/next reflect selection.
+- Browser: Smoke test in Chrome, Firefox, Edge, Safari.
+- Behavior: Confirm marker aligns with current time, current/next zone highlighting updates at least each minute, and add/edit/delete actions re-render and store to localStorage.
+
+Risks & Edge Cases:
+- User-supplied zone times rely on client clock; incorrect system time skews highlights.
+- Templates with overlapping or identical start times rely on sort order; users may need to adjust times for clarity.
+- New localStorage data may conflict if keys were previously used for other experiments.
+
+Follow-Up Suggestions (Optional):
+- Add validation hints for overlapping zones and an explicit reset-to-defaults control per template.
+
+---
 Date: 2025-11-22
 Short Title: Clarify changelog separators
 Summary:

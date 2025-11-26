@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="stylesheet" href="lcl.css" />
+
+    <title>Task Planner Linear Clock | Linear Clock Lab</title>
+
+    <meta
+      name="description"
+      content="Plan the time before your events. Color-coded zones show when to wake up, get ready, leave, and arrive."
+    />
+    <meta
+      name="keywords"
+      content="task planner, linear clock, adhd, schedule, timeline, routine, workday, weekend, event"
+    />
+    <meta name="author" content="jm5k" />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://linearclocklab.com/task-planner-lc.html"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Task Planner Linear Clock | Linear Clock Lab"
+    />
+    <meta
+      property="og:description"
+      content="See what happens before your events. Color-coded zones and now/next timing on a 24-hour rail."
+    />
+    <meta
+      property="og:url"
+      content="https://linearclocklab.com/task-planner-lc.html"
+    />
+    <meta
+      property="og:image"
+      content="https://linearclocklab.com/profile.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Task Planner Linear Clock | Linear Clock Lab"
+    />
+    <meta
+      name="twitter:description"
+      content="Plan the time before your events with clear zones and now/next guidance."
+    />
+    <meta
+      name="twitter:image"
+      content="https://linearclocklab.com/profile.png"
+    />
+
+    <link
+      rel="icon"
+      href="https://linearclocklab.com/profile.png"
+      type="image/png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://linearclocklab.com/profile.png"
+    />
+
+    <style>
+      :root {
+        --bg: #000;
+        --fg: #e0e0e0;
+        --muted: #8b8b8b;
+        --accent: #00eaff;
+        --line: #00eaff;
+        --chip: #111;
+        --chip-brd: #222;
+        --glow: rgba(0, 234, 255, 0.5);
+        --zone-wake: #7fffd4;
+        --zone-routine: #c084fc;
+        --zone-work: #a5f3fc;
+        --zone-break: #fb923c;
+        --zone-travel: #f97316;
+        --zone-event: #ff4d6d;
+        --zone-evening: #d946ef;
+        --zone-night: #6d28d9;
+        --zone-sleep: #3b0764;
+        --zone-focus: #38bdf8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+          "Liberation Mono", monospace;
+        display: flex;
+        justify-content: center;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .wrap {
+        width: min(1000px, 92vw);
+        padding: 1.5rem 1rem 1.75rem;
+        margin: auto;
+      }
+      .lcl-back-nav {
+        margin-bottom: 1rem;
+      }
+      .lcl-back-nav a {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.95rem;
+        padding: 0.35rem 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+      .lcl-back-nav a:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 10px var(--glow);
+      }
+      h1 {
+        margin: 0 0 0.75rem;
+        font-size: clamp(1.8rem, 3vw, 2.2rem);
+        letter-spacing: 0.5px;
+      }
+      p.lead {
+        margin: 0 0 1.4rem;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+      section {
+        margin-top: 1.5rem;
+      }
+
+      .controls {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .control {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: #0a0a0a;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        padding: 0.6rem 0.8rem;
+      }
+      label {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      select,
+      input[type="time"],
+      input[type="text"] {
+        background: #0f0f10;
+        color: var(--fg);
+        border: 1px solid #1a1a1a;
+        border-radius: 8px;
+        padding: 0.55rem 0.65rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+        outline: none;
+        min-width: 150px;
+      }
+      select:focus,
+      input[type="time"]:focus,
+      input[type="text"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 10px var(--glow);
+      }
+
+      .switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        cursor: pointer;
+        color: var(--muted);
+        user-select: none;
+      }
+      .switch input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 999px;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .slider::before {
+        content: "";
+        position: absolute;
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #bbb;
+        border-radius: 50%;
+        transition: left 0.18s, background 0.2s;
+      }
+      .switch input:checked + .slider {
+        background: #0b3a3a;
+        border-color: #0aa;
+      }
+      .switch input:checked + .slider::before {
+        left: 23px;
+        background: #0ff;
+      }
+      .switch-label {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .railCluster {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas: "rail" "labels";
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.5rem 0 0.75rem;
+        width: 100%;
+      }
+      #bar {
+        position: relative;
+        display: block;
+        background: #0a0a0a;
+        border: 2px solid #222;
+        border-radius: 8px;
+        overflow: hidden;
+        grid-area: rail;
+        margin: 0 auto;
+        width: 95%;
+        height: 60px;
+      }
+      #segments,
+      #ticks {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #ticks {
+        pointer-events: none;
+      }
+      .tick {
+        position: absolute;
+        top: 0;
+        height: 100%;
+      }
+      .tick-h.qtr {
+        width: 1px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .tick-h.hour {
+        width: 2px;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .zoneSegment {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        border-right: 1px solid rgba(0, 0, 0, 0.2);
+        opacity: 0.9;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.2s;
+      }
+      .zoneSegment.active {
+        box-shadow: 0 0 10px var(--glow);
+        border-color: rgba(255, 255, 255, 0.2);
+        opacity: 1;
+      }
+
+      #marker {
+        position: absolute;
+        background: var(--accent);
+        width: 4px;
+        height: 100%;
+        top: 0;
+        box-shadow: 0 0 10px var(--glow);
+        pointer-events: none;
+      }
+
+      #hourLabels {
+        grid-area: labels;
+      }
+      .labelRow {
+        display: flex;
+        justify-content: space-between;
+        width: 95%;
+        margin: 8px auto 6px;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .panel {
+        background: #0a0a0a;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        padding: 0.9rem 1rem;
+      }
+      .panel h3 {
+        margin: 0 0 0.5rem;
+        font-size: 1.1rem;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 0.75rem;
+        margin-top: 0.35rem;
+      }
+      .summary-block {
+        background: #0f0f10;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 0.75rem 0.85rem;
+      }
+      .summary-block strong {
+        display: block;
+        margin-bottom: 0.35rem;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #111;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        padding: 0.35rem 0.65rem;
+        font-size: 0.9rem;
+      }
+      .swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+      }
+
+      .zone-list {
+        display: grid;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+      }
+      .zone-row {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.75rem;
+        padding: 0.75rem 0.8rem;
+        background: #0c0c0c;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        align-items: center;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease,
+          background 0.2s ease;
+      }
+      .zone-row.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 10px var(--glow);
+        background: #0f1113;
+      }
+      .zone-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .zone-times {
+        font-size: 0.95rem;
+        color: var(--fg);
+      }
+      .zone-name {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .zone-editor {
+        display: grid;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+      }
+      .zone-edit-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.5rem;
+        background: #0c0c0c;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 0.75rem 0.8rem;
+        align-items: center;
+      }
+      .zone-edit-row .actions {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .btn {
+        background: #111;
+        color: var(--fg);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        padding: 0.45rem 0.85rem;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .btn:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 10px var(--glow);
+      }
+      .btn.delete {
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .btn.add {
+        width: fit-content;
+      }
+      .empty {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-top: 0.35rem;
+      }
+
+      footer {
+        margin-top: 1.2rem;
+        color: #777;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="lcl-back-nav" aria-label="Back to home">
+        <a href="index.html">&larr; Home</a>
+      </nav>
+
+      <header>
+        <h1>Task Planner Linear Clock</h1>
+        <p class="lead">
+          Plan the time before your events. Color-coded zones show when to wake
+          up, get ready, leave, and arrive.
+        </p>
+      </header>
+
+      <div class="controls">
+        <div class="control">
+          <label for="templateSelect">Template</label>
+          <select id="templateSelect" aria-label="Select planner template">
+            <option value="Workday">Workday</option>
+            <option value="Weekend">Weekend</option>
+            <option value="Special Event">Special Event</option>
+          </select>
+        </div>
+        <div class="control">
+          <label class="switch" title="Switch between 12h and 24h display">
+            <input
+              id="formatToggle"
+              type="checkbox"
+              aria-label="Toggle 24-hour time"
+            />
+            <span class="slider"></span>
+            <span id="formatLabel" class="switch-label">24-hour</span>
+          </label>
+        </div>
+      </div>
+
+      <section aria-label="Clock rail">
+        <div class="railCluster">
+          <div id="bar" aria-label="24-hour planner rail">
+            <div id="segments" aria-hidden="true"></div>
+            <div id="ticks" aria-hidden="true"></div>
+            <div id="marker" role="presentation" aria-hidden="true"></div>
+          </div>
+          <div id="hourLabels" class="labelRow"></div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Now and next summary">
+        <h3>Now / Next</h3>
+        <div class="muted" id="currentTemplateLabel"></div>
+        <div class="summary-grid">
+          <div class="summary-block">
+            <strong>Now</strong>
+            <div class="pill">
+              <span id="nowColor" class="swatch"></span>
+              <span id="nowName">--</span>
+            </div>
+            <div class="muted" id="nowTiming">Waiting for schedule...</div>
+          </div>
+          <div class="summary-block">
+            <strong>Next</strong>
+            <div class="pill">
+              <span id="nextColor" class="swatch"></span>
+              <span id="nextName">--</span>
+            </div>
+            <div class="muted" id="nextTiming">Loading upcoming block...</div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="Zone list">
+        <h3>Schedule</h3>
+        <div id="zoneList" class="zone-list"></div>
+        <div id="zoneEmpty" class="empty" hidden>
+          No zones yet. Add your first block below.
+        </div>
+      </section>
+
+      <section aria-label="Zone editor">
+        <h3>Edit Zones</h3>
+        <div id="zoneEditor" class="zone-editor"></div>
+        <button id="addZone" class="btn add" type="button">Add Zone</button>
+      </section>
+
+      <footer>
+        <p>c 2025 <strong>jm5k</strong></p>
+      </footer>
+    </div>
+
+    <script>
+      const LS = {
+        templates: "lcl-taskplanner-templates",
+        active: "lcl-taskplanner-active-template",
+        format: "lcl-taskplanner-timeformat",
+      };
+      const allowedTokens = [
+        "--zone-wake",
+        "--zone-routine",
+        "--zone-work",
+        "--zone-break",
+        "--zone-travel",
+        "--zone-event",
+        "--zone-evening",
+        "--zone-night",
+        "--zone-sleep",
+        "--zone-focus",
+      ];
+
+      const defaultTemplates = () => ({
+        Workday: [
+          { name: "Wakeup", colorToken: "--zone-wake", startMinutes: 420 },
+          {
+            name: "morning routine",
+            colorToken: "--zone-routine",
+            startMinutes: 450,
+          },
+          { name: "Workday", colorToken: "--zone-work", startMinutes: 510 },
+          { name: "lunch", colorToken: "--zone-break", startMinutes: 720 },
+          {
+            name: "back to work",
+            colorToken: "--zone-work",
+            startMinutes: 750,
+          },
+          {
+            name: "workday ends",
+            colorToken: "--zone-evening",
+            startMinutes: 1020,
+          },
+          { name: "dinner", colorToken: "--zone-evening", startMinutes: 1050 },
+          {
+            name: "evening activities",
+            colorToken: "--zone-evening",
+            startMinutes: 1110,
+          },
+          {
+            name: "nighttime routine",
+            colorToken: "--zone-night",
+            startMinutes: 1290,
+          },
+          { name: "bedtime", colorToken: "--zone-sleep", startMinutes: 1320 },
+        ],
+        Weekend: [
+          { name: "Sleep", colorToken: "--zone-sleep", startMinutes: 0 },
+          {
+            name: "Slow morning",
+            colorToken: "--zone-wake",
+            startMinutes: 540,
+          },
+          { name: "Daytime", colorToken: "--zone-focus", startMinutes: 660 },
+          { name: "Evening", colorToken: "--zone-evening", startMinutes: 1080 },
+          {
+            name: "Late night / wind down",
+            colorToken: "--zone-night",
+            startMinutes: 1320,
+          },
+        ],
+        "Special Event": [
+          {
+            name: "regular day stuff",
+            colorToken: "--zone-routine",
+            startMinutes: 480,
+          },
+          {
+            name: "when to get ready",
+            colorToken: "--zone-focus",
+            startMinutes: 1050,
+          },
+          {
+            name: "when to leave",
+            colorToken: "--zone-travel",
+            startMinutes: 1140,
+          },
+          {
+            name: "when the event is",
+            colorToken: "--zone-event",
+            startMinutes: 1200,
+          },
+        ],
+      });
+
+      const templateSelect = document.getElementById("templateSelect");
+      const formatToggle = document.getElementById("formatToggle");
+      const formatLabel = document.getElementById("formatLabel");
+      const bar = document.getElementById("bar");
+      const segments = document.getElementById("segments");
+      const ticks = document.getElementById("ticks");
+      const labels = document.getElementById("hourLabels");
+      const marker = document.getElementById("marker");
+      const currentTemplateLabel = document.getElementById(
+        "currentTemplateLabel"
+      );
+      const nowColor = document.getElementById("nowColor");
+      const nowName = document.getElementById("nowName");
+      const nowTiming = document.getElementById("nowTiming");
+      const nextColor = document.getElementById("nextColor");
+      const nextName = document.getElementById("nextName");
+      const nextTiming = document.getElementById("nextTiming");
+      const zoneList = document.getElementById("zoneList");
+      const zoneEmpty = document.getElementById("zoneEmpty");
+      const zoneEditor = document.getElementById("zoneEditor");
+      const addZoneBtn = document.getElementById("addZone");
+
+      let templates = defaultTemplates();
+      let activeTemplate = "Workday";
+      let timeFormat = "24h";
+
+      function clampMinutes(v) {
+        if (Number.isNaN(v)) return 0;
+        return Math.min(1439, Math.max(0, Math.round(v)));
+      }
+
+      function sanitizeZone(zone, fallbackName) {
+        const name =
+          typeof zone?.name === "string" && zone.name.trim()
+            ? zone.name.trim()
+            : fallbackName;
+        const colorToken = allowedTokens.includes(zone?.colorToken)
+          ? zone.colorToken
+          : "--zone-routine";
+        const startMinutes = clampMinutes(Number(zone?.startMinutes));
+        return { name, colorToken, startMinutes };
+      }
+
+      function sanitizeTemplate(zones) {
+        if (!Array.isArray(zones)) return [];
+        const sanitized = zones.map((z, i) => sanitizeZone(z, `Zone ${i + 1}`));
+        sanitized.sort((a, b) => a.startMinutes - b.startMinutes);
+        return sanitized;
+      }
+
+      function loadTemplates() {
+        try {
+          const raw = localStorage.getItem(LS.templates);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+              Object.keys(parsed).forEach((key) => {
+                templates[key] = sanitizeTemplate(parsed[key]);
+              });
+            }
+          }
+        } catch {}
+        const baseline = defaultTemplates();
+        Object.keys(baseline).forEach((key) => {
+          if (!templates[key] || !Array.isArray(templates[key])) {
+            templates[key] = baseline[key];
+          } else if (templates[key].length === 0) {
+            templates[key] = baseline[key];
+          }
+        });
+      }
+
+      function loadActiveTemplate() {
+        const stored = localStorage.getItem(LS.active);
+        if (stored && templates[stored]) {
+          activeTemplate = stored;
+        }
+      }
+
+      function loadTimeFormat() {
+        const stored = localStorage.getItem(LS.format);
+        if (stored === "12h" || stored === "24h") {
+          timeFormat = stored;
+        }
+      }
+
+      function saveTemplates() {
+        localStorage.setItem(LS.templates, JSON.stringify(templates));
+      }
+
+      function saveActiveTemplate() {
+        localStorage.setItem(LS.active, activeTemplate);
+      }
+
+      function saveTimeFormat() {
+        localStorage.setItem(LS.format, timeFormat);
+      }
+
+      function formatTime(minutes) {
+        const clamped = Math.max(0, Math.min(1440, Math.round(minutes)));
+        const hrs = Math.floor(clamped / 60);
+        const mins = clamped % 60;
+        if (timeFormat === "24h") {
+          const hh = String(Math.min(hrs, 24)).padStart(2, "0");
+          const mm = String(mins).padStart(2, "0");
+          return clamped === 1440 ? "24:00" : `${hh}:${mm}`;
+        }
+        const period = hrs >= 12 ? "PM" : "AM";
+        const baseHour = hrs % 12 === 0 ? 12 : hrs % 12;
+        const mm = String(mins).padStart(2, "0");
+        return `${String(baseHour).padStart(2, "0")}:${mm} ${period}`;
+      }
+
+      function formatPlannerHourLabel(hour24) {
+        if (timeFormat === "24h") return String(hour24);
+        const base = hour24 % 12 || 12;
+        return String(base);
+      }
+
+      function formatDuration(minutes) {
+        if (minutes <= 0) return "now";
+        const hrs = Math.floor(minutes / 60);
+        const mins = Math.round(minutes % 60);
+        if (hrs === 0) return `in ${mins} minute${mins === 1 ? "" : "s"}`;
+        if (mins === 0) return `in ${hrs} hour${hrs === 1 ? "" : "s"}`;
+        return `in ${hrs} hour${hrs === 1 ? "" : "s"} ${mins} minute${
+          mins === 1 ? "" : "s"
+        }`;
+      }
+
+      function getNowMinutes() {
+        const now = new Date();
+        return now.getHours() * 60 + now.getMinutes();
+      }
+
+      function getNowFractionalMinutes() {
+        const now = new Date();
+        return now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+      }
+
+      function buildTicks() {
+        ticks.innerHTML = "";
+        for (let h = 0; h < 24; h++) {
+          for (let q = 0; q < 4; q++) {
+            const pos = ((h + q / 4) / 24) * 100;
+            const d = document.createElement("div");
+            d.className = "tick tick-h " + (q === 0 ? "hour" : "qtr");
+            d.style.left = `calc(${pos}% - ${q === 0 ? 1 : 0.5}px)`;
+            ticks.appendChild(d);
+          }
+        }
+      }
+
+      function renderLabels() {
+        labels.innerHTML = "";
+        for (let h = 1; h <= 24; h++) {
+          const span = document.createElement("span");
+          span.textContent = formatPlannerHourLabel(h);
+          labels.appendChild(span);
+        }
+      }
+
+      function renderSegments(zones) {
+        segments.innerHTML = "";
+        const sorted = sanitizeTemplate(zones);
+        sorted.forEach((zone, idx) => {
+          const start = zone.startMinutes;
+          const end =
+            idx < sorted.length - 1 ? sorted[idx + 1].startMinutes : 1440;
+          const leftPct = (start / 1440) * 100;
+          const widthPct = Math.max(0, ((end - start) / 1440) * 100);
+          const seg = document.createElement("div");
+          seg.className = "zoneSegment";
+          seg.style.left = `${leftPct}%`;
+          seg.style.width = `${widthPct}%`;
+          seg.style.background = `var(${zone.colorToken})`;
+          seg.dataset.start = start;
+          seg.dataset.end = end;
+          seg.title = `${formatTime(start)} - ${formatTime(end)} - ${
+            zone.name
+          }`;
+          segments.appendChild(seg);
+        });
+      }
+
+      function renderZoneList(zones) {
+        zoneList.innerHTML = "";
+        const sorted = sanitizeTemplate(zones);
+        if (sorted.length === 0) {
+          zoneEmpty.hidden = false;
+          return;
+        }
+        zoneEmpty.hidden = true;
+        sorted.forEach((zone, idx) => {
+          const start = zone.startMinutes;
+          const end =
+            idx < sorted.length - 1 ? sorted[idx + 1].startMinutes : 1440;
+          const row = document.createElement("div");
+          row.className = "zone-row";
+          row.dataset.start = start;
+          row.dataset.end = end;
+
+          const dot = document.createElement("div");
+          dot.className = "swatch";
+          dot.style.background = `var(${zone.colorToken})`;
+
+          const meta = document.createElement("div");
+          meta.className = "zone-meta";
+          const times = document.createElement("div");
+          times.className = "zone-times";
+          times.textContent = `${formatTime(start)} - ${formatTime(end)}`;
+          const name = document.createElement("div");
+          name.className = "zone-name";
+          name.textContent = `${zone.name} (${zone.colorToken})`;
+          meta.append(times, name);
+
+          row.append(dot, meta);
+          zoneList.appendChild(row);
+        });
+      }
+      function renderEditor(zones) {
+        zoneEditor.innerHTML = "";
+        const sorted = sanitizeTemplate(zones);
+        sorted.forEach((zone, idx) => {
+          const row = document.createElement("div");
+          row.className = "zone-edit-row";
+
+          const nameInput = document.createElement("input");
+          nameInput.type = "text";
+          nameInput.value = zone.name;
+          nameInput.setAttribute("aria-label", `Zone ${idx + 1} name`);
+          nameInput.addEventListener("input", () => {
+            templates[activeTemplate][idx].name = nameInput.value.trim();
+            normalizeActiveZones();
+            saveTemplates();
+            renderAll();
+          });
+
+          const timeInput = document.createElement("input");
+          timeInput.type = "time";
+          timeInput.step = 900;
+          const hh = String(Math.floor(zone.startMinutes / 60)).padStart(
+            2,
+            "0"
+          );
+          const mm = String(zone.startMinutes % 60).padStart(2, "0");
+          timeInput.value = `${hh}:${mm}`;
+          timeInput.setAttribute("aria-label", `Zone ${idx + 1} start time`);
+          timeInput.addEventListener("change", () => {
+            if (!timeInput.value) return;
+            const [h, m] = timeInput.value.split(":").map(Number);
+            templates[activeTemplate][idx].startMinutes = clampMinutes(
+              h * 60 + m
+            );
+            normalizeActiveZones();
+            saveTemplates();
+            renderAll();
+          });
+
+          const colorSelect = document.createElement("select");
+          colorSelect.setAttribute("aria-label", `Zone ${idx + 1} color`);
+          allowedTokens.forEach((token) => {
+            const opt = document.createElement("option");
+            opt.value = token;
+            opt.textContent = token;
+            if (token === zone.colorToken) opt.selected = true;
+            colorSelect.appendChild(opt);
+          });
+          colorSelect.addEventListener("change", () => {
+            templates[activeTemplate][idx].colorToken = colorSelect.value;
+            saveTemplates();
+            renderAll();
+          });
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+          const del = document.createElement("button");
+          del.className = "btn delete";
+          del.type = "button";
+          del.textContent = "Delete";
+          del.addEventListener("click", () => {
+            templates[activeTemplate].splice(idx, 1);
+            normalizeActiveZones();
+            saveTemplates();
+            renderAll();
+          });
+          actions.appendChild(del);
+
+          row.append(nameInput, timeInput, colorSelect, actions);
+          zoneEditor.appendChild(row);
+        });
+      }
+
+      function normalizeActiveZones() {
+        templates[activeTemplate] = sanitizeTemplate(templates[activeTemplate]);
+      }
+
+      function setActiveClasses(nowMinutes) {
+        const zoneRows = Array.from(zoneList.children);
+        const segs = Array.from(segments.children);
+        let activeFound = false;
+        zoneRows.forEach((row) => {
+          const start = Number(row.dataset.start);
+          const end = Number(row.dataset.end);
+          const isActive = nowMinutes >= start && nowMinutes < end;
+          row.classList.toggle("active", isActive);
+        });
+        segs.forEach((seg) => {
+          const start = Number(seg.dataset.start);
+          const end = Number(seg.dataset.end);
+          const isActive = nowMinutes >= start && nowMinutes < end;
+          seg.classList.toggle("active", isActive);
+          if (isActive) activeFound = true;
+        });
+        if (!activeFound && zoneRows.length && segs.length) {
+          const firstStart = Number(zoneRows[0].dataset.start);
+          if (nowMinutes < firstStart) {
+            zoneRows[0].classList.add("active");
+            segs[0].classList.add("active");
+          }
+        }
+        return activeFound;
+      }
+
+      function currentAndNext(zones, nowMinutes) {
+        const sorted = sanitizeTemplate(zones);
+        if (sorted.length === 0) return { current: null, next: null };
+        let current = null;
+        let next = null;
+        for (let i = 0; i < sorted.length; i++) {
+          const start = sorted[i].startMinutes;
+          const end = i < sorted.length - 1 ? sorted[i + 1].startMinutes : 1440;
+          if (nowMinutes < start) {
+            next = { zone: sorted[i], start };
+            break;
+          }
+          if (nowMinutes >= start && nowMinutes < end) {
+            current = { zone: sorted[i], start, end };
+            next =
+              i < sorted.length - 1
+                ? { zone: sorted[i + 1], start: sorted[i + 1].startMinutes }
+                : null;
+            break;
+          }
+        }
+        if (!current && !next) {
+          const last = sorted[sorted.length - 1];
+          current = { zone: last, start: last.startMinutes, end: 1440 };
+        }
+        return { current, next };
+      }
+
+      function updateNowNext(nowMinutes) {
+        const zones = templates[activeTemplate];
+        const { current, next } = currentAndNext(zones, nowMinutes);
+        currentTemplateLabel.textContent = `Current template: ${activeTemplate}`;
+
+        if (!zones.length) {
+          nowName.textContent = "No zones yet";
+          nowColor.style.background = "#222";
+          nowTiming.textContent = "Add your first block to begin.";
+          nextName.textContent = "--";
+          nextColor.style.background = "#222";
+          nextTiming.textContent = "Next: N/A";
+          return;
+        }
+
+        if (current) {
+          nowName.textContent = current.zone.name;
+          nowColor.style.background = `var(${current.zone.colorToken})`;
+          const end = current.end ?? 1440;
+          const remaining = Math.max(0, end - nowMinutes);
+          nowTiming.textContent =
+            remaining === 0
+              ? "Ends now"
+              : `${formatDuration(remaining)} left in this block`;
+        } else {
+          nowName.textContent = "Before first block";
+          nowColor.style.background = "#222";
+          const first = sanitizeTemplate(zones)[0];
+          nowTiming.textContent = `Starts at ${formatTime(first.startMinutes)}`;
+        }
+
+        if (next) {
+          nextName.textContent = next.zone.name;
+          nextColor.style.background = `var(${next.zone.colorToken})`;
+          const untilNext = Math.max(0, next.start - nowMinutes);
+          nextTiming.textContent = `${formatTime(next.start)} (${formatDuration(
+            untilNext
+          )})`;
+        } else {
+          nextName.textContent = "End of schedule";
+          nextColor.style.background = "#222";
+          nextTiming.textContent = "No more zones today.";
+        }
+      }
+
+      function updateMarker(nowMinutesFractional) {
+        const pct = (nowMinutesFractional / 1440) * 100;
+        marker.style.left = `calc(${pct}% - 2px)`;
+      }
+
+      function renderAll() {
+        normalizeActiveZones();
+        renderSegments(templates[activeTemplate]);
+        renderZoneList(templates[activeTemplate]);
+        renderEditor(templates[activeTemplate]);
+        renderLabels();
+        const nowMinutes = getNowMinutes();
+        setActiveClasses(nowMinutes);
+        updateNowNext(nowMinutes);
+        updateMarker(getNowFractionalMinutes());
+      }
+
+      function initSelectors() {
+        templateSelect.value = activeTemplate;
+        templateSelect.addEventListener("change", () => {
+          activeTemplate = templateSelect.value;
+          if (!templates[activeTemplate]) {
+            templates[activeTemplate] = [];
+          }
+          normalizeActiveZones();
+          saveActiveTemplate();
+          saveTemplates();
+          renderAll();
+        });
+
+        formatToggle.checked = timeFormat === "24h";
+        formatLabel.textContent = timeFormat === "24h" ? "24-hour" : "12-hour";
+        formatToggle.addEventListener("change", () => {
+          timeFormat = formatToggle.checked ? "24h" : "12h";
+          formatLabel.textContent =
+            timeFormat === "24h" ? "24-hour" : "12-hour";
+          saveTimeFormat();
+          renderAll();
+        });
+      }
+
+      addZoneBtn.addEventListener("click", () => {
+        const zones = templates[activeTemplate] || [];
+        const fallbackStart =
+          zones.length > 0
+            ? Math.min(zones[zones.length - 1].startMinutes + 60, 1439)
+            : 480;
+        zones.push({
+          name: "New zone",
+          colorToken: "--zone-routine",
+          startMinutes: fallbackStart,
+        });
+        templates[activeTemplate] = zones;
+        normalizeActiveZones();
+        saveTemplates();
+        renderAll();
+      });
+
+      function startTicker() {
+        setInterval(() => {
+          const nowMinutes = getNowMinutes();
+          setActiveClasses(nowMinutes);
+          updateNowNext(nowMinutes);
+          updateMarker(getNowFractionalMinutes());
+        }, 15000);
+      }
+
+      // Initialize
+      loadTemplates();
+      loadActiveTemplate();
+      loadTimeFormat();
+      buildTicks();
+      initSelectors();
+      renderAll();
+      startTicker();
+    </script>
+  </body>
+</html>
