@@ -259,7 +259,7 @@
         overflow: hidden;
         grid-area: rail;
         margin: 0 auto;
-        width: 95%;
+        width: min(95%, 980px);
         height: 60px;
       }
       #segments,
@@ -317,7 +317,7 @@
       .labelRow {
         display: flex;
         justify-content: space-between;
-        width: 95%;
+        width: min(95%, 980px);
         margin: 8px auto 6px;
         font-size: 0.9rem;
         color: var(--muted);
@@ -785,9 +785,9 @@
       }
 
       function formatPlannerHourLabel(hour24) {
-        if (timeFormat === "24h") return String(hour24);
+        if (timeFormat === "24h") return String(hour24).padStart(2, "0");
         const base = hour24 % 12 || 12;
-        return String(base);
+        return String(base).padStart(2, "0");
       }
 
       function formatDuration(minutes) {
@@ -872,7 +872,7 @@
 
       function renderLabels() {
         labels.innerHTML = "";
-        for (let h = 1; h <= 24; h++) {
+        for (let h = 0; h <= 24; h++) {
           const span = document.createElement("span");
           span.textContent = formatPlannerHourLabel(h);
           labels.appendChild(span);

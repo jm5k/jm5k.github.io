@@ -441,3 +441,96 @@ Risks & Edge Cases:
 - No logic changes; only default color assignments adjusted.
 
 ---
+Date: 2025-11-26
+Short Title: Align Task Planner hour labels with rail
+Summary:
+- Fixed the Task Planner hour labels to use the same 0–24 scale as the rail ticks and marker, eliminating the one-hour visual shift.
+
+LCL Technical Details:
+- Updated the hour label loop in task-planner-lc.html to generate labels from 0 through 24, matching the rail’s time scale.
+- Adjusted formatPlannerHourLabel to keep 24h labels as simple integers (no leading zeros) while retaining 12h formatting aligned to the same positions.
+- Ticks and marker logic remain unchanged; only label generation now matches the existing 0–24 rail scale.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Load task-planner-lc.html and confirm the marker aligns with the corresponding hour label on the rail (e.g., at 14:23 the marker sits under the 14 label in 24h mode).
+- Toggle between 12h/24h modes to verify formatting changes but label positions/count stay consistent.
+
+Risks & Edge Cases:
+- Future changes to tick or marker positioning must keep label generation aligned to the same 0–24 scale.
+- Users familiar with the previous off-by-one labels may notice the shift; behavior is now correct.
+
+---
+Date: 2025-11-26
+Short Title: Fix Task Planner rail label alignment
+Summary:
+- Aligned Task Planner hour labels with the rail’s 0–24 scale so labels, ticks, and marker share the same positions as the original minimal clock.
+
+LCL Technical Details:
+- Updated task-planner-lc.html label generation to produce 25 labels (0–24) in sync with the rail scale and format them without leading zeros in 24h mode.
+- Ensured bar and label row use matching min(95%, 980px) widths to mirror the original minimal clock’s alignment.
+- Retained marker/tick positioning logic; only label alignment and width reference were adjusted.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Load task-planner-lc.html and index.html; in 24h mode at a known time (e.g., 14:23), verify the marker sits under the corresponding “14” label on both clocks.
+- Toggle 12h/24h modes to confirm only label text changes while positions stay aligned.
+
+Risks & Edge Cases:
+- Future rail or tick spacing changes must keep label generation on the same 0–24 scale and width reference.
+- Users may notice a slight shift from the previous misaligned labels, but this reflects correct behavior.
+
+---
+Date: 2025-11-26
+Short Title: Zero-pad Task Planner hour labels
+Summary:
+- Updated the Task Planner Linear Clock to zero-pad 24-hour labels (00–24), matching the original minimal clock’s visual format while keeping alignment and marker behavior unchanged.
+
+LCL Technical Details:
+- Updated the 24-hour branch of formatPlannerHourLabel in task-planner-lc.html to return two-digit, zero-padded hour labels (00–24).
+- Kept label count, positions, ticks, and marker alignment intact on the existing 0–24 rail.
+- Left 12-hour mode logic unchanged; only the 24-hour label text formatting was adjusted.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Load task-planner-lc.html in 24-hour mode and verify labels show as 00 01 02 … 23 24.
+- Confirm the marker still aligns with corresponding hour positions (e.g., 14:23 near label 14).
+- Toggle between 12h and 24h and verify only label text changes.
+
+Risks & Edge Cases:
+- Future label-format changes must preserve zero-padding in 24-hour mode to stay consistent with index.html.
+- Label count/layout must remain unchanged to keep alignment with ticks and marker.
+
+---
+Date: 2025-11-26
+Short Title: Zero-pad Task Planner 12h labels
+Summary:
+- Updated the Task Planner Linear Clock 12-hour labels to use two-digit, zero-padded formatting (01–12) for consistency with the minimal clock while leaving 24h labels unchanged.
+
+LCL Technical Details:
+- Adjusted the 12-hour branch of formatPlannerHourLabel in task-planner-lc.html to pad hour labels to two digits (01–12).
+- Kept the 24-hour branch as-is (00–24) and left label counts/positions unchanged so ticks and marker alignment remain intact.
+- No changes to ticks, marker positioning, or template data.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Load task-planner-lc.html and switch to 12-hour mode; verify labels render as 01 02 03 … 11 12.
+- Switch back to 24-hour mode and confirm labels remain 00 01 02 … 23 24; marker alignment should be unaffected.
+- Confirm marker alignment against labels in both modes (e.g., 2 PM near label 14 in 24h and 02 in 12h).
+
+Risks & Edge Cases:
+- Future label-format changes must preserve zero-padding in both modes; altering label counts or positions would misalign ticks/marker.
+
+---
