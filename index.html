@@ -275,7 +275,7 @@
 
     <hr class="hairline" aria-hidden="true" />
 
-    <!-- Original Minimal Clock -->
+    <!-- Original Task Planner Clock -->
     <div id="currentTimeTop">--:--</div>
     <div id="bar">
       <div id="ticks"></div>
@@ -295,16 +295,17 @@
         <span id="formatLabel" class="switch-label">24-hour</span>
       </label>
     </div>
+    <div style="margin-top: 6px; font-size: 0.95rem">
+      <a href="clock.html">minimal clock view</a>
+    </div>
 
     <hr class="hairline" aria-hidden="true" />
 
     <!-- Hub Links -->
     <div class="grid" aria-label="Linear Clock Lab Links">
-      <a class="card" href="clock.html">
-        <div class="title">🕐 Minimal Clock</div>
-        <div class="desc">
-          Pure linear clock line with ticks, live marker, 12/24h toggle.
-        </div>
+      <a class="card" href="task-planner-lc.html">
+        <div class="title">🕐 Task Planner Clock</div>
+        <div class="desc">Visual schedule zones for Now vs Not Now.</div>
       </a>
       <a class="card" href="multi-clock.html">
         <div class="title">🌍 Multi-Clock</div>
@@ -372,7 +373,7 @@
     </footer>
 
     <script>
-      /* ===== Original minimal clock logic (kept tight) ===== */
+      /* ===== Original Task Planner Clock logic (kept tight) ===== */
       function createTicks() {
         const t = document.getElementById("ticks");
         for (let h = 0; h < 24; h++) {

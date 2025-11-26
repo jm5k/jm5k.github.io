@@ -1,4 +1,38 @@
 Date: 2025-11-26
+Short Title: Add Task Planner link and card
+Summary:
+
+- Added inline access to the full minimal clock and repointed the hub card to the Task Planner Linear Clock with concise Now/Not Now messaging.
+
+LCL Technical Details:
+
+- HTML pages updated: index.html now includes a helper link under the 12/24h toggle pointing to clock.html and repurposes the former Minimal Clock card to task-planner-lc.html with a new title/description.
+- CSS/JS: No changes to rail behavior, toggle logic, or marker/stats updates.
+- Navigation: Hub highlights Task Planner entry; other cards remain unchanged.
+- SEO/meta: No updates.
+- Accessibility/Responsive: Link uses existing base styling; layout unchanged.
+
+Files Touched:
+
+- index.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load index.html; click the inline clock link to open clock.html; click the Task Planner card to open task-planner-lc.html; confirm other cards stay the same.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Minimal risk beyond link destinations; no functional logic altered.
+
+Follow-Up Suggestions (Optional):
+
+- Consider adding a brief Task Planner highlight near the hub intro.
+
+---
+
+Date: 2025-11-26
 Short Title: Planner UI and copy updates
 Summary:
 

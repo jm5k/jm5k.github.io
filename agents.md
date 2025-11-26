@@ -589,6 +589,16 @@ Small, targeted improvements for future updates:
 
 ---
 
+ASCII and arrow rules for LCL
+
+    - All HTML text must use ASCII characters only unless a Unicode character already exists in that file.
+    - For arrows, prefer:
+      - the HTML entity &larr; in links, or
+      - the plain ASCII sequence "<-".
+    - Do NOT introduce new “smart quotes”, Unicode arrows, or other non-ASCII punctuation when editing existing files.
+
+---
+
 # 13. Final Notes
 
 This `AGENTS.md` is the authoritative specification for all code, design, UX, JS, and documentation operations inside Linear Clock Lab. All future work must follow this guide to preserve the suite’s identity, consistency, performance, and maintainability.
