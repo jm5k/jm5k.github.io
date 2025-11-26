@@ -1065,10 +1065,7 @@
         if (next) {
           nextName.textContent = next.zone.name;
           nextColor.style.background = `var(${next.zone.colorToken})`;
-          const untilNext = Math.max(0, next.start - nowMinutes);
-          nextTiming.textContent = `${formatTime(next.start)} (${formatDuration(
-            untilNext
-          )})`;
+          nextTiming.textContent = `${formatTime(next.start)}`;
         } else {
           nextName.textContent = "End of schedule";
           nextColor.style.background = "#222";

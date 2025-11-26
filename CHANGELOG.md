@@ -275,3 +275,35 @@ Risks & Edge Cases:
 Follow-Up Suggestions (Optional):
 
 - Add a simple smoke checklist to verify head/meta consistency across future pages.
+- 
+Date: 2025-11-26
+Short Title: Simplify Task Planner Next panel
+Summary:
+
+- Simplified the Task Planner “Next” section to show only the upcoming block name and its start time, removing countdown text.
+
+LCL Technical Details:
+
+- HTML/JS: task-planner-lc.html Next panel now renders next zone name plus start time using existing formatTime helper; all countdown/duration strings removed.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: No layout changes; display text trimmed for clarity.
+
+Files Touched:
+
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load task-planner-lc.html; confirm Now panel unchanged; Next panel shows only name and start time (no countdown); verify 12h/24h toggle updates the Next start time format.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Minimal; depends on correct next zone detection; formatTime still driven by toggle state.
+
+Follow-Up Suggestions (Optional):
+
+- None.
+
+---
