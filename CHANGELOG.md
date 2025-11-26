@@ -370,3 +370,26 @@ Follow-Up Suggestions (Optional):
 - Consider adding a tiny status note when fallback color is in use (not implemented here).
 
 ---
+Date: 2025-11-26
+Short Title: Add JSON Export/Import for Task Planner
+Summary:
+- Added backup/restore controls so Task Planner templates can be exported to and imported from JSON without changing other planner behavior.
+
+LCL Technical Details:
+- HTML/JS: task-planner-lc.html now includes Export (Blob download) and Import (FileReader) controls in the zone editor; imported data is sanitized with existing helpers, saved to localStorage, and re-rendered.
+- Data model: Templates retained the same JSON structure (name, colorToken, startMinutes) and use existing sanitizeTemplate logic; active template falls back to Workday or first available if missing.
+- Layout/Styling: Uses existing .btn and muted styles; no new tokens added.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Manual: Export templates and confirm a .json downloads; modify a zone in the JSON and re-import; verify templates update, renderAll refreshes, and active template selection remains valid.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+- Malformed or non-hex token colors are sanitized; invalid JSON aborts import without saving.
+- Missing/extra templates or empty imports fall back to existing defaults; active template may switch to Workday or first valid entry if current is absent.
+
+---

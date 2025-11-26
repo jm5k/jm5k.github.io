@@ -410,6 +410,21 @@
         gap: 0.5rem;
         margin-top: 0.6rem;
       }
+      .backup-actions {
+        margin-top: 0.6rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .backup-actions .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      #importTemplates {
+        display: none;
+      }
       .zone-edit-row {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -544,6 +559,21 @@
         <h3>Edit Zones</h3>
         <div id="zoneEditor" class="zone-editor"></div>
         <button id="addZone" class="btn add" type="button">Add Zone</button>
+        <div class="backup-actions">
+          <button id="exportTemplatesBtn" class="btn" type="button">
+            Export templates (JSON)
+          </button>
+          <label for="importTemplates" class="btn" aria-label="Import templates from JSON">
+            Import templates (JSON)
+          </label>
+          <input
+            id="importTemplates"
+            type="file"
+            accept="application/json"
+            aria-label="Import Task Planner templates JSON"
+          />
+          <div id="importStatus" class="muted" aria-live="polite"></div>
+        </div>
       </section>
 
       <footer>
@@ -665,6 +695,9 @@
       const zoneEmpty = document.getElementById("zoneEmpty");
       const zoneEditor = document.getElementById("zoneEditor");
       const addZoneBtn = document.getElementById("addZone");
+      const exportTemplatesBtn = document.getElementById("exportTemplatesBtn");
+      const importTemplatesInput = document.getElementById("importTemplates");
+      const importStatus = document.getElementById("importStatus");
 
       let templates = defaultTemplates();
       let activeTemplate = "Workday";
@@ -1168,6 +1201,72 @@
         saveTemplates();
         renderAll();
       });
+
+      function exportTemplates() {
+        try {
+          const json = JSON.stringify(templates, null, 2);
+          const blob = new Blob([json], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "lcl-taskplanner-templates.json";
+          link.click();
+          URL.revokeObjectURL(url);
+          if (importStatus) importStatus.textContent = "Templates exported.";
+        } catch {
+          if (importStatus) importStatus.textContent = "Export failed.";
+        }
+      }
+
+      function handleImportFile(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            if (!parsed || typeof parsed !== "object") throw new Error();
+            let updated = false;
+            Object.keys(parsed).forEach((key) => {
+              const sanitized = sanitizeTemplate(parsed[key]);
+              if (sanitized.length) {
+                templates[key] = sanitized;
+                updated = true;
+              }
+            });
+            if (!updated) throw new Error();
+            const available = Object.keys(templates).filter(
+              (k) => Array.isArray(templates[k]) && templates[k].length
+            );
+            if (!available.includes(activeTemplate)) {
+              activeTemplate = available.includes("Workday")
+                ? "Workday"
+                : available[0] || activeTemplate;
+              saveActiveTemplate();
+            }
+            saveTemplates();
+            renderAll();
+            if (importStatus) importStatus.textContent = "Templates imported.";
+          } catch {
+            if (importStatus)
+              importStatus.textContent = "Invalid JSON file for templates.";
+          } finally {
+            importTemplatesInput.value = "";
+          }
+        };
+        reader.onerror = () => {
+          if (importStatus) importStatus.textContent = "Import failed.";
+          importTemplatesInput.value = "";
+        };
+        reader.readAsText(file);
+      }
+
+      if (exportTemplatesBtn) {
+        exportTemplatesBtn.addEventListener("click", exportTemplates);
+      }
+      if (importTemplatesInput) {
+        importTemplatesInput.addEventListener("change", handleImportFile);
+      }
 
       function startTicker() {
         setInterval(() => {
