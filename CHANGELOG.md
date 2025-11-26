@@ -556,3 +556,23 @@ Risks & Edge Cases:
 - DST/timezone depends on browser Date; no new handling was added.
 
 ---
+Date: 2025-11-26
+Short Title: Added Task Planner section to About page
+Summary:
+- Inserted a Task Planner documentation block into about.html before the copyright section; no other sections were modified.
+
+LCL Technical Details:
+- Added a new Task Planner section with completed/planned lists in about.html, maintaining existing section styling and layout.
+- No changes to scripts, styles, or other content.
+
+Files Touched:
+- about.html
+- CHANGELOG.md
+
+Testing Notes:
+- Load about.html and verify the Task Planner section appears above Copyright & License with consistent styling.
+
+Risks & Edge Cases:
+- None; content-only addition.
+
+---
