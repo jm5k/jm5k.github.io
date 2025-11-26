@@ -302,11 +302,11 @@
 
       #marker {
         position: absolute;
-        background: var(--accent);
+        background: #ffffff;
         width: 4px;
         height: 100%;
         top: 0;
-        box-shadow: 0 0 10px var(--glow);
+        box-shadow: 0 0 10px #ffffff;
         pointer-events: none;
       }
 
@@ -784,6 +784,40 @@
         return now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
       }
 
+      function invertHexColor(hex) {
+        let h = hex.replace("#", "").trim();
+        if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+        if (h.length !== 6) return null;
+        const num = parseInt(h, 16);
+        if (Number.isNaN(num)) return null;
+        const r = (num >> 16) & 255;
+        const g = (num >> 8) & 255;
+        const b = num & 255;
+        return `rgb(${255 - r}, ${255 - g}, ${255 - b})`;
+      }
+
+      function computeInvertedTokenColor(token) {
+        try {
+          const raw = getComputedStyle(document.documentElement)
+            .getPropertyValue(token)
+            .trim();
+          if (!raw) return null;
+          return invertHexColor(raw);
+        } catch {
+          return null;
+        }
+      }
+
+      function updateMarkerColorForCurrent(currentZone) {
+        const fallbackColor = "var(--accent)";
+        const inverted =
+          currentZone && currentZone.colorToken
+            ? computeInvertedTokenColor(currentZone.colorToken)
+            : null;
+        marker.style.background = inverted || fallbackColor;
+        marker.style.boxShadow = "0 0 10px #ffffff";
+      }
+
       function updateCurrentTimeDisplay() {
         if (!currentTimeDisplay) return;
         const mins = getNowMinutes();
@@ -1035,6 +1069,7 @@
         const zones = templates[activeTemplate];
         const { current, next } = currentAndNext(zones, nowMinutes);
         currentTemplateLabel.textContent = `Current template: ${activeTemplate}`;
+        updateMarkerColorForCurrent(current?.zone);
 
         if (!zones.length) {
           nowName.textContent = "No zones yet";

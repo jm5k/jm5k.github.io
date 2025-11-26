@@ -307,3 +307,66 @@ Follow-Up Suggestions (Optional):
 - None.
 
 ---
+Date: 2025-11-26
+Short Title: Improve Task Planner marker visibility
+Summary:
+
+- Updated the Task Planner current-time marker to a high-contrast white neon style for consistent visibility across all zone colors.
+
+LCL Technical Details:
+
+- CSS: task-planner-lc.html #marker now uses white background with dual white/blue glow for universal contrast; dimensions and positioning unchanged.
+- HTML/JS: No logic or structure changes.
+- Navigation/SEO: No changes.
+
+Files Touched:
+
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load task-planner-lc.html and verify the current-time marker remains visible over all zone colors.
+- Browser: Smoke in Chrome, Firefox, Edge, Safari.
+
+Risks & Edge Cases:
+
+- None expected; glow intensity remains subtle but brighter contrast may vary slightly on very bright displays.
+
+Follow-Up Suggestions (Optional):
+
+- None.
+
+---
+Date: 2025-11-26
+Short Title: Invert Task Planner time marker
+Summary:
+
+- Updated the Task Planner rail marker to invert the active zone color and apply a fixed white glow for consistent contrast across all zone palettes.
+
+LCL Technical Details:
+
+- JavaScript: Added helpers to read zone token colors, invert them, and apply the inverted color to the marker background with a white glow fallback; marker color now refreshes with current zone updates.
+- CSS: Marker box-shadow simplified to a single white glow while retaining size/position.
+- HTML/Layout: No structural changes.
+
+Files Touched:
+
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load task-planner-lc.html; confirm marker tracks current zone position and visibly contrasts against all zone colors; verify fallback accent when no zone active.
+- Browser: Smoke in Chrome, Firefox, Edge, Safari.
+
+Risks & Edge Cases:
+
+- Non-hex token values would fall back to accent; ensure tokens remain hex-based.
+- If no current zone is detected, fallback marker styling appears instead of inverted color.
+
+Follow-Up Suggestions (Optional):
+
+- Consider adding a tiny status note when fallback color is in use (not implemented here).
+
+---
