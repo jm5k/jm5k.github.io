@@ -1137,7 +1137,7 @@
 
       function updateMarker(nowMinutesFractional) {
         const pct = (nowMinutesFractional / 1440) * 100;
-        marker.style.left = `calc(${pct}% - 2px)`;
+        marker.style.left = `${pct}%`;
       }
 
       function renderAll() {
@@ -1283,3 +1283,4 @@
     </script>
   </body>
 </html>
+

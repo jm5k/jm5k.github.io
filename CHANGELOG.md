@@ -534,3 +534,25 @@ Risks & Edge Cases:
 - Future label-format changes must preserve zero-padding in both modes; altering label counts or positions would misalign ticks/marker.
 
 ---
+Date: 2025-11-26
+Short Title: Fix Task Planner marker offset
+Summary:
+- Corrected the Task Planner marker math so it aligns with true time-of-day, matching the minimal clock’s rail behavior in both 12h and 24h modes.
+
+LCL Technical Details:
+- Updated marker positioning in task-planner-lc.html to use the same fraction-of-day placement as clock.html, removing the prior offset while leaving ticks and labels unchanged.
+- No changes to label formatting, tick generation, or template data; only marker positioning logic was adjusted.
+
+Files Touched:
+- task-planner-lc.html
+- CHANGELOG.md
+
+Testing Notes:
+- Load clock.html and task-planner-lc.html side by side; verify markers align at the same positions for the same system time across morning, midday, and evening.
+- Toggle 12h/24h modes in the Task Planner and confirm marker position stays consistent while labels only change text.
+
+Risks & Edge Cases:
+- Future changes to rail width or tick math must keep marker placement on the same 0–24 fraction to avoid drift.
+- DST/timezone depends on browser Date; no new handling was added.
+
+---
