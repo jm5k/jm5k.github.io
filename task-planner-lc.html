@@ -11,7 +11,7 @@
 
     <meta
       name="description"
-      content="Plan the time before your events. Color-coded zones show when to wake up, get ready, leave, and arrive."
+      content="If time blindness keeps turning your whole day into one big ‘not now,’ this timeline cuts through the fog—showing your wakeup, work blocks, downtime, prep windows, and events in bold, readable zones."
     />
     <meta
       name="keywords"
@@ -243,6 +243,12 @@
         margin: 0.5rem 0 0.75rem;
         width: 100%;
       }
+      #currentTimeDisplay {
+        color: var(--accent);
+        font-size: clamp(1.8rem, 3vw, 2.2rem);
+        text-align: center;
+        margin-bottom: 0.25rem;
+      }
       #bar {
         position: relative;
         display: block;
@@ -462,8 +468,9 @@
       <header>
         <h1>Task Planner Linear Clock</h1>
         <p class="lead">
-          Plan the time before your events. Color-coded zones show when to wake
-          up, get ready, leave, and arrive.
+          If time blindness keeps turning your whole day into one big ‘not now,’
+          this timeline cuts through the fog—showing your wakeup, work blocks,
+          downtime, prep windows, and events in bold, readable zones.
         </p>
       </header>
 
@@ -490,6 +497,8 @@
       </div>
 
       <section aria-label="Clock rail">
+        <div id="currentTimeDisplay"></div>
+        <div id="timeFormatHelper" class="muted"></div>
         <div class="railCluster">
           <div id="bar" aria-label="24-hour planner rail">
             <div id="segments" aria-hidden="true"></div>
@@ -538,7 +547,7 @@
       </section>
 
       <footer>
-        <p>c 2025 <strong>jm5k</strong></p>
+        <p>&copy; 2025 <strong>jm5k</strong></p>
       </footer>
     </div>
 
@@ -644,6 +653,8 @@
       const currentTemplateLabel = document.getElementById(
         "currentTemplateLabel"
       );
+      const currentTimeDisplay = document.getElementById("currentTimeDisplay");
+      const timeFormatHelper = document.getElementById("timeFormatHelper");
       const nowColor = document.getElementById("nowColor");
       const nowName = document.getElementById("nowName");
       const nowTiming = document.getElementById("nowTiming");
@@ -773,6 +784,18 @@
         return now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
       }
 
+      function updateCurrentTimeDisplay() {
+        if (!currentTimeDisplay) return;
+        const mins = getNowMinutes();
+        currentTimeDisplay.textContent = formatTime(mins);
+      }
+
+      function updateTimeFormatHelper() {
+        if (!timeFormatHelper) return;
+        timeFormatHelper.textContent =
+          timeFormat === "24h" ? "Time format: 24-hour" : "Time format: 12-hour";
+      }
+
       function buildTicks() {
         ticks.innerHTML = "";
         for (let h = 0; h < 24; h++) {
@@ -856,6 +879,24 @@
       function renderEditor(zones) {
         zoneEditor.innerHTML = "";
         const sorted = sanitizeTemplate(zones);
+        const colorGroups = [
+          {
+            label: "Wake / Routine",
+            tokens: ["--zone-wake", "--zone-routine"],
+          },
+          {
+            label: "Work / Focus",
+            tokens: ["--zone-work", "--zone-focus"],
+          },
+          {
+            label: "Break / Travel / Event",
+            tokens: ["--zone-break", "--zone-travel", "--zone-event"],
+          },
+          {
+            label: "Evening / Night / Sleep",
+            tokens: ["--zone-evening", "--zone-night", "--zone-sleep"],
+          },
+        ];
         sorted.forEach((zone, idx) => {
           const row = document.createElement("div");
           row.className = "zone-edit-row";
@@ -894,12 +935,17 @@
 
           const colorSelect = document.createElement("select");
           colorSelect.setAttribute("aria-label", `Zone ${idx + 1} color`);
-          allowedTokens.forEach((token) => {
-            const opt = document.createElement("option");
-            opt.value = token;
-            opt.textContent = token;
-            if (token === zone.colorToken) opt.selected = true;
-            colorSelect.appendChild(opt);
+          colorGroups.forEach((group) => {
+            const og = document.createElement("optgroup");
+            og.label = group.label;
+            group.tokens.forEach((token) => {
+              const opt = document.createElement("option");
+              opt.value = token;
+              opt.textContent = token;
+              if (token === zone.colorToken) opt.selected = true;
+              og.appendChild(opt);
+            });
+            colorSelect.appendChild(og);
           });
           colorSelect.addEventListener("change", () => {
             templates[activeTemplate][idx].colorToken = colorSelect.value;
@@ -1045,6 +1091,8 @@
         setActiveClasses(nowMinutes);
         updateNowNext(nowMinutes);
         updateMarker(getNowFractionalMinutes());
+        updateCurrentTimeDisplay();
+        updateTimeFormatHelper();
       }
 
       function initSelectors() {
@@ -1069,6 +1117,7 @@
           saveTimeFormat();
           renderAll();
         });
+        updateTimeFormatHelper();
       }
 
       addZoneBtn.addEventListener("click", () => {
@@ -1094,6 +1143,7 @@
           setActiveClasses(nowMinutes);
           updateNowNext(nowMinutes);
           updateMarker(getNowFractionalMinutes());
+          updateCurrentTimeDisplay();
         }, 15000);
       }
 
