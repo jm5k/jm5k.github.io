@@ -72,7 +72,7 @@
   .hairline{ border:none; border-top:var(--line-thin) solid rgba(255,255,255,0.1); margin:18px 0 22px; }
 
   .controls{ display:flex; align-items:center; gap:12px; color:var(--muted); flex-wrap:wrap; }
-  .controls select, .controls input[type="range"], .controls button{
+  .controls select, .controls input[type="range"], .controls input[type="number"], .controls button{
     background:#111; color:var(--fg); border:1px solid rgba(255,255,255,.12);
     padding:6px 8px; border-radius:10px; outline:none;
   }
@@ -83,6 +83,7 @@
     border-color:color-mix(in oklab, var(--accent) 40%, rgba(255,255,255,0.15));
   }
   .controls input[type="range"]{ width:180px; accent-color:var(--accent); }
+  .controls input[type="number"]{ width:74px; text-align:center; }
   #currentTimeTop{ font-size:1.6rem; color:var(--accent); filter:drop-shadow(0 0 calc(6px*var(--glow)) var(--accent)); }
 
   .rail{
@@ -118,6 +119,15 @@
     background:radial-gradient(circle at 30% 30%, #fff, var(--marker) 45%, transparent 60%);
     box-shadow:0 0 calc(16px*var(--glow)) var(--marker);
   }
+
+  .hour-labels{
+    position:relative; margin:8px 2px 0; padding:0 2px; height:18px;
+    color:var(--muted); font-size:.92rem; letter-spacing:.03em; text-transform:uppercase; --label-offset:0ch;
+  }
+  .hour-labels span{
+    position:absolute; top:0; transform:translateX(calc(-50% + var(--label-offset))); min-width:2.4ch; text-align:center; white-space:nowrap; pointer-events:none;
+  }
+  .hour-labels span:last-child{ transform:translateX(calc(-100% + var(--label-offset))); text-align:right; }
 
   .stats{ display:flex; gap:18px; margin-top:12px; color:var(--muted); font-size:.95rem; flex-wrap:wrap; }
   .stats b{ color:var(--fg); }
@@ -174,6 +184,8 @@
         </select>
         <label for="glow">Glow</label>
         <input id="glow" type="range" min="0" max="1.25" step="0.05" value="0.65" />
+        <label for="labelOffset">Label offset</label>
+        <input id="labelOffset" type="number" min="-1" max="3" step="0.05" value="0" />
         <button id="exportTheme" title="Export current custom theme">Export</button>
         <button id="importTheme" title="Import a custom theme JSON">Import</button>
         <input id="themeFile" type="file" accept="application/json" style="display:none">
@@ -214,6 +226,7 @@
       <div class="ticks" aria-hidden="true"></div>
       <div class="marker" role="presentation" aria-hidden="true"></div>
     </div>
+    <div class="hour-labels" id="hourLabels"></div>
 
     <div class="stats" aria-live="polite">
       <div>Day elapsed: <b id="pctElapsed">--%</b></div>
@@ -235,24 +248,52 @@
   for (let i=0;i<96;i++) ticksEl.appendChild(document.createElement('span'));
 
   /* Element refs */
-  const marker     = document.querySelector('.marker');
-  const nowTop     = document.getElementById('currentTimeTop');
-  const timeLeft   = document.getElementById('timeLeft');
-  const pctElapsed = document.getElementById('pctElapsed');
-  const pctRemain  = document.getElementById('pctRemain');
-  const glow       = document.getElementById('glow');
-  const themeSel   = document.getElementById('theme');
-  const root       = document.documentElement;
+  const marker        = document.querySelector('.marker');
+  const nowTop        = document.getElementById('currentTimeTop');
+  const timeLeft      = document.getElementById('timeLeft');
+  const pctElapsed    = document.getElementById('pctElapsed');
+  const pctRemain     = document.getElementById('pctRemain');
+  const hourLabels    = document.getElementById('hourLabels');
+  const labelOffsetIn = document.getElementById('labelOffset');
+  const glow          = document.getElementById('glow');
+  const themeSel      = document.getElementById('theme');
+  const root          = document.documentElement;
 
   /* Keys */
   const THEME_KEY = 'clock_theme';
   const GLOW_KEY  = 'clock_glow';
+  const LABEL_OFFSET_KEY = 'clock_label_offset';
   const CUSTOM_VARS_KEY = 'clock_custom_vars_v1';
   const UI_KEY    = 'clock_theme_ui_v1';
 
   const css   = (k,v)=> root.style.setProperty(k,v);
   const getVar= k => getComputedStyle(root).getPropertyValue(k).trim();
   const pad   = n => String(n).padStart(2,'0');
+  const clamp = (n,min,max)=> Math.min(max, Math.max(min, n));
+
+  const loadLabelOffset = () => {
+    const raw = localStorage.getItem(LABEL_OFFSET_KEY);
+    const n = raw !== null ? parseFloat(raw) : 0;
+    return Number.isFinite(n) ? clamp(n, -3, 3) : 0;
+  };
+  const saveLabelOffset = v => { try { localStorage.setItem(LABEL_OFFSET_KEY, String(v)); } catch {} };
+  const applyLabelOffset = v => { if (hourLabels) hourLabels.style.setProperty('--label-offset', `${v}ch`); };
+
+  /* Hour labels (24h only) */
+  const initialLabelOffset = loadLabelOffset();
+  applyLabelOffset(initialLabelOffset);
+  if (labelOffsetIn) labelOffsetIn.value = String(initialLabelOffset);
+
+  if (hourLabels){
+    for (let h=1; h<=24; h++){
+      const label = document.createElement('span');
+      label.textContent = pad(h);
+      let frac = h/24;
+      if (h < 24) frac = Math.max(0, frac - (1/48));
+      label.style.left = (frac * 100).toFixed(6) + '%';
+      hourLabels.appendChild(label);
+    }
+  }
 
   /* Update loop: DST-safe percentages + countdown to midnight */
   function update(){
@@ -361,6 +402,17 @@
     vars['--glow'] = String(e.target.value);
     saveCustomVars(vars);
   });
+
+  // Label offset fine-tune
+  if (labelOffsetIn){
+    labelOffsetIn.addEventListener('input', () => {
+      const raw = parseFloat(labelOffsetIn.value);
+      const val = Number.isFinite(raw) ? clamp(raw, -3, 3) : 0;
+      labelOffsetIn.value = String(val);
+      applyLabelOffset(val);
+      saveLabelOffset(val);
+    });
+  }
 
   // Collapsible state + reset
   const themePanel = document.getElementById('themePanel');

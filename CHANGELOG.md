@@ -1,4 +1,212 @@
 Date: 2025-11-26
+Short Title: Remove 00 hour label
+Summary:
+
+- Removed the 00 hour label from clock_presets.html to eliminate crowding with 01 while keeping the remaining labels aligned under the 24-hour rail.
+
+LCL Technical Details:
+
+- HTML/JS: Hour labels now render 01-24 only; positioning logic and offset control remain, with the first label starting at 01.
+- CSS: Removed the 00-specific transform override; existing muted styling and end-label handling remain intact.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: Label offset control and persistence unchanged; spacing improved at the left edge.
+
+Files Touched:
+
+- clock_presets.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load clock_presets.html, verify labels start at 01, remain centered on ticks, and offset control still applies/persists; confirm 24 aligns at the rail end.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Low risk; ensure left-edge visibility on narrow viewports after removing 00.
+
+---
+
+Date: 2025-11-26
+Short Title: Expand hour label offset range
+Summary:
+
+- Extended the clock_presets hour-label offset range so users can fine-tune alignment up to +3 and increased spacing between 00 and 01 while keeping other labels centered on their ticks.
+
+LCL Technical Details:
+
+- HTML: Label offset control now allows values up to 3; hour-label row unchanged beneath the rail.
+- CSS: First label applies a slightly larger negative adjustment so 00 stays separated from 01 when offsets are positive.
+- JavaScript: Offset clamping now supports -3 to 3; persistence and tick alignment logic remain intact.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: Muted monospace labels preserved; control styling matches existing inputs.
+
+Files Touched:
+
+- clock_presets.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load clock_presets.html, set Label offset near 1–3, and verify 00 is distinct from 01 while all labels align with hour ticks; reload to confirm persistence.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Low risk; check extreme offsets on narrow viewports to ensure labels remain readable and aligned.
+
+---
+
+Date: 2025-11-26
+Short Title: Refine 00-hour label spacing in presets
+Summary:
+
+- Adjusted the first hour label in clock_presets.html so 00 no longer crowds 01 when using the label offset control, while keeping all labels aligned to their ticks.
+
+LCL Technical Details:
+
+- HTML/CSS: clock_presets hour-label row retains existing structure; first label now applies a slight negative offset to preserve spacing when offsets are positive.
+- JavaScript: No changes to label generation or persistence; offset control still drives the shared --label-offset variable stored in localStorage.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: Muted monospace labels maintained; layout unchanged elsewhere.
+
+Files Touched:
+
+- clock_presets.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load clock_presets.html, set Label offset to 1, and confirm 00 is separated from 01 while other labels stay centered on hour ticks; verify persistence on reload.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Low risk; check left edge on narrow screens to ensure 00 remains visible with offsets applied.
+
+---
+
+Date: 2025-11-26
+Short Title: Add presets label offset control
+Summary:
+
+- Added a UI fine-tune control to shift 00-24 hour labels under the preset rail, with live updates and persisted offset via localStorage.
+
+LCL Technical Details:
+
+- HTML pages updated: clock_presets.html controls now include a Label offset number input; hour-label row remains beneath the rail.
+- CSS: Hour labels use a shared --label-offset variable applied via transforms; control styling extends existing input rules.
+- JavaScript: Hour labels still align to hour ticks with half-hour correction; new offset is applied through a single property, saved/loaded from localStorage, and updated on input.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: Muted monospace labels; minimal control footprint alongside existing sliders/buttons.
+
+Files Touched:
+
+- clock_presets.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load clock_presets.html; adjust Label offset and confirm labels remain centered on hour ticks, shifting consistently; reload to verify persistence across themes and viewports.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Low risk; verify extreme offset values do not cause overlap on very narrow screens.
+
+---
+
+Date: 2025-11-26
+Short Title: Correct presets hour label positions
+Summary:
+
+- Shifted 24-hour labels left to center each 00-24 label on its hour tick instead of the half-hour, keeping ticks and marker aligned.
+
+LCL Technical Details:
+
+- HTML pages updated: clock_presets.html retains the hour-label row beneath the rail for 00-24 labels.
+- CSS: Hour labels keep muted styling while absolute positioning remains; edge transforms handled inline for bounds.
+- JavaScript: Label positions now subtract a half-hour offset (except edges) and set edge transforms so labels sit on hour ticks; tick grid/marker math unchanged.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: Labels stay monospace/muted; layout and sizing unchanged.
+
+Files Touched:
+
+- clock_presets.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load clock_presets.html; verify labels 00-24 center on hour ticks (no half-hour drift) across themes and viewports.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Low risk; confirm edge labels stay visible and aligned on narrow screens.
+
+---
+
+Date: 2025-11-26
+Short Title: Fix presets hour label alignment
+Summary:
+
+- Centered the 24-hour labels under the preset rail ticks to remove drift and keep labels, ticks, and marker aligned across the bar.
+
+LCL Technical Details:
+
+- HTML pages updated: clock_presets.html retains the hour-label container below the rail for 00-24 labels.
+- CSS: Hour labels now use absolute positioning with start/end adjustments so each label centers on its hour tick while keeping muted styling.
+- JavaScript: Labels are placed at hour/24 percentage offsets (00-24); tick grid and marker math remain unchanged.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: Labels stay monospace/muted; container height and spacing align with existing layout.
+
+Files Touched:
+
+- clock_presets.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load clock_presets.html; verify labels 00-24 sit centered on corresponding hour ticks and stay readable across themes and widths.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Low risk; check that labels do not overlap on very narrow viewports and remain aligned at both edges.
+
+---
+
+Date: 2025-11-26
+Short Title: Add presets rail hour labels
+Summary:
+
+- Added a 24-hour label row under the preset themes rail so clock_presets aligns its tick marks with readable hour text.
+
+LCL Technical Details:
+
+- HTML pages updated: clock_presets.html now includes an hour-label container below the rail with 00–24 labels.
+- CSS: Added .hour-labels flex layout with muted styling to align labels across the rail width.
+- JavaScript: Populate 25 zero-padded hour labels (00–24) after tick creation; no changes to marker math or timers.
+- Navigation/SEO: No changes.
+- Accessibility/Responsive: Labels use existing muted palette and flex spacing within the wrap.
+
+Files Touched:
+
+- clock_presets.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Manual: Load clock_presets.html; verify labels 00–24 render beneath the rail, align with ticks, and remain readable across themes.
+- Browser: Smoke in Chrome/Firefox/Edge/Safari.
+
+Risks & Edge Cases:
+
+- Low risk; confirm label row does not wrap on narrow viewports.
+
+---
+
+Date: 2025-11-26
 Short Title: Add Task Planner link and card
 Summary:
 
