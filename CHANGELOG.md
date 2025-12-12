@@ -1,3 +1,9 @@
+Date: 2025-12-12
+Short Title: Added todo.html, todo.css, todo.js
+Summary:
+
+Introduced a new To Do module to Linear Clock Lab, providing a local-only way to capture, organize, and reorder actionable items by urgency, intent, and time context. The module supports multiple planners (Work, Home, Event), quadrant-based prioritization (Now, Next, Planned, Back Burner), manual ordering independent of due dates, pinning with visual emphasis, and JSON import/export. Styling aligns with the existing LCL dark theme, and all data is stored locally with no external dependencies.
+
 Date: 2025-11-26
 Short Title: Remove 00 hour label
 Summary:
@@ -483,10 +489,9 @@ Risks & Edge Cases:
 Follow-Up Suggestions (Optional):
 
 - Add a simple smoke checklist to verify head/meta consistency across future pages.
-- 
-Date: 2025-11-26
-Short Title: Simplify Task Planner Next panel
-Summary:
+- Date: 2025-11-26
+  Short Title: Simplify Task Planner Next panel
+  Summary:
 
 - Simplified the Task Planner “Next” section to show only the upcoming block name and its start time, removing countdown text.
 
@@ -515,6 +520,7 @@ Follow-Up Suggestions (Optional):
 - None.
 
 ---
+
 Date: 2025-11-26
 Short Title: Improve Task Planner marker visibility
 Summary:
@@ -546,6 +552,7 @@ Follow-Up Suggestions (Optional):
 - None.
 
 ---
+
 Date: 2025-11-26
 Short Title: Invert Task Planner time marker
 Summary:
@@ -578,26 +585,32 @@ Follow-Up Suggestions (Optional):
 - Consider adding a tiny status note when fallback color is in use (not implemented here).
 
 ---
+
 Date: 2025-11-26
 Short Title: Add dedicated workday end zone color
 Summary:
+
 - Introduced a `--zone-workend` token and applied it to the Workday “workday ends” block so evening transitions no longer reuse neighboring colors.
 
 LCL Technical Details:
+
 - Added `--zone-workend` token to task-planner-lc.html :root palette and to UI_RULES.md zone palette spec with guidance.
 - Updated defaultTemplates().Workday to assign `--zone-workend` to “workday ends” while keeping other evening blocks on break/evening tokens.
 - Documented approved palette expansion and usage guidelines for work-to-personal boundaries.
 
 Files Touched:
+
 - task-planner-lc.html
 - UI_RULES.md
 - CHANGELOG.md
 
 Testing Notes:
+
 - Clear `lcl-taskplanner-templates` in localStorage or use a fresh profile; open task-planner-lc.html, select Workday, and confirm “workday ends” displays a distinct color between work and dinner.
 - Verify Now/Next and rail markers still identify current/next zones correctly.
 
 Risks & Edge Cases:
+
 - Users with customized templates retain their stored colors until reset/import.
 - Palette expansion is limited to the documented `--zone-workend`; no other new tokens should be introduced.
 
@@ -606,181 +619,228 @@ Risks & Edge Cases:
 Date: 2025-11-26
 Short Title: Add JSON Export/Import for Task Planner
 Summary:
+
 - Added backup/restore controls so Task Planner templates can be exported to and imported from JSON without changing other planner behavior.
 
 LCL Technical Details:
+
 - HTML/JS: task-planner-lc.html now includes Export (Blob download) and Import (FileReader) controls in the zone editor; imported data is sanitized with existing helpers, saved to localStorage, and re-rendered.
 - Data model: Templates retained the same JSON structure (name, colorToken, startMinutes) and use existing sanitizeTemplate logic; active template falls back to Workday or first available if missing.
 - Layout/Styling: Uses existing .btn and muted styles; no new tokens added.
 
 Files Touched:
+
 - task-planner-lc.html
 - CHANGELOG.md
 
 Testing Notes:
+
 - Manual: Export templates and confirm a .json downloads; modify a zone in the JSON and re-import; verify templates update, renderAll refreshes, and active template selection remains valid.
 - Browser: Smoke in Chrome/Firefox/Edge/Safari.
 
 Risks & Edge Cases:
+
 - Malformed or non-hex token colors are sanitized; invalid JSON aborts import without saving.
 - Missing/extra templates or empty imports fall back to existing defaults; active template may switch to Workday or first valid entry if current is absent.
 
 ---
+
 Date: 2025-11-26
 Short Title: Break up Workday evening color wall
 Summary:
+
 - Recolored Workday evening defaults so “workday ends,” “dinner,” and “evening activities” no longer form a single color wall, improving visual clarity per palette rules.
 
 LCL Technical Details:
+
 - Updated defaultTemplates().Workday colorToken assignments: “dinner” now uses --zone-break while neighboring blocks remain --zone-evening to avoid triple repetition.
 - Ensured no three consecutive distinct zones share the same token in Workday defaults; other templates already avoided color walls.
 - Confirmed adherence to approved Zone Color Palette tokens without changing times or structures.
 
 Files Touched:
+
 - task-planner-lc.html
 - CHANGELOG.md
 
 Testing Notes:
+
 - Clear lcl-taskplanner-templates in localStorage or use a fresh profile; load task-planner-lc.html and select Workday to verify distinct colors for “workday ends,” “dinner,” and “evening activities.”
 - Confirm Now/Next highlights still track the correct zones and marker behavior is unchanged.
 
 Risks & Edge Cases:
+
 - Users with customized templates in localStorage will retain their colors until they reset or import defaults.
 - No logic changes; only default color assignments adjusted.
 
 ---
+
 Date: 2025-11-26
 Short Title: Align Task Planner hour labels with rail
 Summary:
+
 - Fixed the Task Planner hour labels to use the same 0–24 scale as the rail ticks and marker, eliminating the one-hour visual shift.
 
 LCL Technical Details:
+
 - Updated the hour label loop in task-planner-lc.html to generate labels from 0 through 24, matching the rail’s time scale.
 - Adjusted formatPlannerHourLabel to keep 24h labels as simple integers (no leading zeros) while retaining 12h formatting aligned to the same positions.
 - Ticks and marker logic remain unchanged; only label generation now matches the existing 0–24 rail scale.
 
 Files Touched:
+
 - task-planner-lc.html
 - CHANGELOG.md
 
 Testing Notes:
+
 - Load task-planner-lc.html and confirm the marker aligns with the corresponding hour label on the rail (e.g., at 14:23 the marker sits under the 14 label in 24h mode).
 - Toggle between 12h/24h modes to verify formatting changes but label positions/count stay consistent.
 
 Risks & Edge Cases:
+
 - Future changes to tick or marker positioning must keep label generation aligned to the same 0–24 scale.
 - Users familiar with the previous off-by-one labels may notice the shift; behavior is now correct.
 
 ---
+
 Date: 2025-11-26
 Short Title: Fix Task Planner rail label alignment
 Summary:
+
 - Aligned Task Planner hour labels with the rail’s 0–24 scale so labels, ticks, and marker share the same positions as the original minimal clock.
 
 LCL Technical Details:
+
 - Updated task-planner-lc.html label generation to produce 25 labels (0–24) in sync with the rail scale and format them without leading zeros in 24h mode.
 - Ensured bar and label row use matching min(95%, 980px) widths to mirror the original minimal clock’s alignment.
 - Retained marker/tick positioning logic; only label alignment and width reference were adjusted.
 
 Files Touched:
+
 - task-planner-lc.html
 - CHANGELOG.md
 
 Testing Notes:
+
 - Load task-planner-lc.html and index.html; in 24h mode at a known time (e.g., 14:23), verify the marker sits under the corresponding “14” label on both clocks.
 - Toggle 12h/24h modes to confirm only label text changes while positions stay aligned.
 
 Risks & Edge Cases:
+
 - Future rail or tick spacing changes must keep label generation on the same 0–24 scale and width reference.
 - Users may notice a slight shift from the previous misaligned labels, but this reflects correct behavior.
 
 ---
+
 Date: 2025-11-26
 Short Title: Zero-pad Task Planner hour labels
 Summary:
+
 - Updated the Task Planner Linear Clock to zero-pad 24-hour labels (00–24), matching the original minimal clock’s visual format while keeping alignment and marker behavior unchanged.
 
 LCL Technical Details:
+
 - Updated the 24-hour branch of formatPlannerHourLabel in task-planner-lc.html to return two-digit, zero-padded hour labels (00–24).
 - Kept label count, positions, ticks, and marker alignment intact on the existing 0–24 rail.
 - Left 12-hour mode logic unchanged; only the 24-hour label text formatting was adjusted.
 
 Files Touched:
+
 - task-planner-lc.html
 - CHANGELOG.md
 
 Testing Notes:
+
 - Load task-planner-lc.html in 24-hour mode and verify labels show as 00 01 02 … 23 24.
 - Confirm the marker still aligns with corresponding hour positions (e.g., 14:23 near label 14).
 - Toggle between 12h and 24h and verify only label text changes.
 
 Risks & Edge Cases:
+
 - Future label-format changes must preserve zero-padding in 24-hour mode to stay consistent with index.html.
 - Label count/layout must remain unchanged to keep alignment with ticks and marker.
 
 ---
+
 Date: 2025-11-26
 Short Title: Zero-pad Task Planner 12h labels
 Summary:
+
 - Updated the Task Planner Linear Clock 12-hour labels to use two-digit, zero-padded formatting (01–12) for consistency with the minimal clock while leaving 24h labels unchanged.
 
 LCL Technical Details:
+
 - Adjusted the 12-hour branch of formatPlannerHourLabel in task-planner-lc.html to pad hour labels to two digits (01–12).
 - Kept the 24-hour branch as-is (00–24) and left label counts/positions unchanged so ticks and marker alignment remain intact.
 - No changes to ticks, marker positioning, or template data.
 
 Files Touched:
+
 - task-planner-lc.html
 - CHANGELOG.md
 
 Testing Notes:
+
 - Load task-planner-lc.html and switch to 12-hour mode; verify labels render as 01 02 03 … 11 12.
 - Switch back to 24-hour mode and confirm labels remain 00 01 02 … 23 24; marker alignment should be unaffected.
 - Confirm marker alignment against labels in both modes (e.g., 2 PM near label 14 in 24h and 02 in 12h).
 
 Risks & Edge Cases:
+
 - Future label-format changes must preserve zero-padding in both modes; altering label counts or positions would misalign ticks/marker.
 
 ---
+
 Date: 2025-11-26
 Short Title: Fix Task Planner marker offset
 Summary:
+
 - Corrected the Task Planner marker math so it aligns with true time-of-day, matching the minimal clock’s rail behavior in both 12h and 24h modes.
 
 LCL Technical Details:
+
 - Updated marker positioning in task-planner-lc.html to use the same fraction-of-day placement as clock.html, removing the prior offset while leaving ticks and labels unchanged.
 - No changes to label formatting, tick generation, or template data; only marker positioning logic was adjusted.
 
 Files Touched:
+
 - task-planner-lc.html
 - CHANGELOG.md
 
 Testing Notes:
+
 - Load clock.html and task-planner-lc.html side by side; verify markers align at the same positions for the same system time across morning, midday, and evening.
 - Toggle 12h/24h modes in the Task Planner and confirm marker position stays consistent while labels only change text.
 
 Risks & Edge Cases:
+
 - Future changes to rail width or tick math must keep marker placement on the same 0–24 fraction to avoid drift.
 - DST/timezone depends on browser Date; no new handling was added.
 
 ---
+
 Date: 2025-11-26
 Short Title: Added Task Planner section to About page
 Summary:
+
 - Inserted a Task Planner documentation block into about.html before the copyright section; no other sections were modified.
 
 LCL Technical Details:
+
 - Added a new Task Planner section with completed/planned lists in about.html, maintaining existing section styling and layout.
 - No changes to scripts, styles, or other content.
 
 Files Touched:
+
 - about.html
 - CHANGELOG.md
 
 Testing Notes:
+
 - Load about.html and verify the Task Planner section appears above Copyright & License with consistent styling.
 
 Risks & Edge Cases:
+
 - None; content-only addition.
 
 ---

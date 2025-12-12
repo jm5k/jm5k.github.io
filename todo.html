@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>To Do</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Use your Temporal Forge-style CSS (copied/renamed as todo.css) -->
+    <link rel="stylesheet" href="todo.css" />
+    <!-- Task planner logic -->
+    <script src="todo.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
+        <div class="returnlink">
+          <a href="index.html">← Home</a>
+        </div>
+      </div>
+
+      <div class="header-main">
+        <div class="title-block">
+          <h1>To Do</h1>
+          <p>Stabilize the chaos. Tea optional, panic inevitable.</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <label for="plannerSelect" class="sr-only">Select planner</label>
+        <select
+          id="plannerSelect"
+          aria-label="Task planner"
+          class="planner-select"
+        >
+          <option value="work">Work</option>
+          <option value="home">Home</option>
+          <option value="event">Event</option>
+        </select>
+
+        <a class="nav-link" href="#" onclick="return false;">
+          <span>Local Only</span>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <!-- Add Task Card -->
+      <section class="card add-card">
+        <div class="card-header-row">
+          <div>
+            <h2>New Item</h2>
+            <small
+              >Record new items as they arise, assign them to the appropriate
+              category, and establish a clear due date.</small
+            >
+          </div>
+        </div>
+        <form class="add-form" id="addForm">
+          <input
+            type="text"
+            id="newTitle"
+            placeholder="New Item (e.g., Schedule TPS report follow-up meeting.)"
+            required
+          />
+          <select id="newCategory" aria-label="Category">
+            <option value="now">Now</option>
+            <option value="next">Next</option>
+            <option value="planned">Planned</option>
+            <option value="backburner">Backburner</option>
+          </select>
+          <input type="date" id="newDueDate" aria-label="Due date" />
+          <button type="submit" class="btn-primary">Add Item</button>
+        </form>
+      </section>
+
+      <section class="card day-rail">
+        <div class="rail-label">
+          <span class="rail-left">Day Progress</span>
+          <span id="railPercent" class="rail-center rail-percent">0%</span>
+          <span id="clockTime" class="rail-right">--:--</span>
+        </div>
+        <div class="rail-track">
+          <div class="rail-fill" id="railFill"></div>
+          <div class="rail-marker" id="railMarker" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <!-- Quadrants -->
+      <div class="quadrant-grid" id="grid">
+        <section class="card quadrant" data-category="now">
+          <div class="quadrant-header">
+            <div class="quadrant-title">
+              Now
+              <span class="count" id="count-now">(0)</span>
+            </div>
+            <div class="quadrant-controls">
+              <label>
+                <input type="checkbox" data-hide-completed="now" />
+                Hide done
+              </label>
+            </div>
+          </div>
+          <div class="quadrant-body" id="quadrant-now"></div>
+        </section>
+
+        <section class="card quadrant" data-category="next">
+          <div class="quadrant-header">
+            <div class="quadrant-title">
+              Next
+              <span class="count" id="count-next">(0)</span>
+            </div>
+            <div class="quadrant-controls">
+              <label>
+                <input type="checkbox" data-hide-completed="next" />
+                Hide done
+              </label>
+            </div>
+          </div>
+          <div class="quadrant-body" id="quadrant-next"></div>
+        </section>
+
+        <section class="card quadrant" data-category="planned">
+          <div class="quadrant-header">
+            <div class="quadrant-title">
+              Planned
+              <span class="count" id="count-planned">(0)</span>
+            </div>
+            <div class="quadrant-controls">
+              <label>
+                <input type="checkbox" data-hide-completed="planned" />
+                Hide done
+              </label>
+            </div>
+          </div>
+          <div class="quadrant-body" id="quadrant-planned"></div>
+        </section>
+
+        <section class="card quadrant" data-category="backburner">
+          <div class="quadrant-header">
+            <div class="quadrant-title">
+              Backburner
+              <span class="count" id="count-backburner">(0)</span>
+            </div>
+            <div class="quadrant-controls">
+              <label>
+                <input type="checkbox" data-hide-completed="backburner" />
+                Hide done
+              </label>
+            </div>
+          </div>
+          <div class="quadrant-body" id="quadrant-backburner"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="save-status">
+        All tasks are stored locally in your browser (<span
+          >no server, no sync</span
+        >). Close the tab, come back later, everything should still be here.
+      </div>
+      <div class="footer-actions">
+        <button
+          type="button"
+          id="btnExportJson"
+          class="btn-primary btn-compact"
+        >
+          Export JSON
+        </button>
+        <button type="button" id="btnImportJson" class="btn-ghost btn-compact">
+          Import JSON
+        </button>
+        <input
+          type="file"
+          id="importFileInput"
+          accept="application/json"
+          class="sr-only"
+        />
+      </div>
+    </footer>
+  </body>
+</html>
