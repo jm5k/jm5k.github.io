@@ -64,19 +64,6 @@
     />
 
     <style>
-      :root {
-        --bg: #000;
-        --fg: #e0e0e0;
-        --muted: #9aa0a6;
-        --accent: #0ff;
-        --rail: #0b0b0b;
-        --rail-border: #555;
-        --tick-q: #ffffff1a;
-        --tick-h: #ffffff4d;
-        --label: #888;
-        --workhour: #ffea00;
-        --stats: #9cf;
-      }
       html,
       body {
         min-height: 100%;
@@ -112,12 +99,6 @@
         font-size: 1.8rem;
         margin-bottom: 8px;
       }
-      #julianDate {
-        color: var(--muted);
-        font-size: 0.9rem;
-        margin: 0 0 8px;
-      }
-
       /* Cluster holds rail + labels; switches layout by orientation */
       .railCluster {
         display: grid;
@@ -197,8 +178,6 @@
       /* Cyan time marker */
       #marker {
         position: absolute;
-        background: var(--accent);
-        box-shadow: 0 0 10px var(--accent);
       }
       .marker-h {
         width: 4px;
@@ -233,66 +212,9 @@
         color: var(--label);
         text-align: left;
       }
-      .workhour {
-        color: var(--workhour);
-      }
-
-      #statsBottom {
-        color: var(--stats);
-        margin-top: 6px;
-        font-size: 1.05em;
-      }
-
       /* 12/24 switch */
       #controlsMain {
         margin: 16px 0 10px;
-      }
-      .switch {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.6rem;
-        cursor: pointer;
-        color: #9cf;
-        user-select: none;
-      }
-      .switch input {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      .slider {
-        position: relative;
-        width: 44px;
-        height: 24px;
-        background: #333;
-        border: 1px solid #555;
-        border-radius: 999px;
-        transition: background 0.2s, border-color 0.2s;
-      }
-      .slider::before {
-        content: "";
-        position: absolute;
-        height: 18px;
-        width: 18px;
-        left: 3px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: #bbb;
-        border-radius: 50%;
-        transition: left 0.18s, background 0.2s;
-      }
-      .switch input:checked + .slider {
-        background: #0b3a3a;
-        border-color: #0aa;
-      }
-      .switch input:checked + .slider::before {
-        left: 23px;
-        background: #0ff;
-      }
-      .switch-label {
-        font-size: 0.95em;
-        color: #9cf;
       }
 
       /* Compact utility actions */
@@ -416,6 +338,7 @@
       <div id="currentTimeTop">--:--</div>
       <div
         id="julianDate"
+        class="lcl-julian-date"
         aria-label="Julian date in ordinal YYYY-DDD format"
       >
         Julian date: ---- ---
@@ -427,7 +350,7 @@
           <div id="ticks" aria-hidden="true"></div>
           <div
             id="marker"
-            class="marker-h"
+            class="lcl-now-marker marker-h"
             role="presentation"
             aria-hidden="true"
           ></div>
@@ -435,18 +358,18 @@
         <div id="hourLabels" class="labelRow"></div>
       </div>
 
-      <div id="statsBottom"></div>
+      <div id="statsBottom" class="lcl-day-stats"></div>
 
       <!-- 12/24-hour toggle (kept mid-page) -->
       <div id="controlsMain">
-        <label class="switch" title="Switch between 12h and 24h">
+        <label class="lcl-time-switch" title="Switch between 12h and 24h">
           <input
             id="formatToggle"
             type="checkbox"
             aria-label="Toggle 24-hour time"
           />
-          <span class="slider"></span>
-          <span id="formatLabel" class="switch-label">24-hour</span>
+          <span class="lcl-switch-track"></span>
+          <span id="formatLabel" class="lcl-switch-label">24-hour</span>
         </label>
       </div>
 
@@ -484,6 +407,7 @@
       </footer>
     </div>
 
+    <script src="lcl-time.js"></script>
     <script>
       /* ===== Persistence ===== */
       const LS = { use24h: "use24h", prefs: "clock.prefs.v3" };
@@ -511,43 +435,6 @@
       orientationSel.value = prefs.orientation;
       directionSel.value = prefs.direction;
 
-      /* ===== Formatting ===== */
-      function formatHourLabel(h24) {
-        if (use24h) return String(h24).padStart(2, "0");
-        const base = h24 % 12 || 12;
-        return String(base).padStart(2, "0");
-      }
-      function fmtHMS(totalSeconds) {
-        const s = Math.max(0, Math.floor(totalSeconds));
-        const hh = String(Math.floor(s / 3600)).padStart(2, "0");
-        const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
-        const ss = String(s % 60).padStart(2, "0");
-        return `${hh}:${mm}:${ss}`;
-      }
-      function formatClockTime(hours, minutes) {
-        if (use24h)
-          return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-            2,
-            "0"
-          )}`;
-        let h = hours % 12;
-        if (h === 0) h = 12;
-        return `${String(h).padStart(2, "0")}:${String(minutes).padStart(
-          2,
-          "0"
-        )} ${hours >= 12 ? "PM" : "AM"}`;
-      }
-      function formatJulianDate(date) {
-        const year = date.getFullYear();
-        const dayOfYear =
-          Math.floor(
-            (Date.UTC(year, date.getMonth(), date.getDate()) -
-              Date.UTC(year, 0, 1)) /
-              86400000
-          ) + 1;
-        return `${year}-${String(dayOfYear).padStart(3, "0")}`;
-      }
-
       /* ===== Ticks & Labels ===== */
       function buildTicks() {
         ticks.innerHTML = "";
@@ -573,8 +460,8 @@
         labels.innerHTML = "";
         for (let h = 0; h <= 24; h++) {
           const span = document.createElement("span");
-          span.textContent = formatHourLabel(h);
-          if (h >= 8 && h <= 17) span.classList.add("workhour");
+          span.textContent = LCLTime.formatHourLabel(h, use24h);
+          if (h >= 8 && h <= 17) span.classList.add("lcl-workhour");
           labels.appendChild(span);
         }
       }
@@ -630,11 +517,15 @@
           marker.style.left = `calc(${progress * 100}% - 2px)`;
         }
 
-        current.textContent = formatClockTime(h, m);
-        julianDate.textContent = `Julian date: ${formatJulianDate(now)}`;
+        current.textContent = LCLTime.formatClockTime(h, m, use24h);
+        julianDate.textContent = `Julian date: ${LCLTime.formatJulianDate(
+          now
+        )}`;
         const pct = frac * 100;
         const remaining = secondsPerDay - secondsSinceMidnight;
-        stats.textContent = `${pct.toFixed(2)}% of day elapsed | ${fmtHMS(
+        stats.textContent = `${pct.toFixed(
+          2
+        )}% of day elapsed | ${LCLTime.formatDurationHMS(
           remaining
         )} remaining`;
       }

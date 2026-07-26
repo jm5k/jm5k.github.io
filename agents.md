@@ -37,13 +37,15 @@ LCL conforms to these universal rules:
    - No analytics.
    - No imports from remote URLs.
 
-4. **Tool pages are independent**
-   Each page contains:
+4. **Tool pages use a hybrid shared/page-specific architecture**
+   Each page uses:
 
-   - Inline `<style>` with feature tokens.
-   - Inline `<script>` (bottom of `<body>`).
+   - `lcl.css` for stable design tokens, accessibility-safe foundations, and components shared by multiple pages.
+   - Shared dependency-free utilities, such as `lcl-time.js`, only when multiple pages need the same pure logic.
+   - Inline `<style>` for page-specific layout and component styling.
+   - Inline controller `<script>` at the bottom of `<body>` for DOM access, tool state, events, and timers.
    - A “Home” link back to `index.html`.
-   - `index.html` is the only multi-link hub.
+   - `index.html` as the only multi-link hub.
 
 5. **Design tokens rule everything**
 
@@ -95,7 +97,7 @@ Authoritative code-editing agent for HTML, CSS, and JavaScript.
 
 - Perform safe edits across the repo.
 - Maintain structure, spacing, ordering, indentation, and design tokens.
-- Preserve existing inline CSS and JS patterns.
+- Preserve the boundary between shared foundations and page-specific inline CSS and controllers.
 - Guarantee dark-mode enforcement on all pages.
 - Apply global multi-file changes without breaking formatting.
 - Produce diff-style output for updates unless a full file rewrite is requested.
@@ -105,9 +107,12 @@ Authoritative code-editing agent for HTML, CSS, and JavaScript.
 
 - Deterministic edits; no speculation.
 - Adhere to token names (`--bg`, `--fg`, `--muted`, `--accent`, `--line`, etc.).
-- Inline CSS stays inline unless a rule must be truly global.
-- Inline JS stays at bottom of `<body>`.
+- Inline CSS stays inline unless a stable component is used by multiple pages.
+- Pure shared JavaScript may live in a narrow, dependency-free utility file; DOM controllers stay inline at the bottom of `<body>`.
 - No refactoring into modules unless explicitly requested.
+- Do not extract one-page code without a clear reuse case or migrate unrelated pages for consistency.
+- Keep page scripts independent; never create a monolithic application controller.
+- Perform shared-code migrations in small, testable phases.
 - No altering of time logic or calculations unless explicitly instructed.
 
 ### Typical Tasks
@@ -247,7 +252,7 @@ Plus:
 - Twitter cards
 - Favicon / apple-touch icon pointing to `https://linearclocklab.com/profile.png`
 
-Scripts must be placed at the bottom of `<body>`.
+Scripts must be placed at the bottom of `<body>`. Shared utility scripts load before the page's inline controller.
 
 ## 3.2 Head/Meta Checklist
 
@@ -268,7 +273,7 @@ Scripts must be placed at the bottom of `<body>`.
 
 ## 4.1 Design Tokens
 
-Each page includes local tokens inside `<style>`:
+Shared defaults live in `lcl.css`. Pages may override tokens or add page-specific tokens inside `<style>`:
 
 ---
 
@@ -293,23 +298,24 @@ Rules:
 - Tools like `clock_presets.html` may use `data-theme` with alternate token dictionaries.
 - Accent glow must remain subtle and consistent across tools.
 
-## 4.2 Global Dark Enforcement
+## 4.2 Shared CSS Foundation
 
 Stored in `lcl.css`:
 
 ---
 
-html, body { background: var(--bg) !important; color: var(--fg) !important; }
-html { color-scheme: dark !important; }
-@media (forced-colors: active) { \* { forced-color-adjust: none !important; }
-}
+:root { --bg: #000; --fg: #e0e0e0; --accent: #0ff; }
+html { color-scheme: dark; }
+html, body { background: var(--bg); color: var(--fg); }
 
 ---
 
 Rules:
 
-- Only truly global dark-mode behavior lives in `lcl.css`.
-- Do not add page-specific tokens or layout rules to `lcl.css`.
+- Stable tokens, accessibility-safe foundations, and components used by multiple pages may live in `lcl.css`.
+- Do not add page-specific layout rules to `lcl.css`.
+- Do not suppress operating-system forced-colors behavior globally.
+- Local token overrides must continue to work through the normal cascade.
 
 ---
 
@@ -393,7 +399,9 @@ Rules:
 # 7. JavaScript Patterns
 
 - Vanilla JS only (no libraries).
-- Inline `<script>` at bottom of `<body>`.
+- Shared utilities must be dependency-free, pure, narrowly scoped, and documented.
+- Shared utilities must not own DOM state, LocalStorage, events, timers, or page initialization.
+- Inline controller `<script>` remains at the bottom of `<body>`, after any shared utility script.
 - Query via `document.getElementById` for main controls.
 - Attach event listeners once per element.
 - Keep scopes narrow.
@@ -443,8 +451,13 @@ Rules:
 
 ## 9.5 lcl.css
 
-- Holds only global dark-mode rules.
-- No page-specific tokens or layout rules.
+- Holds stable shared tokens, accessibility-safe global foundations, and namespaced components used by multiple pages.
+- Contains no page-specific layout rules.
+
+## 9.6 lcl-time.js
+
+- Exposes only the frozen `window.LCLTime` formatting API, with `module.exports` compatibility for direct Node tests.
+- Contains pure, dependency-free helpers and no DOM, LocalStorage, event, timer, or page-controller behavior.
 
 ---
 
@@ -452,14 +465,15 @@ Rules:
 
 1. Copy a correct head/meta block.
 2. Declare local design tokens via `:root`.
-3. Keep CSS and JS inline unless a rule belongs in `lcl.css`.
-4. Add a top “Home” back link (`.lcl-back-nav`).
-5. Build UI with flex/grid following existing page patterns.
-6. Persist user settings with `localStorage`.
-7. Validate responsiveness with `min()`, `max()`, and `clamp()`.
-8. Confirm no light-mode media queries remain.
-9. Test in Chrome, Firefox, Edge, Safari.
-10. Confirm dark enforcement on system-light machines.
+3. Keep page-specific CSS and controllers inline; reuse stable shared tokens/components and pure utilities when multiple pages need them.
+4. Load shared utility scripts before the inline page controller.
+5. Add a top “Home” back link (`.lcl-back-nav`).
+6. Build UI with flex/grid following existing page patterns.
+7. Persist user settings with `localStorage`.
+8. Validate responsiveness with `min()`, `max()`, and `clamp()`.
+9. Confirm no light-mode media queries remain.
+10. Test in Chrome, Firefox, Edge, Safari.
+11. Confirm dark enforcement on system-light machines.
 
 ---
 

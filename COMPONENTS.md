@@ -8,7 +8,7 @@ All components:
 - Use dark-only token-based theming
 - Follow minimalistic neon-accent styling
 - Are written in pure HTML/CSS
-- Rely on inline styles (per page) + global dark enforcement (lcl.css)
+- Use `lcl.css` for stable tokens and genuinely shared components, with page-specific layout kept inline
 - Must remain consistent across all tools
 
 Each component described here includes:
@@ -181,7 +181,7 @@ Shows current time.
 
 Structure:
 
-<div id="marker"></div>
+<div id="marker" class="lcl-now-marker"></div>
 
 Rules:
 
@@ -189,6 +189,33 @@ Rules:
 - Vertical or horizontal line depending on orientation
 - Small neon glow permitted
 - Movement handled by JS updating style.left or style.top
+- Shared CSS owns only the accent color and glow; page CSS owns dimensions and orientation
+
+## 4.4 Shared Clock Text States
+
+The main and minimal clocks share narrowly scoped text-state classes:
+
+- `.lcl-julian-date` for the muted ordinal `YYYY-DDD` line
+- `.lcl-day-stats` for elapsed-day and remaining-time text
+- `.lcl-workhour` for yellow work-hour labels
+
+These classes own only stable presentation shared by both pages. Rail geometry, label layout, and orientation remain page-specific.
+
+## 4.5 Time-Format Switch
+
+Structure:
+
+<label class="lcl-time-switch">
+<input type="checkbox">
+<span class="lcl-switch-track"></span>
+<span class="lcl-switch-label">24-hour</span>
+</label>
+
+Rules:
+
+- The native checkbox remains the keyboard- and pointer-operable control.
+- Shared CSS owns the track, thumb, label, and checked-state appearance.
+- Page controllers own preference storage and change handling.
 
 ---
 
@@ -422,14 +449,16 @@ All new components must:
 
 1. Use existing tokens or extend them with consistent naming.
 2. Use dark backgrounds and neon accents.
-3. Avoid external CSS or JS imports.
+3. Avoid external or remote CSS/JS dependencies; repository-local shared foundations are allowed.
 4. Fit into wrapper/grid/card systems already used.
 5. Follow monospace or system-ui fonts as determined by the page.
 6. Maintain predictable hover/active behavior.
 7. Fit into the hub-and-spoke navigation model.
 8. Include accessibility attributes as required.
-9. Use inline CSS/JS unless rule is globally relevant.
+9. Keep page-specific layout and controllers inline; extract only stable components or pure utilities used by multiple pages.
 10. Work on Chrome, Edge, Firefox, and Safari without patches.
+11. Keep shared APIs narrow and dependency-free; never create a monolithic controller.
+12. Migrate pages in small, testable phases rather than changing the whole suite for consistency.
 
 ---
 

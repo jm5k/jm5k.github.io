@@ -4,6 +4,8 @@
 A suite of minimalist, client-side time tools that visualize your day as a single continuous line — extended with timers, stopwatches, multi-timezone support, themes, and focus-tracking utilities.  
 Built by **[jm5k](https://linearclocklab.com/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
 
+The project uses a small hybrid foundation: stable design tokens and reused components live in `lcl.css`, pure multi-page time formatting lives in `lcl-time.js`, and each tool keeps its own inline layout and controller logic.
+
 ---
 
 ## 🔗 Live Demo
@@ -114,12 +116,15 @@ The **Color Theme Clock** allows complete visual customization, from background 
 ## 🗺️ Project Structure
 - `index.html` — Main Linear Clock  
 - `clock.html` — Minimal View  
+- `lcl.css` — Shared design tokens and reusable UI foundations
+- `lcl-time.js` — Pure shared clock-formatting utilities
 - `multi-clock.html` — Multi-Timezone Clocks  
 - `focus.html` — FocusLine Pomodoro  
 - `clock_presets.html` — Theme and Color Presets  
 - `timer.html` — Countdown Timer  
 - `stopwatch.html` — Stopwatch  
 - `about.html` — Overview, roadmap, and license  
+- `tests/time-utils.test.js` — Dependency-free Node tests for shared time formatting
 
 ---
 

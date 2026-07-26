@@ -59,16 +59,6 @@
     <link rel="manifest" href="/site.webmanifest" />
 
     <style>
-      :root {
-        --bg: #000;
-        --fg: #e0e0e0;
-        --muted: #9aa0a6;
-        --accent: #0ff;
-        --rail: #111;
-        --tick-q: #ffffff1a;
-        --tick-h: #ffffff4d;
-        --border: #2a2a2a;
-      }
       /* Base */
       html,
       body {
@@ -118,18 +108,13 @@
         font-size: 1.6rem;
         margin: 8px 0;
       }
-      #julianDate {
-        color: var(--muted);
-        font-size: 0.9rem;
-        margin: 0 0 8px;
-      }
       #bar {
         position: relative;
         width: min(95%, 980px);
         height: 60px;
         margin: 8px auto;
-        background: #0b0b0b;
-        border: 2px solid #555;
+        background: var(--rail);
+        border: 2px solid var(--rail-border);
         border-radius: 8px;
         overflow: hidden;
       }
@@ -155,8 +140,6 @@
         top: 0;
         width: 4px;
         height: 100%;
-        background: var(--accent);
-        box-shadow: 0 0 10px var(--accent);
       }
 
       .label {
@@ -166,68 +149,12 @@
         width: min(95%, 980px);
         margin: 8px auto 6px;
         font-size: 0.9rem;
-        color: #888;
-      }
-      .workhour {
-        color: #ffea00;
-      }
-
-      #statsBottom {
-        color: #9cf;
-        margin-top: 6px;
-        font-size: 1.05rem;
+        color: var(--label);
       }
 
       /* 12/24h toggle */
       #controls {
         margin: 12px 0 0;
-      }
-      .switch {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.6rem;
-        cursor: pointer;
-        color: #9cf;
-        user-select: none;
-      }
-      .switch input {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      .slider {
-        position: relative;
-        width: 44px;
-        height: 24px;
-        background: #333;
-        border: 1px solid #555;
-        border-radius: 999px;
-        transition: background 0.2s, border-color 0.2s;
-      }
-      .slider::before {
-        content: "";
-        position: absolute;
-        height: 18px;
-        width: 18px;
-        left: 3px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: #bbb;
-        border-radius: 50%;
-        transition: left 0.18s, background 0.2s;
-      }
-      .switch input:checked + .slider {
-        background: #0b3a3a;
-        border-color: #0aa;
-      }
-      .switch input:checked + .slider::before {
-        left: 23px;
-        background: #0ff;
-      }
-      .switch-label {
-        font-size: 0.95rem;
-        color: #9cf;
       }
 
       /* Grid of links */
@@ -279,26 +206,27 @@
     <div id="currentTimeTop">--:--</div>
     <div
       id="julianDate"
+      class="lcl-julian-date"
       aria-label="Julian date in ordinal YYYY-DDD format"
     >
       Julian date: ---- ---
     </div>
     <div id="bar">
       <div id="ticks"></div>
-      <div id="marker"></div>
+      <div id="marker" class="lcl-now-marker"></div>
     </div>
     <div class="label" id="hourLabels"></div>
-    <div id="statsBottom"></div>
+    <div id="statsBottom" class="lcl-day-stats"></div>
 
     <div id="controls">
-      <label class="switch" title="Switch between 12h and 24h">
+      <label class="lcl-time-switch" title="Switch between 12h and 24h">
         <input
           id="formatToggle"
           type="checkbox"
           aria-label="Toggle 24-hour time"
         />
-        <span class="slider"></span>
-        <span id="formatLabel" class="switch-label">24-hour</span>
+        <span class="lcl-switch-track"></span>
+        <span id="formatLabel" class="lcl-switch-label">24-hour</span>
       </label>
     </div>
     <div style="margin-top: 6px; font-size: 0.95rem">
@@ -382,6 +310,7 @@
       <p>© 2025–2026 <strong>jm5k</strong></p>
     </footer>
 
+    <script src="lcl-time.js"></script>
     <script>
       /* ===== Original Task Planner Clock logic (kept tight) ===== */
       function createTicks() {
@@ -399,56 +328,15 @@
 
       let use24h = JSON.parse(localStorage.getItem("use24h") ?? "true");
 
-      function formatHourLabel(h24) {
-        if (use24h) return String(h24).padStart(2, "0");
-        const base = h24 % 12 || 12;
-        return String(base).padStart(2, "0");
-      }
-
       function renderHourLabels() {
         const labels = document.getElementById("hourLabels");
         labels.innerHTML = "";
         for (let h = 0; h <= 24; h++) {
           const span = document.createElement("span");
-          span.textContent = formatHourLabel(h);
-          if (h >= 8 && h <= 17) span.classList.add("workhour");
+          span.textContent = LCLTime.formatHourLabel(h, use24h);
+          if (h >= 8 && h <= 17) span.classList.add("lcl-workhour");
           labels.appendChild(span);
         }
-      }
-
-      function formatClockTime(hours, minutes) {
-        if (use24h) {
-          return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-            2,
-            "0"
-          )}`;
-        } else {
-          let h = hours % 12;
-          if (h === 0) h = 12;
-          return `${String(h).padStart(2, "0")}:${String(minutes).padStart(
-            2,
-            "0"
-          )} ${hours >= 12 ? "PM" : "AM"}`;
-        }
-      }
-
-      function fmtHMS(totalSeconds) {
-        const s = Math.max(0, Math.floor(totalSeconds));
-        const hh = String(Math.floor(s / 3600)).padStart(2, "0");
-        const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
-        const ss = String(s % 60).padStart(2, "0");
-        return `${hh}:${mm}:${ss}`;
-      }
-
-      function formatJulianDate(date) {
-        const year = date.getFullYear();
-        const dayOfYear =
-          Math.floor(
-            (Date.UTC(year, date.getMonth(), date.getDate()) -
-              Date.UTC(year, 0, 1)) /
-              86400000
-          ) + 1;
-        return `${year}-${String(dayOfYear).padStart(3, "0")}`;
       }
 
       function updateClock() {
@@ -460,20 +348,20 @@
         document.getElementById("marker").style.left = `calc(${
           (hoursFloat / 24) * 100
         }%)`;
-        document.getElementById("currentTimeTop").textContent = formatClockTime(
-          h,
-          m
-        );
+        document.getElementById("currentTimeTop").textContent =
+          LCLTime.formatClockTime(h, m, use24h);
         document.getElementById(
           "julianDate"
-        ).textContent = `Julian date: ${formatJulianDate(now)}`;
+        ).textContent = `Julian date: ${LCLTime.formatJulianDate(now)}`;
         const secondsSinceMidnight = h * 3600 + m * 60 + s;
         const secondsPerDay = 86400;
         const pct = (secondsSinceMidnight / secondsPerDay) * 100;
         const remaining = secondsPerDay - secondsSinceMidnight;
         document.getElementById("statsBottom").textContent = `${pct.toFixed(
           2
-        )}% of day elapsed | ${fmtHMS(remaining)} remaining`;
+        )}% of day elapsed | ${LCLTime.formatDurationHMS(
+          remaining
+        )} remaining`;
       }
 
       /* Init */

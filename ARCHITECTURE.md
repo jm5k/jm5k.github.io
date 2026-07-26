@@ -21,8 +21,9 @@ LCL consists of:
 
 - A central hub: `index.html`
 - Multiple independent tool pages
-- A minimal shared CSS file (`lcl.css`)
-- Page-specific inline CSS and JS
+- A shared CSS foundation (`lcl.css`) for stable tokens and reused components
+- A narrow shared time-formatting utility (`lcl-time.js`)
+- Page-specific inline CSS and controller JS
 - A small shared image/profile resource
 - A consistent SEO + metadata layer
 - A theme system powered by CSS variables
@@ -64,23 +65,27 @@ This reduces maintenance burden and keeps every tool focused.
 
 All LCL pages use a **universal dark theme** enforced by tokens.
 
-## 3.1 Global Dark Enforcement (lcl.css)
+## 3.1 Shared Foundation (lcl.css)
 
-    html, body { background: var(--bg) !important; color: var(--fg) !important; }
-    html { color-scheme: dark !important; }
-    @media (forced-colors: active) {
-        * { forced-color-adjust: none !important; }
+    :root {
+        --bg: #000;
+        --fg: #e0e0e0;
+        --accent: #0ff;
     }
+    html { color-scheme: dark; }
+    html, body { background: var(--bg); color: var(--fg); }
 
-This prevents:
+This provides:
 
-- OS light mode overrides
-- Browser auto-theming
-- Contrast mode distortions
+- Safe dark-only defaults
+- Stable design tokens
+- Namespaced components shared by multiple pages
+- Normal cascade behavior for page-level token overrides
+- Compatibility with operating-system forced-colors behavior
 
-## 3.2 Local Token Definitions (Inline in Each Page)
+## 3.2 Local Token Overrides (Inline in Each Page)
 
-Each page declares a local token set via:
+Pages declare only overrides and page-specific tokens when needed:
 
     :root {
         --bg: #000;
@@ -205,18 +210,25 @@ Design:
 
 # 6. JavaScript Architecture
 
-LCL uses inline `<script>` tags at the end of `<body>`.
+LCL uses a hybrid JavaScript architecture: shared files hold only pure, reused utilities, while each page keeps its independent inline controller at the end of `<body>`.
 
 ## 6.1 Principles
 
 - Vanilla JS only
 - Small, page-specific scopes
 - No external libraries
-- No global namespace pollution beyond existing patterns
+- Shared utilities expose one narrow, frozen namespace
 - Prefer const/let with narrow scope
 - Query via ID for key elements
+- Do not extract one-page logic without a clear reuse case
+- Do not merge page controllers or migrate unrelated pages merely for consistency
+- Refactors proceed in small, testable phases
 
-## 6.2 LocalStorage System
+## 6.2 Shared Time Utilities
+
+`lcl-time.js` exposes the dependency-free `window.LCLTime` API for formatting hour labels, clock times, durations, and ordinal `YYYY-DDD` dates. It has no DOM, LocalStorage, event, interval, or page-state responsibilities and also supports `module.exports` for direct Node tests.
+
+## 6.3 LocalStorage System
 
 Used for:
 
@@ -230,7 +242,7 @@ All keys must use:
 
 to avoid collisions.
 
-## 6.3 Interval-Driven Tools
+## 6.4 Interval-Driven Tools
 
 Clock, stopwatch, timer, and dashboard rely on:
 
@@ -299,10 +311,15 @@ Scripts go at the bottom of `<body>` to avoid blocking rendering.
 
 Contains only:
 
-- Global dark enforcement
-- Forced-colors override
+- Stable shared design tokens
+- Accessibility-safe dark foundations
+- Namespaced components used by multiple pages
 
-No additional styling belongs here.
+Page-specific layout does not belong here.
+
+## 8.6 lcl-time.js
+
+Contains only the frozen, pure `LCLTime` formatting API. Page controllers remain inline and independent.
 
 ---
 
@@ -325,7 +342,8 @@ Agents must ensure:
 - No tool replicates the multi-link navigation of index.
 - No accidental introduction of external scripts or CDN assets.
 - No rearrangement of script positions.
-- No global CSS rules are added to lcl.css unless truly global.
+- No page-specific layout is added to `lcl.css`.
+- No shared utility takes ownership of DOM state, LocalStorage, events, or intervals.
 - No mixing of UI patterns across tool contexts without preserving identity.
 
 ---
@@ -336,12 +354,13 @@ When adding new tools:
 
 - They must follow existing layout + typography patterns.
 - They must begin with the canonical `<head>` block.
-- They must declare their own `:root` tokens.
+- They inherit shared tokens and declare only necessary local overrides or page-specific tokens.
 - They must contain a Home link.
 - They must store user prefs via `localStorage`.
 - They must use grid/flex patterns that match existing pages.
 - They must not introduce new dark/light logic.
 - They must avoid global namespace pollution.
+- Code used by one page stays local until a clear multi-page reuse case exists.
 
 ---
 

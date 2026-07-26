@@ -1,5 +1,103 @@
-html, body { background: var(--bg) !important; color: var(--fg) !important; }
-html { color-scheme: dark !important; }
-@media (forced-colors: active) {
-    * { forced-color-adjust: none !important; }
+:root {
+    --bg: #000;
+    --fg: #e0e0e0;
+    --muted: #9aa0a6;
+    --accent: #0ff;
+    --rail: #0b0b0b;
+    --rail-border: #555;
+    --tick-q: #ffffff1a;
+    --tick-h: #ffffff4d;
+    --label: #888;
+    --workhour: #ffea00;
+    --stats: #9cf;
+    --border: #2a2a2a;
+    --switch-track: #333;
+    --switch-thumb: #bbb;
+    --switch-track-active: #0b3a3a;
+    --switch-border-active: #0aa;
+}
+
+html {
+    color-scheme: dark;
+}
+
+html,
+body {
+    background: var(--bg);
+    color: var(--fg);
+}
+
+.lcl-julian-date {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.lcl-time-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--stats);
+    cursor: pointer;
+    user-select: none;
+}
+
+.lcl-time-switch input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+.lcl-switch-track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border: 1px solid var(--rail-border);
+    border-radius: 999px;
+    background: var(--switch-track);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.lcl-switch-track::before {
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--switch-thumb);
+    content: "";
+    transform: translateY(-50%);
+    transition: left 0.18s, background 0.2s;
+}
+
+.lcl-time-switch input:checked + .lcl-switch-track {
+    border-color: var(--switch-border-active);
+    background: var(--switch-track-active);
+}
+
+.lcl-time-switch input:checked + .lcl-switch-track::before {
+    left: 23px;
+    background: var(--accent);
+}
+
+.lcl-switch-label {
+    color: var(--stats);
+    font-size: 0.95em;
+}
+
+.lcl-now-marker {
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+.lcl-day-stats {
+    margin-top: 6px;
+    color: var(--stats);
+    font-size: 1.05rem;
+}
+
+.lcl-workhour {
+    color: var(--workhour);
 }

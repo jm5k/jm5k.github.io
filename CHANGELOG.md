@@ -1,13 +1,14 @@
 Date: 2026-07-26
-Short Title: Validate Metadata and Structure
+Short Title: Establish Shared Clock Foundation
 Summary:
 
-Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated.
+Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established a dependency-free shared CSS and time-formatting foundation while keeping page-specific layouts and clock controllers independent.
 
 LCL Technical Details:
 
 - HTML: index.html and clock.html place a compact, clearly labelled Julian date line between the current time and the rail; clock.html keeps the line outside the orientation-specific rail-and-label cluster.
-- CSS: Added a muted, responsive inherited-typography style for #julianDate using existing color tokens and spacing.
+- Shared CSS: Expanded lcl.css with the main/minimal clock design-token defaults and namespaced Julian date, time switch, marker appearance, day statistics, and work-hour classes; removed unnecessary !important declarations and the global forced-color suppression.
+- CSS Migration: index.html and clock.html now use the shared tokens and classes while retaining all page-specific layout, rail geometry, orientation, controls, and responsive rules inline.
 - CSS: clock.html now uses homepage-matching tokens for the background, foreground, muted text, accent, rail, rail border, ticks, labels, work-hour highlight, statistics, and cyan glowing marker; layout dimensions and orientation rules are unchanged.
 - Layout: clock.html no longer vertically centers .wrap; responsive top padding positions the clock near the top while retaining centered, scrollable clock content.
 - Controls: Replaced the wide customization summary with a compact gear and the full return link with a compact back arrow; the existing details panel, selectors, and persistence behavior remain intact.
@@ -15,7 +16,10 @@ LCL Technical Details:
 - Web Manifest: Added site.webmanifest with standalone presentation, dark colors, site description, and the verified 32x32 profile.png icon.
 - HTML Structure: Repaired todo.html navigation, header nesting, and closing wrapper without changing IDs, controls, scripts, or localStorage behavior.
 - Sitemap: Added every homepage-linked public tool and page to sitemap.xml using absolute HTTPS URLs.
-- JavaScript: index.html and clock.html use the pure formatJulianDate(date) helper, which derives the local day of year with Date.UTC subtraction and three-digit padding; each updateClock() reuses its existing Date instance to refresh the display.
+- Shared JavaScript: Added the frozen LCLTime API in lcl-time.js for hour labels, clock times, durations, and ordinal Julian dates, with browser and direct Node compatibility and no DOM, LocalStorage, event, or timer access.
+- JavaScript Migration: index.html and clock.html load lcl-time.js before their independent inline controllers and pass use24h explicitly to shared formatting calls; each updateClock() still reuses one Date instance and the one-second intervals are unchanged.
+- Tests: Added dependency-free Node assertions for Julian dates, 12/24-hour clock formatting, hour labels, duration formatting, negative clamping, and API freezing.
+- Documentation: Updated agents.md, ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, and README.md to define the hybrid shared-foundation/page-controller boundary and phased migration rules.
 - LocalStorage: No keys added or changed; the existing 12/24-hour preference behavior remains unchanged.
 - Footer: Updated visible footer text in index.html, clock.html, about.html, focus.html, and multi-clock.html from 2025 to 2025–2026 without changing footer structure, styling, or legal files.
 - Navigation/SEO/Dark mode: No changes.
@@ -26,6 +30,13 @@ Files Touched:
 
 - index.html
 - clock.html
+- lcl.css
+- lcl-time.js
+- tests/time-utils.test.js
+- agents.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
 - about.html
 - focus.html
 - multi-clock.html
@@ -37,7 +48,7 @@ Files Touched:
 
 Testing Notes:
 
-- Automated: Verify formatJulianDate() for 2026-01-01 (2026-001), 2026-07-26 (2026-207), 2026-12-31 (2026-365), 2024-02-29 (2024-060), and 2024-12-31 (2024-366); run JavaScript syntax validation.
+- Automated: Run node tests/time-utils.test.js and node --check for lcl-time.js, the test file, and extracted inline scripts; the test suite covers all required Julian-date, clock, hour-label, and duration cases.
 - Manual: Load index.html and clock.html at desktop and mobile widths; confirm current-time updates, marker movement, statistics, 12/24-hour toggle, clock.html horizontal/vertical orientations, and forward/backward directions remain correct.
 - Visual: Compare index.html and clock.html to confirm matching clock palette values, including the cyan marker and glow in both Minimal Clock orientations.
 - Layout/Controls: Verify desktop, narrow mobile, and short-height layouts remain top-oriented and scrollable; open the gear panel, change orientation/direction, tab to both utility icons, and follow the back arrow to index.html.
@@ -49,6 +60,7 @@ Risks & Edge Cases:
 
 - The value follows the local calendar date. Date.UTC subtraction avoids daylight-saving off-by-one errors; verify rollover at local midnight. The minimal clock's Julian date remains independent of its orientation, direction, and time-format settings.
 - The expanded utility panel reserves vertical space so it does not overlap the footer on narrow viewports.
+- Removing forced-color suppression allows the operating system to adapt colors in high-contrast modes; browser forced-colors behavior should be included in future accessibility smoke tests.
 
 ---
 

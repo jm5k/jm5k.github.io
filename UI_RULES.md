@@ -114,14 +114,26 @@ All UI must use these tokens:
 
 ---
 
---bg  
---fg  
---muted  
---accent  
---line  
---chip  
---chip-brd  
---glow
+    --bg
+    --fg
+    --muted
+    --accent
+    --rail
+    --rail-border
+    --tick-q
+    --tick-h
+    --label
+    --workhour
+    --stats
+    --border
+    --switch-track
+    --switch-thumb
+    --switch-track-active
+    --switch-border-active
+    --line
+    --chip
+    --chip-brd
+    --glow
 
 ---
 
@@ -130,6 +142,7 @@ Rules:
 - No hard-coded colors except `#000` for fallback blocks.
 - Accent must be neon-cyan.
 - Muted must remain neutral gray.
+- Stable shared defaults belong in `lcl.css`; pages may define local overrides and page-specific tokens.
 
 ## 3.2 Glow Standards
 
@@ -141,7 +154,7 @@ Glow behavior:
 
 Rules:
 
-- Glow must use `var(--glow)`.
+- Glow must use `var(--glow)` or `var(--accent)` for the shared current-time marker.
 - Glow radius ≤ 15px.
 - No multi-layer glows.
 - Glow appears only on:
@@ -474,16 +487,25 @@ Not allowed:
 ## 9.1 DOM Access
 
 - Use `document.getElementById`.
-- Script at bottom of `<body>`.
+- Keep page controller scripts at the bottom of `<body>`.
+- Load any shared utility script before the inline page controller.
 - No layout rewrites beyond existing patterns.
 
-## 9.2 Updates
+## 9.2 Shared Utility Boundary
+
+- Shared JavaScript contains only pure, dependency-free functions used by multiple pages.
+- Shared utilities expose a narrow documented API and do not access the DOM, LocalStorage, events, timers, or page state.
+- Page scripts remain independent; do not create a monolithic controller.
+- Do not extract one-page code or migrate unrelated pages solely for consistency.
+- Refactor in small, testable phases.
+
+## 9.3 Updates
 
 - Keep DOM writes minimal.
 - Use `requestAnimationFrame` only when needed.
 - Timers/clocks use safe `setInterval`.
 
-## 9.3 LocalStorage
+## 9.4 LocalStorage
 
 Keys must follow:
 
@@ -493,7 +515,7 @@ Keys must follow:
 
 Never store UI-only temporary state.
 
-## 9.4 Task Planner Clock – Storage Keys
+## 9.5 Task Planner Clock – Storage Keys
 
 All Task Planner state must use:
 
