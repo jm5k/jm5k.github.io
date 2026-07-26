@@ -65,24 +65,32 @@
 
     <style>
       :root {
-        --fg: #eaeaea;
-        --muted: #9ca3af;
-        --accent: #00e5ff;
+        --bg: #000;
+        --fg: #e0e0e0;
+        --muted: #9aa0a6;
+        --accent: #0ff;
+        --rail: #0b0b0b;
+        --rail-border: #555;
+        --tick-q: #ffffff1a;
+        --tick-h: #ffffff4d;
+        --label: #888;
+        --workhour: #ffea00;
+        --stats: #9cf;
       }
       html,
       body {
-        height: 100%;
+        min-height: 100%;
       }
       body {
         margin: 0;
-        background: #000;
+        min-height: 100vh;
+        box-sizing: border-box;
+        background: var(--bg);
         color: var(--fg);
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
           "Liberation Mono", monospace;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         text-align: center;
+        padding: clamp(28px, 5vh, 56px) 0 0;
       }
       a,
       a:visited,
@@ -94,15 +102,20 @@
 
       .wrap {
         width: min(1000px, 92vw);
-        padding: 28px 20px 36px;
-        margin: auto;
+        padding: 0 20px 36px;
+        margin: 0 auto;
       }
 
       /* Time readout */
       #currentTimeTop {
-        color: #0ff;
+        color: var(--accent);
         font-size: 1.8rem;
         margin-bottom: 8px;
+      }
+      #julianDate {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 0 8px;
       }
 
       /* Cluster holds rail + labels; switches layout by orientation */
@@ -126,8 +139,8 @@
       /* Plain gray rail */
       #bar {
         position: relative;
-        background: #111;
-        border: 2px solid #666;
+        background: var(--rail);
+        border: 2px solid var(--rail-border);
         border-radius: 6px;
         overflow: hidden;
         grid-area: rail;
@@ -158,13 +171,13 @@
         top: 0;
         height: 100%;
         width: 1px;
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--tick-q);
       }
       .tick-h.hour {
         top: 0;
         height: 100%;
         width: 2px;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--tick-h);
       }
 
       /* Vertical ticks */
@@ -172,19 +185,20 @@
         left: 0;
         width: 100%;
         height: 1px;
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--tick-q);
       }
       .tick-v.hour {
         left: 0;
         width: 100%;
         height: 2px;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--tick-h);
       }
 
-      /* Red time marker */
+      /* Cyan time marker */
       #marker {
         position: absolute;
-        background: red;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
       }
       .marker-h {
         width: 4px;
@@ -207,7 +221,7 @@
         width: 95%;
         margin: 8px auto 6px;
         font-size: 0.9em;
-        color: #888;
+        color: var(--label);
       }
       .labelCol {
         display: flex;
@@ -216,15 +230,15 @@
         height: min(70vh, 640px);
         margin: 0;
         font-size: 0.9em;
-        color: #888;
+        color: var(--label);
         text-align: left;
       }
       .workhour {
-        color: yellow;
+        color: var(--workhour);
       }
 
       #statsBottom {
-        color: #9cf;
+        color: var(--stats);
         margin-top: 6px;
         font-size: 1.05em;
       }
@@ -281,39 +295,74 @@
         color: #9cf;
       }
 
-      /* Collapsible customizer (bottom) */
-      details {
-        margin: 18px auto 2px;
+      /* Compact utility actions */
+      .utilityActions {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 0.5rem;
         width: min(1000px, 92vw);
-        background: #0a0a0a;
-        border: 1px solid #111;
-        border-radius: 10px;
+        margin: 18px auto 0;
+      }
+      details {
+        margin: 0;
       }
       summary {
+        box-sizing: border-box;
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
         cursor: pointer;
         list-style: none;
         user-select: none;
-        padding: 10px 12px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        color: #9ca3af; /* grey default */
-        text-align: left;
-        transition: color 0.2s ease, text-shadow 0.2s ease;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        color: var(--muted);
+        transition: color 0.2s ease, border-color 0.2s ease,
+          background 0.2s ease;
       }
       summary:hover {
-        color: #00e5ff; /* cyan accent */
-        text-shadow: 0 0 6px #00e5ff;
+        color: var(--accent);
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.04);
       }
-
+      summary:focus-visible,
+      .returnnav a:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      summary::marker,
       summary::-webkit-details-marker {
         display: none;
       }
       .panel {
+        position: absolute;
+        top: calc(38px + 0.5rem);
+        left: 50%;
+        z-index: 1;
         display: grid;
         gap: 10px;
+        width: min(500px, 92vw);
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        box-sizing: border-box;
         padding: 10px 12px 14px;
+        border: 1px solid #111;
+        border-radius: 6px;
+        background: #0a0a0a;
         color: var(--muted);
         text-align: left;
+        transform: translateX(-50%);
+      }
+      details[open] {
+        padding-bottom: 168px;
+      }
+      @media (min-width: 520px) {
+        details[open] {
+          padding-bottom: 100px;
+        }
       }
       .panel label {
         display: flex;
@@ -332,22 +381,27 @@
 
       /* Return link */
       .returnnav {
-        text-align: center;
-        margin: 20px auto 0;
+        margin: 0;
       }
       .returnnav a {
-        color: var(--accent);
+        box-sizing: border-box;
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        color: var(--muted);
         text-decoration: none;
-        font-size: 0.95rem;
+        font-size: 1.1rem;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 6px 12px;
-        transition: all 0.2s ease;
+        border-radius: 6px;
+        padding: 0;
+        transition: color 0.2s ease, border-color 0.2s ease,
+          background 0.2s ease;
       }
       .returnnav a:hover {
         background: rgba(255, 255, 255, 0.04);
         border-color: var(--accent);
-        text-shadow: 0 0 6px var(--accent);
+        color: var(--accent);
       }
 
       footer {
@@ -360,6 +414,12 @@
   <body>
     <div class="wrap">
       <div id="currentTimeTop">--:--</div>
+      <div
+        id="julianDate"
+        aria-label="Julian date in ordinal YYYY-DDD format"
+      >
+        Julian date: ---- ---
+      </div>
 
       <!-- Rail + labels cluster -->
       <div id="cluster" class="railCluster horizontal">
@@ -390,33 +450,37 @@
         </label>
       </div>
 
-      <!-- Collapsible control panel — moved to bottom, before nav -->
-      <details id="customize">
-        <summary>Customize Clock Orientation</summary>
-        <div class="panel">
-          <label
-            >Orientation
-            <select id="orientation">
-              <option value="horizontal">Horizontal</option>
-              <option value="vertical">Vertical</option>
-            </select>
-          </label>
-          <label
-            >Direction
-            <select id="direction">
-              <option value="forward">Forward (start → end)</option>
-              <option value="backward">Backward (end → start)</option>
-            </select>
-          </label>
-        </div>
-      </details>
+      <div class="utilityActions">
+        <details id="customize">
+          <summary aria-label="Customize clock" title="Customize clock">⚙</summary>
+          <div class="panel">
+            <label
+              >Orientation
+              <select id="orientation">
+                <option value="horizontal">Horizontal</option>
+                <option value="vertical">Vertical</option>
+              </select>
+            </label>
+            <label
+              >Direction
+              <select id="direction">
+                <option value="forward">Forward (start → end)</option>
+                <option value="backward">Backward (end → start)</option>
+              </select>
+            </label>
+          </div>
+        </details>
 
-      <nav class="returnnav" aria-label="Return">
-        <a href="index.html">← Back to Linear Clock Lab</a>
-      </nav>
-
+        <nav class="returnnav" aria-label="Return">
+          <a
+            href="index.html"
+            aria-label="Back to Linear Clock Lab"
+            title="Back to Linear Clock Lab"
+            >&larr;</a>
+        </nav>
+      </div>
       <footer>
-        <p>© 2025 <strong>jm5k</strong></p>
+        <p>© 2025–2026 <strong>jm5k</strong></p>
       </footer>
     </div>
 
@@ -439,6 +503,7 @@
       const marker = document.getElementById("marker");
       const labels = document.getElementById("hourLabels");
       const current = document.getElementById("currentTimeTop");
+      const julianDate = document.getElementById("julianDate");
       const stats = document.getElementById("statsBottom");
 
       const orientationSel = document.getElementById("orientation");
@@ -471,6 +536,16 @@
           2,
           "0"
         )} ${hours >= 12 ? "PM" : "AM"}`;
+      }
+      function formatJulianDate(date) {
+        const year = date.getFullYear();
+        const dayOfYear =
+          Math.floor(
+            (Date.UTC(year, date.getMonth(), date.getDate()) -
+              Date.UTC(year, 0, 1)) /
+              86400000
+          ) + 1;
+        return `${year}-${String(dayOfYear).padStart(3, "0")}`;
       }
 
       /* ===== Ticks & Labels ===== */
@@ -556,6 +631,7 @@
         }
 
         current.textContent = formatClockTime(h, m);
+        julianDate.textContent = `Julian date: ${formatJulianDate(now)}`;
         const pct = frac * 100;
         const remaining = secondsPerDay - secondsSinceMidnight;
         stats.textContent = `${pct.toFixed(2)}% of day elapsed | ${fmtHMS(

@@ -1,3 +1,49 @@
+Date: 2026-07-26
+Short Title: Refine Minimal Clock Layout
+Summary:
+
+Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, and its layout is now top-oriented with compact utility controls.
+
+LCL Technical Details:
+
+- HTML: index.html and clock.html place a compact, clearly labelled Julian date line between the current time and the rail; clock.html keeps the line outside the orientation-specific rail-and-label cluster.
+- CSS: Added a muted, responsive inherited-typography style for #julianDate using existing color tokens and spacing.
+- CSS: clock.html now uses homepage-matching tokens for the background, foreground, muted text, accent, rail, rail border, ticks, labels, work-hour highlight, statistics, and cyan glowing marker; layout dimensions and orientation rules are unchanged.
+- Layout: clock.html no longer vertically centers .wrap; responsive top padding positions the clock near the top while retaining centered, scrollable clock content.
+- Controls: Replaced the wide customization summary with a compact gear and the full return link with a compact back arrow; the existing details panel, selectors, and persistence behavior remain intact.
+- JavaScript: index.html and clock.html use the pure formatJulianDate(date) helper, which derives the local day of year with Date.UTC subtraction and three-digit padding; each updateClock() reuses its existing Date instance to refresh the display.
+- LocalStorage: No keys added or changed; the existing 12/24-hour preference behavior remains unchanged.
+- Footer: Updated visible footer text in index.html, clock.html, about.html, focus.html, and multi-clock.html from 2025 to 2025–2026 without changing footer structure, styling, or legal files.
+- Navigation/SEO/Dark mode: No changes.
+- Accessibility: The new value has an explicit ordinal YYYY-DDD Julian-date aria-label.
+- Accessibility: The gear and back arrow have descriptive aria-label and title attributes, with visible keyboard focus states.
+
+Files Touched:
+
+- index.html
+- clock.html
+- about.html
+- focus.html
+- multi-clock.html
+- README.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: Verify formatJulianDate() for 2026-01-01 (2026-001), 2026-07-26 (2026-207), 2026-12-31 (2026-365), 2024-02-29 (2024-060), and 2024-12-31 (2024-366); run JavaScript syntax validation.
+- Manual: Load index.html and clock.html at desktop and mobile widths; confirm current-time updates, marker movement, statistics, 12/24-hour toggle, clock.html horizontal/vertical orientations, and forward/backward directions remain correct.
+- Visual: Compare index.html and clock.html to confirm matching clock palette values, including the cyan marker and glow in both Minimal Clock orientations.
+- Layout/Controls: Verify desktop, narrow mobile, and short-height layouts remain top-oriented and scrollable; open the gear panel, change orientation/direction, tab to both utility icons, and follow the back arrow to index.html.
+- Footer: Confirm every visible HTML footer displays 2025–2026.
+- Browser: Smoke test in Chrome, Firefox, Edge, and Safari.
+
+Risks & Edge Cases:
+
+- The value follows the local calendar date. Date.UTC subtraction avoids daylight-saving off-by-one errors; verify rollover at local midnight. The minimal clock's Julian date remains independent of its orientation, direction, and time-format settings.
+- The expanded utility panel reserves vertical space so it does not overlap the footer on narrow viewports.
+
+---
+
 Date: 2025-12-12
 Short Title: Added todo.html, todo.css, todo.js
 Summary:

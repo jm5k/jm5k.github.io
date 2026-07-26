@@ -14,7 +14,7 @@ Explore the full suite — all pages load locally, with instant switching and ze
 
 ## 🕐 Core Tools
 - **24-Hour Linear Clock** — your full day on one line  
-- **Minimal View** — compact version of the main clock  
+- **Minimal View** — compact clock with a Julian YYYY-DDD display
 - **Multi Clocks** — world-time tracking with reordering  
 - **Color Theme Clocks** — customizable themes and glow presets  
 - **FocusLine Pomodoro** — focused work cycles with notes  
@@ -29,6 +29,7 @@ All components share a **unified navigation bar**, **consistent design**, and **
 - Smooth cyan marker and clean gradient rail  
 - Quarter-hour and hour tick marks  
 - Real-time % of day elapsed / remaining  
+- Julian date in ordinal YYYY-DDD format (not astronomical Julian Day)
 - 12-hour / 24-hour toggle (saved locally)  
 - Workday highlight (08:00–17:00)  
 - Local persistence for all settings  
