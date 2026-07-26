@@ -1,8 +1,8 @@
 Date: 2026-07-26
-Short Title: Refine Minimal Clock Layout
+Short Title: Validate Metadata and Structure
 Summary:
 
-Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, and its layout is now top-oriented with compact utility controls.
+Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated.
 
 LCL Technical Details:
 
@@ -11,6 +11,10 @@ LCL Technical Details:
 - CSS: clock.html now uses homepage-matching tokens for the background, foreground, muted text, accent, rail, rail border, ticks, labels, work-hour highlight, statistics, and cyan glowing marker; layout dimensions and orientation rules are unchanged.
 - Layout: clock.html no longer vertically centers .wrap; responsive top padding positions the clock near the top while retaining centered, scrollable clock content.
 - Controls: Replaced the wide customization summary with a compact gear and the full return link with a compact back arrow; the existing details panel, selectors, and persistence behavior remain intact.
+- SEO/Metadata: index.html now has one charset and viewport declaration with a static homepage canonical URL; focus.html now has one charset and viewport declaration, plus corrected canonical and Open Graph URLs for focus.html.
+- Web Manifest: Added site.webmanifest with standalone presentation, dark colors, site description, and the verified 32x32 profile.png icon.
+- HTML Structure: Repaired todo.html navigation, header nesting, and closing wrapper without changing IDs, controls, scripts, or localStorage behavior.
+- Sitemap: Added every homepage-linked public tool and page to sitemap.xml using absolute HTTPS URLs.
 - JavaScript: index.html and clock.html use the pure formatJulianDate(date) helper, which derives the local day of year with Date.UTC subtraction and three-digit padding; each updateClock() reuses its existing Date instance to refresh the display.
 - LocalStorage: No keys added or changed; the existing 12/24-hour preference behavior remains unchanged.
 - Footer: Updated visible footer text in index.html, clock.html, about.html, focus.html, and multi-clock.html from 2025 to 2025–2026 without changing footer structure, styling, or legal files.
@@ -25,6 +29,9 @@ Files Touched:
 - about.html
 - focus.html
 - multi-clock.html
+- todo.html
+- sitemap.xml
+- site.webmanifest
 - README.md
 - CHANGELOG.md
 
@@ -34,6 +41,7 @@ Testing Notes:
 - Manual: Load index.html and clock.html at desktop and mobile widths; confirm current-time updates, marker movement, statistics, 12/24-hour toggle, clock.html horizontal/vertical orientations, and forward/backward directions remain correct.
 - Visual: Compare index.html and clock.html to confirm matching clock palette values, including the cyan marker and glow in both Minimal Clock orientations.
 - Layout/Controls: Verify desktop, narrow mobile, and short-height layouts remain top-oriented and scrollable; open the gear panel, change orientation/direction, tab to both utility icons, and follow the back arrow to index.html.
+- Validation: Confirm modified HTML structure, sitemap XML, and manifest JSON are valid; verify each sitemap URL maps to an existing public file and no stale focusline.html or Liquid canonical references remain.
 - Footer: Confirm every visible HTML footer displays 2025–2026.
 - Browser: Smoke test in Chrome, Firefox, Edge, and Safari.
 

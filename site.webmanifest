@@ -1,0 +1,17 @@
+{
+  "name": "Linear Clock Lab",
+  "short_name": "Linear Clock",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "description": "Minimalist time visualizations and productivity tools.",
+  "icons": [
+    {
+      "src": "/profile.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ]
+}
