@@ -2,7 +2,7 @@ Date: 2026-07-26
 Short Title: Extend Shared Suite Foundation
 Summary:
 
-Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established dependency-free shared CSS and time-formatting foundations while keeping page-specific layouts and controllers independent. Standardized every public tool page on one shared, accessible icon-only return control and normalized all existing public copyright notices without changing page placement or behavior.
+Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established dependency-free shared CSS and time-formatting foundations while keeping page-specific layouts and controllers independent. Standardized every public tool page on one shared, accessible icon-only return control and normalized all existing public copyright notices without changing page placement or behavior. The To Do page now keeps data actions with the planner selector and uses a concise informational footer.
 
 LCL Technical Details:
 
@@ -31,6 +31,8 @@ LCL Technical Details:
 - Suite Navigation: Standardized clock.html, task-planner-lc.html, multi-clock.html, clock_presets.html, focus.html, stopwatch.html, timer.html, dashboard.html, todo.html, and about.html on exactly one dedicated `.lcl-back-link` arrow with the shared accessible name and tooltip; index.html remains the hub without a back control.
 - Page-Local CSS: Removed obsolete return-anchor sizing, border, hover, glow, and focus rules from nine public tool pages while retaining every navigation container's existing placement and spacing.
 - To Do Shared CSS: Added lcl.css before todo.css so todo.html can use the shared return component while preserving its page-specific tokens, layout, and control overrides.
+- To Do Data Controls: Moved the existing Export and Import buttons plus hidden JSON file input into the header after the planner selector; shortened the labels, added descriptive tooltips, retained visible text and focus states, and preserved all IDs and bindings.
+- To Do Footer: Removed the redundant Local Only pill and replaced the footer toolbar with concise local-storage and © 2025–2026 jm5k lines; the footer now contains no buttons, while task, import, export, planner, and LocalStorage behavior remain unchanged.
 - Tests: Added 25-hour duration coverage confirming 90000 seconds formats as 25:00:00.
 - Tests: Added dependency-free Node assertions for Julian dates, 12/24-hour clock formatting, hour labels, duration formatting, negative clamping, and API freezing.
 - Documentation: Updated agents.md, ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, and README.md to define the hybrid shared-foundation/page-controller boundary and phased migration rules; navigation documentation now defines one `.lcl-back-link` per public spoke, page-specific container placement, accessible icon-control requirements, clarity-first label minimization, and existing-public-notice copyright rules.
@@ -60,6 +62,7 @@ Files Touched:
 - timer.html
 - dashboard.html
 - todo.html
+- todo.css
 - sitemap.xml
 - site.webmanifest
 - README.md
@@ -76,6 +79,8 @@ Testing Notes:
 - Suite Navigation Automated: Audit every sitemap-listed public spoke for exactly one dedicated index.html anchor using `.lcl-back-link`, the required aria-label and title, and arrow-only visible content; confirm index.html has no back control and no conflicting page-local anchor styles remain.
 - Suite Copyright Automated: Confirm no visible 2025-only jm5k notice remains, every existing public notice includes © 2025–2026 jm5k, and todo.html remains without a newly added notice.
 - Suite Navigation Manual: Open every sitemap-listed page at desktop and mobile widths; verify arrow placement, current-page accent hover, visible keyboard focus, the 38px square target, index.html destination, footer content, functional controls, and forced-colors usability.
+- To Do Automated: Confirm the preserved Export, Import, and hidden file-input IDs occur exactly once inside .header-actions; confirm the footer has no buttons and renders the required two informational lines.
+- To Do Manual: Verify desktop and narrow header wrapping, button tooltips and keyboard focus, planner switching, export filename and payload, import picker and replacement confirmation, persisted task data, board layout, and non-sticky footer spacing.
 - Manual: Load index.html and clock.html at desktop and mobile widths; confirm current-time updates, marker movement, statistics, 12/24-hour toggle, clock.html horizontal/vertical orientations, and forward/backward directions remain correct.
 - Visual: Compare index.html and clock.html to confirm matching clock palette values, including the cyan marker and glow in both Minimal Clock orientations.
 - Layout/Controls: Verify desktop, narrow mobile, and short-height layouts remain top-oriented and scrollable; open the gear panel, change orientation/direction, tab to both utility icons, and follow the back arrow to index.html.
@@ -92,6 +97,7 @@ Risks & Edge Cases:
 - Preset Themes retains its independent theme, custom override, persistence, and controller logic; only pure time formatting is shared.
 - The icon-only home control depends on its aria-label and title for a textual name; keep both synchronized if the destination wording changes.
 - The shared back-link component intentionally owns only anchor presentation; page-local navigation containers retain positioning so top-, header-, fixed-, and bottom-oriented controls do not shift.
+- To Do header controls retain the existing IDs so their event bindings remain location-independent; verify compact actions do not crowd the title at narrow widths.
 
 ---
 

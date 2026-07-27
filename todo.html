@@ -22,29 +22,47 @@
       </nav>
       <header>
         <div class="header-main">
-        <div class="title-block">
-          <h1>To Do</h1>
-          <p>Stabilize the chaos. Tea optional, panic inevitable.</p>
+          <div class="title-block">
+            <h1>To Do</h1>
+            <p>Stabilize the chaos. Tea optional, panic inevitable.</p>
+          </div>
         </div>
-      </div>
 
-      <div class="header-actions">
-        <label for="plannerSelect" class="sr-only">Select planner</label>
-        <select
-          id="plannerSelect"
-          aria-label="Task planner"
-          class="planner-select"
-        >
-          <option value="work">Work</option>
-          <option value="home">Home</option>
-          <option value="event">Event</option>
-        </select>
-
-        <a class="nav-link" href="#" onclick="return false;">
-          <span>Local Only</span>
-        </a>
-      </div>
-    </header>
+        <div class="header-actions">
+          <label for="plannerSelect" class="sr-only">Select planner</label>
+          <select
+            id="plannerSelect"
+            aria-label="Task planner"
+            class="planner-select"
+          >
+            <option value="work">Work</option>
+            <option value="home">Home</option>
+            <option value="event">Event</option>
+          </select>
+          <button
+            type="button"
+            id="btnExportJson"
+            class="btn-primary btn-compact header-data-action"
+            title="Export tasks as JSON"
+          >
+            Export
+          </button>
+          <button
+            type="button"
+            id="btnImportJson"
+            class="btn-ghost btn-compact header-data-action"
+            title="Import tasks from JSON"
+          >
+            Import
+          </button>
+          <input
+            type="file"
+            id="importFileInput"
+            accept="application/json"
+            class="sr-only"
+          />
+        </div>
+      </header>
 
     <main>
       <!-- Add Task Card -->
@@ -156,29 +174,12 @@
       </div>
     </main>
 
-    <footer>
-      <div class="save-status">
-        All tasks are stored locally in your browser (<span
-          >no server, no sync</span
-        >). Close the tab, come back later, everything should still be here.
+    <footer class="todo-footer">
+      <div class="todo-footer-status">
+        Local only &middot; no server, no sync &middot; stored in this browser
       </div>
-      <div class="footer-actions">
-        <button
-          type="button"
-          id="btnExportJson"
-          class="btn-primary btn-compact"
-        >
-          Export JSON
-        </button>
-        <button type="button" id="btnImportJson" class="btn-ghost btn-compact">
-          Import JSON
-        </button>
-        <input
-          type="file"
-          id="importFileInput"
-          accept="application/json"
-          class="sr-only"
-        />
+      <div class="todo-footer-copyright">
+        &copy; 2025&ndash;2026 jm5k
       </div>
     </footer>
     </div>
