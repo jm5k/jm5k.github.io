@@ -10,8 +10,6 @@
 <title>Multi-Clock | Linear Clock Lab</title>
 
 <!-- 🔍 SEO -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Multi-timezone 24-hour linear clocks by jm5k — pin favorites, add custom labels, reorder dynamically, and visualize world time with gradient progress and persistent local storage.">
 <meta name="keywords" content="multi-clock, linear clock, jm5k, timezones, UTC, linearclocklab, world clock, 24-hour timeline, time visualization">
 <meta name="author" content="jm5k">
@@ -38,14 +36,14 @@
 <style>
   :root{
     --bg:#000; --fg:#ccc; --muted:#888; --soft:#aaa;
-    --cyan:#0ff; --yellow:#cc9; --rail:#222; --tick:#333; --marker:#0ff;
+    --yellow:#cc9; --rail:#222; --tick:#333;
 
     /* link/back vars */
-    --accent:#00e5ff; --line:#1f1f1f; --chip:#151515; --chip-brd:#222;
+    --back-accent:#00e5ff; --line:#1f1f1f; --chip:#151515; --chip-brd:#222;
   }
   *{box-sizing:border-box}
   body{ background:var(--bg); color:var(--fg); font-family:monospace; margin:0; padding:24px 16px 64px; }
-  a{color:var(--cyan); text-decoration:none}
+  a{color:var(--accent); text-decoration:none}
   a:hover{text-decoration:underline}
 
   .wrap{max-width:960px; margin:0 auto}
@@ -53,10 +51,10 @@
   /* ← Back link (top-left) */
   .returnnav { max-width:960px; margin:0 auto 10px; }
   .returnnav a{
-    display:inline-block; color:var(--accent); text-decoration:none; font-size:0.95rem;
+    display:inline-block; color:var(--back-accent); text-decoration:none; font-size:0.95rem;
     border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:6px 12px; transition:all .2s ease;
   }
-  .returnnav a:hover{ background:rgba(255,255,255,0.04); border-color:var(--accent); text-shadow:0 0 6px var(--accent); }
+  .returnnav a:hover{ background:rgba(255,255,255,0.04); border-color:var(--back-accent); text-shadow:0 0 6px var(--back-accent); }
 
   h1{margin:6px 0 10px; font-weight:600; font-size:1.25rem; color:var(--yellow)}
   .sub{margin:0 0 18px; color:var(--muted)}
@@ -80,9 +78,9 @@
   .drop-target{outline:1px dashed rgba(0,255,255,0.45)}
   .head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px; cursor:grab; user-select:none; }
   .head:active{cursor:grabbing}
-  .title{color:var(--cyan); font-weight:600; display:flex; align-items:center; gap:8px}
+  .title{color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px}
   .title small{color:var(--muted); font-weight:400}
-  .now{color:var(--cyan)}
+  .now{color:var(--accent)}
   .pct{color:var(--yellow)}
   .subline{color:var(--muted); font-size:0.9rem; display:flex; align-items:center; gap:10px}
 
@@ -99,7 +97,7 @@
     border-radius:999px;
   }
   .marker{
-    position:absolute; top:50%; transform:translate(-50%,-50%); height:16px; width:2px; background:var(--marker);
+    position:absolute; top:50%; transform:translate(-50%,-50%); height:16px; width:2px; background:var(--accent);
     box-shadow:0 0 6px rgba(0,255,255,0.75);
   }
   .ticks{position:relative; display:flex; justify-content:space-between; font-size:0.8rem}
@@ -147,6 +145,7 @@
     <div id="extraClocks"></div>
   </div>
 
+<script src="lcl-time.js"></script>
 <script>
 /* ---------- Constants & DOM ---------- */
 const LS_KEY = 'jm5k_multi_clocks_v2'; // persistent; includes label editing support
@@ -160,7 +159,6 @@ const clearAllBtn = document.getElementById('clearAllBtn');
 const extraClocks = document.getElementById('extraClocks');
 
 /* ---------- Utilities ---------- */
-const pad = (n)=> String(n).padStart(2,'0');
 const idSafe = (t)=> t.replace(/[^a-z0-9]/gi,'-').toLowerCase();
 
 function getNowInTZ(tz) {
@@ -172,7 +170,11 @@ function getNowInTZ(tz) {
   return new Date(`${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}:${map.second}`);
 }
 function dayPercent(dateObj){ const s=dateObj.getHours()*3600+dateObj.getMinutes()*60+dateObj.getSeconds(); return (s/86400)*100; }
-function fmtTime(d){ return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+function formatZonedTime(date){
+  const hoursAndMinutes = LCLTime.formatClockTime(date.getHours(), date.getMinutes(), true);
+  const seconds = String(date.getSeconds()).padStart(2,'0');
+  return `${hoursAndMinutes}:${seconds}`;
+}
 
 function getOffsetMinutes(tz, when = new Date()){
   const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName:'shortOffset' }).formatToParts(when);
@@ -386,7 +388,7 @@ function tickClock(el, tz){
   el.querySelector('.fill').style.width = pct + '%';
   el.querySelector('.marker').style.left = pct + '%';
   el.querySelector('.pct').textContent = `${pct.toFixed(2)}%`;
-  el.querySelector('.now').textContent = fmtTime(now);
+  el.querySelector('.now').textContent = formatZonedTime(now);
 }
 function startClock(entry){
   const el = createClockCard(entry);

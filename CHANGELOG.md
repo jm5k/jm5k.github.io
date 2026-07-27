@@ -1,8 +1,8 @@
 Date: 2026-07-26
-Short Title: Establish Shared Clock Foundation
+Short Title: Expand Shared Clock Foundation
 Summary:
 
-Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established a dependency-free shared CSS and time-formatting foundation while keeping page-specific layouts and clock controllers independent.
+Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established a dependency-free shared CSS and time-formatting foundation while keeping page-specific layouts and clock controllers independent, then migrated Multi-Clock where exact semantic matches existed.
 
 LCL Technical Details:
 
@@ -18,6 +18,10 @@ LCL Technical Details:
 - Sitemap: Added every homepage-linked public tool and page to sitemap.xml using absolute HTTPS URLs.
 - Shared JavaScript: Added the frozen LCLTime API in lcl-time.js for hour labels, clock times, durations, and ordinal Julian dates, with browser and direct Node compatibility and no DOM, LocalStorage, event, or timer access.
 - JavaScript Migration: index.html and clock.html load lcl-time.js before their independent inline controllers and pass use24h explicitly to shared formatting calls; each updateClock() still reuses one Date instance and the one-second intervals are unchanged.
+- Multi-Clock Migration: multi-clock.html now loads lcl-time.js before its inline controller and uses LCLTime.formatClockTime() for fixed 24-hour HH:MM formatting; its page-specific helper continues to append zero-padded seconds for the unchanged HH:MM:SS display.
+- Multi-Clock CSS: Removed the exact-match --cyan and --marker aliases and now uses the shared --accent token for links, clock titles, current-time readouts, and marker color; retained the distinct back-link accent and all page-specific card, rail, tick, glow, control, and text values.
+- Multi-Clock Metadata: Removed duplicate charset and viewport declarations while preserving the canonical URL and all remaining SEO, social, icon, title, and description metadata.
+- Multi-Clock Compatibility: Timezone calculations, dropdown contents and sorting, pinned zones, one-second card timers, stored data under jm5k_multi_clocks_v2, JSON import/export formats, editing, reordering, removal, and independent page control remain unchanged.
 - Tests: Added dependency-free Node assertions for Julian dates, 12/24-hour clock formatting, hour labels, duration formatting, negative clamping, and API freezing.
 - Documentation: Updated agents.md, ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, and README.md to define the hybrid shared-foundation/page-controller boundary and phased migration rules.
 - LocalStorage: No keys added or changed; the existing 12/24-hour preference behavior remains unchanged.
@@ -49,6 +53,8 @@ Files Touched:
 Testing Notes:
 
 - Automated: Run node tests/time-utils.test.js and node --check for lcl-time.js, the test file, and extracted inline scripts; the test suite covers all required Julian-date, clock, hour-label, and duration cases.
+- Multi-Clock Automated: Compile the extracted multi-clock.html controller, validate HTML structure and script ordering, confirm one charset and viewport declaration, verify shared accent migration, and confirm storage/JSON compatibility constants remain unchanged.
+- Multi-Clock Manual: Exercise UTC, America/New_York, America/Los_Angeles, Europe/London, and Asia/Tokyo clocks; verify ticking, offsets, progress, labels, ordering, removal, persistence, import/export, empty state, return navigation, footer, and unchanged visual appearance.
 - Manual: Load index.html and clock.html at desktop and mobile widths; confirm current-time updates, marker movement, statistics, 12/24-hour toggle, clock.html horizontal/vertical orientations, and forward/backward directions remain correct.
 - Visual: Compare index.html and clock.html to confirm matching clock palette values, including the cyan marker and glow in both Minimal Clock orientations.
 - Layout/Controls: Verify desktop, narrow mobile, and short-height layouts remain top-oriented and scrollable; open the gear panel, change orientation/direction, tab to both utility icons, and follow the back arrow to index.html.
@@ -61,6 +67,7 @@ Risks & Edge Cases:
 - The value follows the local calendar date. Date.UTC subtraction avoids daylight-saving off-by-one errors; verify rollover at local midnight. The minimal clock's Julian date remains independent of its orientation, direction, and time-format settings.
 - The expanded utility panel reserves vertical space so it does not overlap the footer on narrow viewports.
 - Removing forced-color suppression allows the operating system to adapt colors in high-contrast modes; browser forced-colors behavior should be included in future accessibility smoke tests.
+- Multi-Clock remains intentionally responsible for timezone conversion, state, card intervals, and import/export behavior; only pure HH:MM formatting is shared.
 
 ---
 
