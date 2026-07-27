@@ -174,51 +174,7 @@
         box-shadow: 0 0 10px var(--glow);
       }
 
-      .switch {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.55rem;
-        cursor: pointer;
-        color: var(--muted);
-        user-select: none;
-      }
-      .switch input {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      .slider {
-        position: relative;
-        width: 44px;
-        height: 24px;
-        background: #333;
-        border: 1px solid #555;
-        border-radius: 999px;
-        transition: background 0.2s, border-color 0.2s;
-      }
-      .slider::before {
-        content: "";
-        position: absolute;
-        height: 18px;
-        width: 18px;
-        left: 3px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: #bbb;
-        border-radius: 50%;
-        transition: left 0.18s, background 0.2s;
-      }
-      .switch input:checked + .slider {
-        background: #0b3a3a;
-        border-color: #0aa;
-      }
-      .switch input:checked + .slider::before {
-        left: 23px;
-        background: #0ff;
-      }
-      .switch-label {
-        font-size: 0.95rem;
+      .lcl-time-switch .lcl-switch-label {
         color: var(--muted);
       }
 
@@ -492,14 +448,14 @@
           </select>
         </div>
         <div class="control">
-          <label class="switch" title="Switch between 12h and 24h display">
+          <label class="lcl-time-switch" title="Switch between 12h and 24h display">
             <input
               id="formatToggle"
               type="checkbox"
               aria-label="Toggle 24-hour time"
             />
-            <span class="slider"></span>
-            <span id="formatLabel" class="switch-label">24-hour</span>
+            <span class="lcl-switch-track"></span>
+            <span id="formatLabel" class="lcl-switch-label">24-hour</span>
           </label>
         </div>
       </div>
@@ -574,6 +530,7 @@
       </footer>
     </div>
 
+    <script src="lcl-time.js"></script>
     <script>
       const LS = {
         templates: "lcl-taskplanner-templates",
@@ -763,23 +720,14 @@
 
       function formatTime(minutes) {
         const clamped = Math.max(0, Math.min(1440, Math.round(minutes)));
-        const hrs = Math.floor(clamped / 60);
+        if (clamped === 1440 && timeFormat === "24h") return "24:00";
+        const hours = Math.floor(clamped / 60);
         const mins = clamped % 60;
-        if (timeFormat === "24h") {
-          const hh = String(Math.min(hrs, 24)).padStart(2, "0");
-          const mm = String(mins).padStart(2, "0");
-          return clamped === 1440 ? "24:00" : `${hh}:${mm}`;
-        }
-        const period = hrs >= 12 ? "PM" : "AM";
-        const baseHour = hrs % 12 === 0 ? 12 : hrs % 12;
-        const mm = String(mins).padStart(2, "0");
-        return `${String(baseHour).padStart(2, "0")}:${mm} ${period}`;
+        return LCLTime.formatClockTime(hours, mins, timeFormat === "24h");
       }
 
       function formatPlannerHourLabel(hour24) {
-        if (timeFormat === "24h") return String(hour24).padStart(2, "0");
-        const base = hour24 % 12 || 12;
-        return String(base).padStart(2, "0");
+        return LCLTime.formatHourLabel(hour24, timeFormat === "24h");
       }
 
       function formatDuration(minutes) {
