@@ -496,6 +496,15 @@ Rules:
 10. Test in Chrome, Firefox, Edge, Safari.
 11. Confirm dark enforcement on system-light machines.
 
+## 10.1 Required Automated Checks
+
+- Run `node tests/time-utils.test.js` whenever `lcl-time.js` or a public page
+  migrated to the shared time API changes.
+- Run `node tests/site-audit.test.js` whenever public HTML, `sitemap.xml`,
+  shared local assets, navigation, copyright, or metadata changes.
+- A migrated time page is also public HTML, so changes to one require both
+  checks.
+
 ---
 
 # 11. Clock-Family Time Standard

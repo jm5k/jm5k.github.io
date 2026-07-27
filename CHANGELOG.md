@@ -2,7 +2,7 @@ Date: 2026-07-26
 Short Title: Extend Shared Suite Foundation
 Summary:
 
-Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established dependency-free shared CSS and time-formatting foundations while keeping page-specific layouts and controllers independent. Standardized every public tool page on one shared, accessible icon-only return control and normalized all existing public copyright notices without changing page placement or behavior. The To Do page now keeps data actions with the planner selector and uses a concise informational footer; Timer Lab, Stopwatch Lab, FocusLine, and Task Planner now reuse the shared time-formatting foundation while preserving their page-local behavior and display semantics.
+Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established dependency-free shared CSS and time-formatting foundations while keeping page-specific layouts and controllers independent. Standardized every public tool page on one shared, accessible icon-only return control and normalized all existing public copyright notices without changing page placement or behavior. The To Do page now keeps data actions with the planner selector and uses a concise informational footer; Timer Lab, Stopwatch Lab, FocusLine, and Task Planner now reuse the shared time-formatting foundation while preserving their page-local behavior and display semantics. Completed a sitemap-driven public-page metadata and content audit and added a dependency-free regression test for the suite's publishing contracts.
 
 LCL Technical Details:
 
@@ -43,12 +43,17 @@ LCL Technical Details:
 - Task Planner Shared Formatting: task-planner-lc.html now loads lcl-time.js before its independent inline controller. Its page-local minute adapter delegates ordinary clock output to LCLTime.formatClockTime(), while preserving clamping, rounding, and the Task Planner-specific 24:00 end-of-day boundary; rail labels now use LCLTime.formatHourLabel().
 - Task Planner Shared Switch: Replaced the duplicate page-local 12/24-hour switch CSS and markup with lcl-time-switch, lcl-switch-track, and lcl-switch-label. A narrow page override preserves the existing muted label color, dimensions, thumb, cyan checked state, native checkbox, accessible name, title, and behavior.
 - Task Planner Compatibility: Natural-language duration wording and native HH:MM time-input formatting remain local. Zone logic and colors, marker inversion and glow, 15-second ticker, templates, sanitization, sorting, all three Task Planner LocalStorage keys, import/export structure and filename, footer, back arrow, layout, and styling remain unchanged.
+- About Metadata: Removed duplicate charset and viewport declarations; corrected canonical and og:url to https://linearclocklab.com/about.html; replaced copied homepage descriptions and social titles with page-specific About metadata while preserving theme, manifest, icons, and AboutPage structured data.
+- About Content: Updated the current-suite summary and verified tool sections for the Main and Minimal clocks, Task Planner, Multi-Clock, Clock Colors, FocusLine, Stopwatch, Timer, Dashboard, and To Do Lists. Documented ordinal Julian YYYY-DDD displays and the static, dependency-free, client-side, local-first, analytics-free architecture without adding tool-page links.
+- To Do Metadata: Added the missing page-specific description, author, robots, canonical, theme, color-scheme, Open Graph, and Twitter metadata while preserving the existing title, deferred controller, layout, and behavior.
+- Site Audit: Added dependency-free tests/site-audit.test.js, which derives public pages from sitemap.xml and verifies sitemap uniqueness and file coverage, homepage tool-card coverage, core/social metadata and URLs, shared back navigation, visible copyright text, local asset existence, and lcl-time.js ordering on migrated pages.
+- Public Page Audit: All 11 sitemap-listed pages now pass the required metadata, navigation, copyright, local-asset, sitemap, and shared-script checks.
 - Tests: Added 25-hour duration coverage confirming 90000 seconds formats as 25:00:00.
 - Tests: Added dependency-free Node assertions for Julian dates, 12/24-hour clock formatting, hour labels, duration formatting, negative clamping, and API freezing.
 - Documentation: Updated agents.md, ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, and README.md to define the hybrid shared-foundation/page-controller boundary and phased migration rules; navigation documentation now defines one `.lcl-back-link` per public spoke, page-specific container placement, accessible icon-control requirements, clarity-first label minimization, and existing-public-notice copyright rules.
 - LocalStorage: No keys added or changed; the existing 12/24-hour preference behavior remains unchanged.
-- Footer: Normalized existing public notices in index.html, clock.html, task-planner-lc.html, multi-clock.html, clock_presets.html, focus.html, stopwatch.html, timer.html, dashboard.html, and about.html to display © 2025–2026 jm5k without changing footer structure, styling, functional content, or legal files; todo.html remains without a copyright notice.
-- SEO/Metadata/Dark mode: No changes.
+- Footer: Every sitemap-listed public page now visibly contains © 2025–2026 jm5k without JavaScript generation; page-specific surrounding text, functional controls, and legal files remain unchanged.
+- SEO/Metadata: Corrected About metadata, completed To Do metadata, and verified every public canonical and og:url against sitemap.xml; no dark-mode styling changed.
 - Accessibility: The new value has an explicit ordinal YYYY-DDD Julian-date aria-label.
 - Accessibility: The gear and back arrow have descriptive aria-label and title attributes, with visible keyboard focus states.
 
@@ -60,6 +65,7 @@ Files Touched:
 - lcl.css
 - lcl-time.js
 - tests/time-utils.test.js
+- tests/site-audit.test.js
 - agents.md
 - ARCHITECTURE.md
 - COMPONENTS.md
@@ -87,7 +93,7 @@ Testing Notes:
 - Preset Themes Manual: Verify every preset and custom control, one-second clock/countdown updates, DST-safe progress, marker and rail appearance, persistence, reset/collapse behavior, import/export compatibility, navigation, and the synchronized footer.
 - Preset Themes Accessibility: Tab to the back arrow and confirm its accent focus ring, 38px by 38px target, accessible name, tooltip, and index.html destination.
 - Suite Navigation Automated: Audit every sitemap-listed public spoke for exactly one dedicated index.html anchor using `.lcl-back-link`, the required aria-label and title, and arrow-only visible content; confirm index.html has no back control and no conflicting page-local anchor styles remain.
-- Suite Copyright Automated: Confirm no visible 2025-only jm5k notice remains, every existing public notice includes © 2025–2026 jm5k, and todo.html remains without a newly added notice.
+- Suite Copyright Automated: Confirm every sitemap-listed public page visibly contains exactly one © 2025–2026 jm5k notice and no visible 2025-only jm5k notice remains.
 - Suite Navigation Manual: Open every sitemap-listed page at desktop and mobile widths; verify arrow placement, current-page accent hover, visible keyboard focus, the 38px square target, index.html destination, footer content, functional controls, and forced-colors usability.
 - To Do Automated: Confirm the preserved Export, Import, and hidden file-input IDs occur exactly once inside .header-actions; confirm the footer has no buttons and renders the required two informational lines.
 - To Do Manual: Verify desktop and narrow header wrapping, button tooltips and keyboard focus, planner switching, export filename and payload, import picker and replacement confirmation, persisted task data, board layout, and non-sticky footer spacing.
@@ -97,11 +103,12 @@ Testing Notes:
 - FocusLine Manual: Verify all Pomodoro controls and phase durations, progress, auto-advance, chime, notifications, shortcuts, today's total, one-second locale local clock, notes and timestamp insertion, drafts, searches, note actions, exports, persistence, footer, back arrow, and unchanged layout.
 - Task Planner Automated: Run the shared utility tests, syntax-check the shared utility and extracted task-planner-lc.html controller, verify 12/24-hour output including 24:00, confirm shared hour labels and switch classes, and audit the unchanged duration helper, native time inputs, storage keys, template JSON, export filename, and 15-second ticker.
 - Task Planner Manual: Verify templates, custom zones, current/next summaries, marker color and position, 12/24-hour persistence and labels, native time editing, import/export, keyboard-accessible switch behavior, footer, back arrow, and unchanged desktop/mobile layout.
+- Site Audit Automated: Run node tests/site-audit.test.js after public HTML, sitemap, shared local asset, navigation, copyright, or metadata changes; run node tests/time-utils.test.js as well when shared time code or a migrated time page changes.
 - Manual: Load index.html and clock.html at desktop and mobile widths; confirm current-time updates, marker movement, statistics, 12/24-hour toggle, clock.html horizontal/vertical orientations, and forward/backward directions remain correct.
 - Visual: Compare index.html and clock.html to confirm matching clock palette values, including the cyan marker and glow in both Minimal Clock orientations.
 - Layout/Controls: Verify desktop, narrow mobile, and short-height layouts remain top-oriented and scrollable; open the gear panel, change orientation/direction, tab to both utility icons, and follow the back arrow to index.html.
 - Validation: Confirm modified HTML structure, sitemap XML, and manifest JSON are valid; verify each sitemap URL maps to an existing public file and no stale focusline.html or Liquid canonical references remain.
-- Footer: Confirm every visible HTML footer displays 2025–2026.
+- Footer: Confirm every public page visibly contains © 2025–2026 jm5k.
 - Browser: Smoke test in Chrome, Firefox, Edge, and Safari.
 
 Risks & Edge Cases:
@@ -110,6 +117,7 @@ Risks & Edge Cases:
 - The expanded utility panel reserves vertical space so it does not overlap the footer on narrow viewports.
 - FocusLine: The compact adapter depends on the frozen shared duration formatter retaining its HH:MM:SS contract; its local conversion intentionally restores total minutes and preserves rounded countdown behavior above 59 minutes.
 - Task Planner: The page adapter intentionally owns the 24:00 boundary because a 24-hour day endpoint is not a general clock-time value; verify that it remains distinct from 12:00 PM in 12-hour mode after future shared-utility changes.
+- Site Audit: The dependency-free checker intentionally uses tolerant, case-insensitive HTML matching rather than a parser dependency; keep static metadata and asset references in ordinary HTML tags so regressions remain detectable.
 - Removing forced-color suppression allows the operating system to adapt colors in high-contrast modes; browser forced-colors behavior should be included in future accessibility smoke tests.
 - Multi-Clock remains intentionally responsible for timezone conversion, state, card intervals, and import/export behavior; only pure HH:MM formatting is shared.
 - Preset Themes retains its independent theme, custom override, persistence, and controller logic; only pure time formatting is shared.

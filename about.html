@@ -7,15 +7,10 @@
     <meta name="theme-color" content="#000000" />
     <link rel="stylesheet" href="lcl.css" />
 
-    <!-- 🔍 Basic SEO -->
     <title>About | Linear Clock Lab</title>
-
-    <!-- 🔍 SEO -->
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Linear Clock Lab — jm5k’s hub for minimalist time visualizations and tools. Explore the original 24-hour linear clock, multi-timezone clock, FocusLine timer, and themed presets."
+      content="About Linear Clock Lab, a static, dependency-free suite of local-first clocks and productivity tools by jm5k. Everything runs client-side without analytics or tracking."
     />
     <meta
       name="keywords"
@@ -23,25 +18,28 @@
     />
     <meta name="author" content="jm5k" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://linearclocklab.com/" />
+    <link rel="canonical" href="https://linearclocklab.com/about.html" />
 
     <!-- 🔗 Social (Open Graph & Twitter) -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Linear Clock Lab" />
+    <meta property="og:title" content="About Linear Clock Lab" />
     <meta
       property="og:description"
-      content="jm5k’s hub for minimalist time visualizations and tools — original 24-hour linear clock, multi-timezone views, FocusLine timer, and themed presets."
+      content="Learn about Linear Clock Lab, its local-first clock and productivity tools, and its static, dependency-free approach."
     />
-    <meta property="og:url" content="https://linearclocklab.com/" />
+    <meta
+      property="og:url"
+      content="https://linearclocklab.com/about.html"
+    />
     <meta
       property="og:image"
       content="https://linearclocklab.com/profile.png"
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Linear Clock Lab" />
+    <meta name="twitter:title" content="About Linear Clock Lab" />
     <meta
       name="twitter:description"
-      content="Minimal time. Maximum clarity. Explore 24-hour linear clocks, multi-timezone views, and FocusLine."
+      content="Learn about Linear Clock Lab, a static, client-side suite of local-first clocks and productivity tools with no analytics or tracking."
     />
     <meta
       name="twitter:image"
@@ -252,16 +250,17 @@
         <h1>What is the Linear Clock Lab?</h1>
         <p>
           The <strong>Linear Clock Lab</strong> is a suite of minimalist,
-          client-side time tools by <strong>jm5k</strong>. Everything runs in
-          your browser—no tracking, no servers, and no frameworks—focusing on
-          clarity, speed, and control.
+          static, dependency-free time and productivity tools by
+          <strong>jm5k</strong>. Everything runs client-side and stays
+          local-first in your browser—no backend, analytics, tracking, or
+          frameworks—focusing on clarity, speed, and control.
         </p>
         <p>
-          The suite currently includes: a full-day
-          <em>24-Hour Linear Clock</em>, a <em>Minimal View</em>,
-          <em>Multi Clocks</em> for world time,
-          <em>Color Theme Clocks</em> (experimental), and the
-          <em>FocusLine</em> Pomodoro timer.
+          The current suite includes the <em>Main 24-Hour Linear Clock</em>,
+          <em>Minimal Clock</em>, <em>Task Planner Linear Clock</em>,
+          <em>Multi-Clock</em>, <em>Clock Colors / Preset Themes</em>,
+          <em>FocusLine</em>, <em>Stopwatch</em>, <em>Timer</em>,
+          <em>Dashboard</em>, and <em>To Do Lists</em>.
         </p>
         <div class="cta">
           <a
@@ -308,8 +307,8 @@
               <li>Quarter-hour and hour tick marks, smooth 1s updates.</li>
               <li>Stats: % of day elapsed and time remaining.</li>
               <li>Workday band (08:00–17:00).</li>
-              <li>Vertical layout option.</li>
-              <li>Reverse marker direction option.</li>
+              <li>12h/24h display with a locally saved preference.</li>
+              <li>Ordinal Julian date in YYYY-DDD format.</li>
             </ul>
           </div>
           <div class="card">
@@ -331,6 +330,9 @@
               <li>Matches lab styling (gray rail, cyan marker, soft glow).</li>
               <li>12h/24h toggle with localStorage persistence.</li>
               <li>Hour labels with work-hour emphasis.</li>
+              <li>Ordinal Julian date in YYYY-DDD format.</li>
+              <li>Horizontal or vertical layout.</li>
+              <li>Forward or backward marker direction.</li>
             </ul>
           </div>
           <div class="card">
@@ -343,7 +345,7 @@
       </section>
 
       <section class="section">
-        <h2>Multi Clocks</h2>
+        <h2>Multi-Clock</h2>
         <div class="two-col">
           <div class="card">
             <h3>Completed</h3>
@@ -366,13 +368,14 @@
       </section>
 
       <section class="section">
-        <h2>Color Theme Clocks</h2>
+        <h2>Clock Colors / Preset Themes</h2>
         <div class="two-col">
           <div class="card">
             <h3>Completed</h3>
             <ul class="plain">
-              <li>Theme variables scaffold (dark/light aware).</li>
-              <li>Accent-driven gradients and markers.</li>
+              <li>Sixteen dark preset palettes with instant switching.</li>
+              <li>Custom clock colors, marker glow, and label offset controls.</li>
+              <li>Locally saved settings with JSON import and export.</li>
             </ul>
           </div>
           <div class="card">
@@ -409,7 +412,7 @@
       </section>
 
       <section class="section">
-        <h2>Timers</h2>
+        <h2>Timer</h2>
         <div class="two-col">
           <div class="card">
             <h3>Completed</h3>
@@ -480,7 +483,7 @@
       </section>
 
       <section class="section">
-        <h2>Task Planner</h2>
+        <h2>Task Planner Linear Clock</h2>
         <div class="two-col">
           <div class="card">
             <h3>Completed</h3>
@@ -502,6 +505,25 @@
               <li>Advanced templates (school schedule, sleep routine builder).</li>
               <li>Reduced-stimulus mode for users sensitive to visual clutter.</li>
             </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>To Do Lists</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Completed</h3>
+            <ul class="plain">
+              <li>Separate Work, Home, and Event planners.</li>
+              <li>Now, Next, Planned, and Backburner task groups.</li>
+              <li>Due dates, pinning, completion filters, and manual ordering.</li>
+              <li>LocalStorage persistence with JSON import and export.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Planned</h3>
+            <ul class="plain"></ul>
           </div>
         </div>
       </section>

@@ -125,6 +125,22 @@ The **Color Theme Clock** allows complete visual customization, from background 
 - `stopwatch.html` — Stopwatch  
 - `about.html` — Overview, roadmap, and license  
 - `tests/time-utils.test.js` — Dependency-free Node tests for shared time formatting
+- `tests/site-audit.test.js` — Sitemap-driven public-page metadata and asset audit
+
+---
+
+## 🧪 Testing
+
+Run the dependency-free Node checks directly:
+
+```text
+node tests/time-utils.test.js
+node tests/site-audit.test.js
+```
+
+The time utility tests protect shared formatting behavior. The site audit
+protects public-page metadata, navigation, copyright, sitemap coverage, shared
+script ordering, and local asset references.
 
 ---
 
