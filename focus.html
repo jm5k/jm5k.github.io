@@ -258,6 +258,7 @@
 <!-- Chime -->
 <audio id="ding" preload="auto"><source src="data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBIAAAABAAEAESsAACJWAAACABYAaW5mbyBKa2IAAAAAAAAAPwAAAP///wAAAP///wAAAP///wAAAP///wAAAP///wAA" type="audio/wav"></audio>
 
+<script src="lcl-time.js"></script>
 <script>
 (function(){
   // ------- Elements
@@ -350,10 +351,12 @@
     }
   }
 
-  function format(ms){
-    const t = Math.max(0, Math.round(ms/1000));
-    const m = Math.floor(t/60), s = t%60;
-    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  function formatFocusDuration(milliseconds){
+    const roundedSeconds = Math.max(0, Math.round(milliseconds/1000));
+    const fullDuration = LCLTime.formatDurationHMS(roundedSeconds);
+    const [hours, minutes, seconds] = fullDuration.split(':');
+    const totalMinutes = Number(hours)*60 + Number(minutes);
+    return `${String(totalMinutes).padStart(2,'0')}:${seconds}`;
   }
 
   let rafId=0;
@@ -434,7 +437,7 @@
     const p = Math.max(0, Math.min(1, state.elapsedMs / state.durationMs));
     els.bar.style.width = (p*100).toFixed(4)+'%';
     els.progressbar.setAttribute('aria-valuenow', Math.round(p*100));
-    els.timeLabel.textContent = format(state.durationMs - state.elapsedMs);
+    els.timeLabel.textContent = formatFocusDuration(state.durationMs - state.elapsedMs);
     els.cyclePill.textContent = `${state.phase===Phases.Work?'Cycle':'Break'} ${state.phase===Phases.Work?state.cycle:'·'} / ${els.cycles.value}`;
     saveTimer();
   }
@@ -479,9 +482,6 @@
     els.clockTimeLabel.textContent = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
     els.clockPercent.textContent = Math.round(pct) + '%';
   }
-  setInterval(updateLocalClock, 1000);
-  updateLocalClock();
-
   // ------- Notes
   const NOTES_KEY = 'focusline:notes:v1';
   const DRAFT_KEY = 'focusline:note:draft';
@@ -498,7 +498,8 @@
   function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
   function formatTs(ts){
     const d = new Date(ts), pad = (x)=>String(x).padStart(2,'0');
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const time = LCLTime.formatClockTime(d.getHours(), d.getMinutes(), true);
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${time}`;
   }
 
   function renderNotes(){
