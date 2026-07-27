@@ -57,33 +57,29 @@
   html[data-theme="zenmint"]{ --bg:#0a1112; --fg:#e6f4f3; --muted:#99b1ae; --accent:#6ef7c9; --accent2:#60d2ff; --accent3:#91ffd8; --tick:#122021; --railA:#0e191a; --railB:#142223; --marker:#6ef7c9; }
   html[data-theme="voidlux"]{ --bg:#040011; --fg:#d9daff; --muted:#8a8fc9; --accent:#9966ff; --accent2:#00ccff; --accent3:#6a00ff; --tick:#12002a; --railA:#0a0018; --railB:#13002a; --marker:#9966ff; }
 
-  html,body{height:100%}
+  html,body{min-height:100%}
   body{
-    margin:0; background:var(--bg); color:var(--fg);
+    margin:0; min-height:100vh; box-sizing:border-box;
+    background:var(--bg); color:var(--fg);
     font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:clamp(28px, 5vh, 56px) 0 0;
   }
-  .wrap{ width:min(1000px, 92vw); padding:28px 20px 36px; }
+  .wrap{ width:min(1000px, 92vw); padding:0 20px 36px; margin:0 auto; }
 
-  .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
-  .brand a, .brand a:visited, .brand a:hover{ color:var(--accent); text-decoration:none; letter-spacing:.02em; }
-  .brand small{ color:var(--muted); margin-left:10px; font-size:.9em; }
-
-  .hairline{ border:none; border-top:var(--line-thin) solid rgba(255,255,255,0.1); margin:18px 0 22px; }
-
-  .controls{ display:flex; align-items:center; gap:12px; color:var(--muted); flex-wrap:wrap; }
-  .controls select, .controls input[type="range"], .controls input[type="number"], .controls button{
+  .settings-controls{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; color:var(--muted); }
+  .settings-controls label{ display:flex; flex-direction:column; gap:6px; }
+  .settings-controls select, .settings-controls input[type="range"], .settings-controls input[type="number"]{
     background:#111; color:var(--fg); border:1px solid rgba(255,255,255,.12);
     padding:6px 8px; border-radius:10px; outline:none;
   }
-  .controls select{ min-width:190px; color:var(--fg); appearance:none; }
-  .controls select option{ background-color:#111; color:var(--fg); }
-  .controls select:focus{
+  .settings-controls select{ min-width:190px; color:var(--fg); appearance:none; }
+  .settings-controls select option{ background-color:#111; color:var(--fg); }
+  .settings-controls select:focus{
     box-shadow:0 0 calc(10px*var(--glow)) color-mix(in oklab, var(--accent) 40%, transparent);
     border-color:color-mix(in oklab, var(--accent) 40%, rgba(255,255,255,0.15));
   }
-  .controls input[type="range"]{ width:180px; accent-color:var(--accent); }
-  .controls input[type="number"]{ width:74px; text-align:center; }
+  .settings-controls input[type="range"]{ width:180px; accent-color:var(--accent); }
+  .settings-controls input[type="number"]{ width:74px; text-align:center; }
   #currentTimeTop{ font-size:1.6rem; color:var(--accent); filter:drop-shadow(0 0 calc(6px*var(--glow)) var(--accent)); }
 
   .rail{
@@ -132,91 +128,43 @@
   .stats{ display:flex; gap:18px; margin-top:12px; color:var(--muted); font-size:.95rem; flex-wrap:wrap; }
   .stats b{ color:var(--fg); }
 
-  /* Collapsible Custom Theme (color pickers only) */
-  details.theme {
-    border:1px solid #111; border-radius:10px; background:#0a0a0a; box-shadow:0 0 0 1px #0f0f0f inset;
-    margin:14px 0 10px; padding:8px 10px;
+  .utility-actions{ position:relative; display:flex; justify-content:center; align-items:flex-start; gap:.5rem; margin:18px auto 0; }
+  #themePanel{ margin:0; }
+  #themePanel[open]{ padding-bottom:500px; }
+  #themePanel > summary{
+    box-sizing:border-box; display:grid; width:38px; height:38px; place-items:center;
+    cursor:pointer; list-style:none; user-select:none; padding:0;
+    border:1px solid rgba(255,255,255,.12); border-radius:6px;
+    background:transparent; color:var(--muted);
+    transition:color .2s ease, border-color .2s ease, background .2s ease;
   }
-  details.theme > summary{ cursor:pointer; list-style:none; color:var(--accent); font-weight:600; display:flex; align-items:center; gap:8px; }
-  details.theme[open] > summary{ margin-bottom:10px; }
+  #themePanel > summary:hover{ color:var(--accent); border-color:var(--accent); background:color-mix(in oklab, var(--accent) 8%, transparent); }
+  #themePanel > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  #themePanel > summary::marker, #themePanel > summary::-webkit-details-marker{ display:none; }
+  .settings-panel{
+    position:absolute; top:calc(38px + .5rem); left:50%; z-index:1;
+    display:grid; gap:12px; width:min(1000px, 92vw); box-sizing:border-box;
+    padding:14px; border:1px solid color-mix(in oklab, var(--accent) 35%, rgba(255,255,255,.12));
+    border-radius:10px; background:color-mix(in oklab, var(--bg) 92%, var(--fg) 8%);
+    color:var(--muted); text-align:left; transform:translateX(-50%);
+  }
+  .settings-group{ display:grid; gap:10px; padding:10px; border:1px solid color-mix(in oklab, var(--accent) 16%, rgba(255,255,255,.12)); border-radius:8px; }
+  .settings-heading{ color:var(--fg); font-size:.9rem; font-weight:600; }
   .theme-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
   .swatch{ display:flex; align-items:center; gap:8px; background:#0b0b0b; border:1px solid #222; padding:8px; border-radius:8px; }
   .swatch label{ min-width:90px; color:#aaa; }
   .swatch input[type="color"]{ background:#111; border:1px solid #222; border-radius:6px; padding:0; width:48px; height:34px; }
 
-  .theme-actions{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .theme-actions{ display:flex; gap:8px; flex-wrap:wrap; }
   .theme-actions button{ background:#111; color:var(--fg); border:1px solid #222; padding:8px 10px; border-radius:6px; cursor:pointer; }
 
-  .returnnav{text-align:center;margin:40px auto 0;}
+  .returnnav{ margin:0; }
 
-  .foot{ margin-top:22px; color:var(--muted); font-size:.9rem; }
-  .foot a{ color:var(--accent); text-decoration:none; }
+  .foot{ margin-top:14px; color:var(--muted); font-size:.9rem; text-align:center; }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <a href="index.html">Linear Clock Lab</a>
-        <small>Custom or Preset Color Themes</small>
-      </div>
-      <div class="controls" title="Choose theme & adjust glow">
-        <label for="theme">Theme</label>
-        <select id="theme">
-          <option value="technolust">TechnoLust (Neon)</option>
-          <option value="midnight">Midnight Blue</option>
-          <option value="vaporwave">Vaporwave</option>
-          <option value="terminal">Terminal Green</option>
-          <option value="amber">Amber Retro</option>
-          <option value="mono">Mono Minimal</option>
-          <option value="solar">Solar-ish Dark</option>
-          <option value="cybercrimson">CyberCrimson</option>
-          <option value="aurorapulse">AuroraPulse</option>
-          <option value="neonmist">NeonMist</option>
-          <option value="deepcircuit">DeepCircuit</option>
-          <option value="infravoid">InfraVoid</option>
-          <option value="ghostline">Ghostline</option>
-          <option value="ionstorm">IonStorm</option>
-          <option value="zenmint">ZenMint</option>
-          <option value="voidlux">VoidLux</option>
-        </select>
-        <label for="glow">Glow</label>
-        <input id="glow" type="range" min="0" max="1.25" step="0.05" value="0.65" />
-        <label for="labelOffset">Label offset</label>
-        <input id="labelOffset" type="number" min="-1" max="3" step="0.05" value="0" />
-        <button id="exportTheme" title="Export current custom theme">Export</button>
-        <button id="importTheme" title="Import a custom theme JSON">Import</button>
-        <input id="themeFile" type="file" accept="application/json" style="display:none">
-      </div>
-    </div>
-
-    <!-- Collapsible: color pickers only -->
-    <details class="theme" id="themePanel">
-      <summary>🎨 Custom Theme (click to toggle)</summary>
-      <div class="theme-grid">
-        <div class="swatch"><label for="bg">Background</label><input id="bg" type="color" value="#000000"></div>
-        <div class="swatch"><label for="fg">Foreground</label><input id="fg" type="color" value="#bfc7d5"></div>
-        <div class="swatch"><label for="muted">Muted</label><input id="muted" type="color" value="#7a8393"></div>
-
-        <div class="swatch"><label for="accent">Accent</label><input id="accent" type="color" value="#00ffe6"></div>
-        <div class="swatch"><label for="accent2">Accent 2</label><input id="accent2" type="color" value="#ff2bd6"></div>
-        <div class="swatch"><label for="accent3">Accent 3</label><input id="accent3" type="color" value="#b4ff00"></div>
-
-        <div class="swatch"><label for="marker">Marker</label><input id="marker" type="color" value="#00ffe6"></div>
-        <div class="swatch"><label for="tick">Ticks</label><input id="tick" type="color" value="#1b1f28"></div>
-
-        <div class="swatch"><label for="railA">Rail A</label><input id="railA" type="color" value="#0b0f15"></div>
-        <div class="swatch"><label for="railB">Rail B</label><input id="railB" type="color" value="#121826"></div>
-      </div>
-
-      <div class="theme-actions">
-        <button id="resetTheme" title="Restore preset defaults">Reset</button>
-        <button id="collapseTheme" title="Collapse this panel">Collapse</button>
-      </div>
-    </details>
-
-    <hr class="hairline" />
-
     <div id="currentTimeTop">--:--:--</div>
 
     <div class="rail" aria-label="24-hour time rail">
@@ -232,14 +180,82 @@
       <div>Time left: <b id="timeLeft">--:--:--</b></div>
     </div>
 
-    <nav class="returnnav" aria-label="Return">
-      <a
-        href="index.html"
-        class="lcl-back-link"
-        aria-label="Back to Linear Clock Lab"
-        title="Back to Linear Clock Lab"
-        >&larr;</a>
-    </nav>
+    <div class="utility-actions">
+      <details id="themePanel">
+        <summary aria-label="Customize clock theme" title="Customize clock theme">⚙</summary>
+        <div class="settings-panel">
+          <div class="settings-group">
+            <div class="settings-heading">Preset and display</div>
+            <div class="settings-controls">
+              <label for="theme">Theme
+                <select id="theme">
+                  <option value="technolust">TechnoLust (Neon)</option>
+                  <option value="midnight">Midnight Blue</option>
+                  <option value="vaporwave">Vaporwave</option>
+                  <option value="terminal">Terminal Green</option>
+                  <option value="amber">Amber Retro</option>
+                  <option value="mono">Mono Minimal</option>
+                  <option value="solar">Solar-ish Dark</option>
+                  <option value="cybercrimson">CyberCrimson</option>
+                  <option value="aurorapulse">AuroraPulse</option>
+                  <option value="neonmist">NeonMist</option>
+                  <option value="deepcircuit">DeepCircuit</option>
+                  <option value="infravoid">InfraVoid</option>
+                  <option value="ghostline">Ghostline</option>
+                  <option value="ionstorm">IonStorm</option>
+                  <option value="zenmint">ZenMint</option>
+                  <option value="voidlux">VoidLux</option>
+                </select>
+              </label>
+              <label for="glow">Glow
+                <input id="glow" type="range" min="0" max="1.25" step="0.05" value="0.65" />
+              </label>
+              <label for="labelOffset">Label offset
+                <input id="labelOffset" type="number" min="-1" max="3" step="0.05" value="0" />
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-heading">Theme data</div>
+            <div class="theme-actions">
+              <button id="exportTheme" title="Export current custom theme">Export</button>
+              <button id="importTheme" title="Import a custom theme JSON">Import</button>
+              <button id="resetTheme" title="Restore preset defaults">Reset</button>
+              <input id="themeFile" type="file" accept="application/json" style="display:none">
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-heading">Custom colors</div>
+            <div class="theme-grid">
+              <div class="swatch"><label for="bg">Background</label><input id="bg" type="color" value="#000000"></div>
+              <div class="swatch"><label for="fg">Foreground</label><input id="fg" type="color" value="#bfc7d5"></div>
+              <div class="swatch"><label for="muted">Muted</label><input id="muted" type="color" value="#7a8393"></div>
+
+              <div class="swatch"><label for="accent">Accent</label><input id="accent" type="color" value="#00ffe6"></div>
+              <div class="swatch"><label for="accent2">Accent 2</label><input id="accent2" type="color" value="#ff2bd6"></div>
+              <div class="swatch"><label for="accent3">Accent 3</label><input id="accent3" type="color" value="#b4ff00"></div>
+
+              <div class="swatch"><label for="marker">Marker</label><input id="marker" type="color" value="#00ffe6"></div>
+              <div class="swatch"><label for="tick">Ticks</label><input id="tick" type="color" value="#1b1f28"></div>
+
+              <div class="swatch"><label for="railA">Rail A</label><input id="railA" type="color" value="#0b0f15"></div>
+              <div class="swatch"><label for="railB">Rail B</label><input id="railB" type="color" value="#121826"></div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <nav class="returnnav" aria-label="Return">
+        <a
+          href="index.html"
+          class="lcl-back-link"
+          aria-label="Back to Linear Clock Lab"
+          title="Back to Linear Clock Lab"
+          >&larr;</a>
+      </nav>
+    </div>
 
     <div class="foot"><span>© 2025–2026 jm5k</span></div>
   </div>
@@ -421,14 +437,12 @@
 
   // Collapsible state + reset
   const themePanel = document.getElementById('themePanel');
-  const collapseThemeBtn = document.getElementById('collapseTheme');
   const resetThemeBtn = document.getElementById('resetTheme');
 
   function loadUI(){ try { const raw = localStorage.getItem(UI_KEY); return raw ? JSON.parse(raw) : { open:false }; } catch { return { open:false }; } }
   function saveUI(v){ try { localStorage.setItem(UI_KEY, JSON.stringify(v)); } catch {} }
 
   themePanel.addEventListener('toggle', () => { const u = loadUI(); u.open = themePanel.open; saveUI(u); });
-  collapseThemeBtn.addEventListener('click', () => { themePanel.open = false; const u = loadUI(); u.open=false; saveUI(u); });
 
   resetThemeBtn.addEventListener('click', () => {
     localStorage.removeItem(CUSTOM_VARS_KEY);
