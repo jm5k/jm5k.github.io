@@ -126,20 +126,6 @@
         transform: translateY(-6px);
         font-size: 14px;
       }
-      .returnlink a {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 10px;
-        border: 1px solid var(--line);
-        background: transparent;
-        transition: border-color 0.2s ease, background 0.2s ease,
-          text-shadow 0.2s ease;
-      }
-      .returnlink a:hover {
-        background: rgba(255, 255, 255, 0.04);
-        border-color: var(--accent);
-        text-shadow: 0 0 6px var(--accent);
-      }
 
       .brand {
         text-align: center;
@@ -250,7 +236,12 @@
     <div class="wrap">
       <header>
         <div class="returnlink">
-          <a href="index.html">← Back to Linear Clock Lab</a>
+          <a
+            href="index.html"
+            class="lcl-back-link"
+            aria-label="Back to Linear Clock Lab"
+            title="Back to Linear Clock Lab"
+            >&larr;</a>
         </div>
         <div class="brand">About the <strong>Linear Clock Lab</strong></div>
         <div class="navline" aria-hidden="true"></div>

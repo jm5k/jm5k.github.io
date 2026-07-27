@@ -57,17 +57,6 @@
     transform:translateY(-6px);
     font-size:14px;
   }
-  .returnlink a{
-    color:var(--accent); text-decoration:none;
-    border:1px solid var(--line); border-radius:10px;
-    padding:6px 10px; display:inline-block;
-    transition:border-color .2s ease, background .2s ease, text-shadow .2s ease;
-  }
-  .returnlink a:hover{
-    background:rgba(255,255,255,0.04);
-    border-color:var(--accent);
-    text-shadow:0 0 6px var(--accent);
-  }
 
   /* Cards */
   .card{
@@ -165,7 +154,14 @@
 <body>
 <main>
   <header>
-    <div class="returnlink"><a href="index.html">← Back to Linear Clock Lab</a></div>
+    <div class="returnlink">
+      <a
+        href="index.html"
+        class="lcl-back-link"
+        aria-label="Back to Linear Clock Lab"
+        title="Back to Linear Clock Lab"
+        >&larr;</a>
+    </div>
     <div class="brand">FocusLine Pomodoro</div>
   </header>
 

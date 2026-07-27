@@ -380,13 +380,14 @@ Rules:
 
 ## 6.4 Back Navigation
 
-Each non-index page includes:
+Every public non-index page includes exactly one dedicated home control:
 
 ---
 
 <nav class="lcl-back-nav" aria-label="Return">
     <a
         href="index.html"
+        class="lcl-back-link"
         aria-label="Back to Linear Clock Lab"
         title="Back to Linear Clock Lab"
     >&larr;</a>
@@ -395,19 +396,24 @@ Each non-index page includes:
 
 Rules:
 
-- Home navigation uses an icon-only back arrow.
-- Only one back link.
+- Home navigation uses the shared `.lcl-back-link` icon-only back arrow.
+- The shared class owns the compact anchor appearance, hover state, and visible
+  keyboard focus.
+- Navigation container placement and spacing remain page-specific.
+- Only one dedicated back link is allowed on each public non-index page.
 - No additional nav bars.
 - Icon-only controls require an `aria-label`, a matching `title`, a visible
   `:focus-visible` state, and an adequate click target.
 - Remove a redundant visible label only when the control's action remains
   unmistakable.
 - Ambiguous, destructive, or data-changing actions retain visible text labels.
+- Do not pursue minimalism at the expense of clarity.
 
 ## 6.5 Visible Copyright Footer
 
-- User-facing copyright footers use exactly `© 2025–2026 jm5k`.
+- Existing public copyright notices display exactly `© 2025–2026 jm5k`.
 - Keep the footer text in HTML so it remains visible without JavaScript.
+- Do not add a copyright notice to a page that does not already have one.
 
 ---
 

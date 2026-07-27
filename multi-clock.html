@@ -39,7 +39,7 @@
     --yellow:#cc9; --rail:#222; --tick:#333;
 
     /* link/back vars */
-    --back-accent:#00e5ff; --line:#1f1f1f; --chip:#151515; --chip-brd:#222;
+    --line:#1f1f1f; --chip:#151515; --chip-brd:#222;
   }
   *{box-sizing:border-box}
   body{ background:var(--bg); color:var(--fg); font-family:monospace; margin:0; padding:24px 16px 64px; }
@@ -50,11 +50,6 @@
 
   /* ← Back link (top-left) */
   .returnnav { max-width:960px; margin:0 auto 10px; }
-  .returnnav a{
-    display:inline-block; color:var(--back-accent); text-decoration:none; font-size:0.95rem;
-    border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:6px 12px; transition:all .2s ease;
-  }
-  .returnnav a:hover{ background:rgba(255,255,255,0.04); border-color:var(--back-accent); text-shadow:0 0 6px var(--back-accent); }
 
   h1{margin:6px 0 10px; font-weight:600; font-size:1.25rem; color:var(--yellow)}
   .sub{margin:0 0 18px; color:var(--muted)}
@@ -115,7 +110,12 @@
 
   <!-- Top-left return link -->
   <nav class="returnnav" aria-label="Return">
-    <a href="index.html">← Back to Linear Clock Lab</a>
+    <a
+      href="index.html"
+      class="lcl-back-link"
+      aria-label="Back to Linear Clock Lab"
+      title="Back to Linear Clock Lab"
+      >&larr;</a>
   </nav>
 
   <div class="wrap">

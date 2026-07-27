@@ -148,22 +148,6 @@
   .theme-actions button{ background:#111; color:var(--fg); border:1px solid #222; padding:8px 10px; border-radius:6px; cursor:pointer; }
 
   .returnnav{text-align:center;margin:40px auto 0;}
-  .returnnav a{
-    box-sizing:border-box;
-    display:inline-grid;
-    width:38px;
-    height:38px;
-    place-items:center;
-    color:var(--muted);
-    text-decoration:none;
-    font-size:1.1rem;
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:6px;
-    padding:0;
-    transition:color .2s ease,border-color .2s ease,background .2s ease;
-  }
-  .returnnav a:hover{ background:rgba(255,255,255,0.04); border-color:var(--accent); color:var(--accent); }
-  .returnnav a:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 
   .foot{ margin-top:22px; color:var(--muted); font-size:.9rem; }
   .foot a{ color:var(--accent); text-decoration:none; }
@@ -251,6 +235,7 @@
     <nav class="returnnav" aria-label="Return">
       <a
         href="index.html"
+        class="lcl-back-link"
         aria-label="Back to Linear Clock Lab"
         title="Back to Linear Clock Lab"
         >&larr;</a>

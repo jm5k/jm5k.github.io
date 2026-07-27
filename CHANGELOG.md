@@ -1,13 +1,14 @@
 Date: 2026-07-26
-Short Title: Extend Shared Clock Foundation
+Short Title: Extend Shared Suite Foundation
 Summary:
 
-Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established a dependency-free shared CSS and time-formatting foundation while keeping page-specific layouts and clock controllers independent, then migrated Multi-Clock and Preset Themes where exact semantic matches existed. Preset Themes now uses the suite's compact icon-only home control, and the suite documentation defines accessible icon-control, visible-label, and footer conventions.
+Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established dependency-free shared CSS and time-formatting foundations while keeping page-specific layouts and controllers independent. Standardized every public tool page on one shared, accessible icon-only return control and normalized all existing public copyright notices without changing page placement or behavior.
 
 LCL Technical Details:
 
 - HTML: index.html and clock.html place a compact, clearly labelled Julian date line between the current time and the rail; clock.html keeps the line outside the orientation-specific rail-and-label cluster.
 - Shared CSS: Expanded lcl.css with the main/minimal clock design-token defaults and namespaced Julian date, time switch, marker appearance, day statistics, and work-hour classes; removed unnecessary !important declarations and the global forced-color suppression.
+- Shared Back Link: Added `.lcl-back-link` to lcl.css for the suite's 38px by 38px icon-only home control, including a neutral border, page-accent hover, subtle background, inherited typography, and visible accent focus outline without global positioning or margins.
 - CSS Migration: index.html and clock.html now use the shared tokens and classes while retaining all page-specific layout, rail geometry, orientation, controls, and responsive rules inline.
 - CSS: clock.html now uses homepage-matching tokens for the background, foreground, muted text, accent, rail, rail border, ticks, labels, work-hour highlight, statistics, and cyan glowing marker; layout dimensions and orientation rules are unchanged.
 - Layout: clock.html no longer vertically centers .wrap; responsive top padding positions the clock near the top while retaining centered, scrollable clock content.
@@ -19,7 +20,7 @@ LCL Technical Details:
 - Shared JavaScript: Added the frozen LCLTime API in lcl-time.js for hour labels, clock times, durations, and ordinal Julian dates, with browser and direct Node compatibility and no DOM, LocalStorage, event, or timer access.
 - JavaScript Migration: index.html and clock.html load lcl-time.js before their independent inline controllers and pass use24h explicitly to shared formatting calls; each updateClock() still reuses one Date instance and the one-second intervals are unchanged.
 - Multi-Clock Migration: multi-clock.html now loads lcl-time.js before its inline controller and uses LCLTime.formatClockTime() for fixed 24-hour HH:MM formatting; its page-specific helper continues to append zero-padded seconds for the unchanged HH:MM:SS display.
-- Multi-Clock CSS: Removed the exact-match --cyan and --marker aliases and now uses the shared --accent token for links, clock titles, current-time readouts, and marker color; retained the distinct back-link accent and all page-specific card, rail, tick, glow, control, and text values.
+- Multi-Clock CSS: Removed the exact-match --cyan and --marker aliases and now uses the shared --accent token for links, clock titles, current-time readouts, marker color, and the shared back control; retained all page-specific card, rail, tick, glow, control, and text values.
 - Multi-Clock Metadata: Removed duplicate charset and viewport declarations while preserving the canonical URL and all remaining SEO, social, icon, title, and description metadata.
 - Multi-Clock Compatibility: Timezone calculations, dropdown contents and sorting, pinned zones, one-second card timers, stored data under jm5k_multi_clocks_v2, JSON import/export formats, editing, reordering, removal, and independent page control remain unchanged.
 - Preset Themes Migration: clock_presets.html now loads lcl-time.js before its inline controller; 01-24 labels use LCLTime.formatHourLabel(), the current HH:MM portion uses LCLTime.formatClockTime(), and its narrow page helper continues to append zero-padded seconds.
@@ -27,12 +28,15 @@ LCL Technical Details:
 - Preset Themes Compatibility: All 16 theme dictionaries, custom overrides, glow and label-offset behavior, panel state, reset behavior, import/export payload, and five LocalStorage keys remain unchanged.
 - Preset Themes Footer: Synchronized the visible footer to © 2025–2026 jm5k without changing its styling or placement.
 - Preset Themes Navigation: Replaced the visible return label with the established 38px by 38px back arrow while preserving the index.html destination; added matching aria-label and title text plus an accent focus-visible state.
+- Suite Navigation: Standardized clock.html, task-planner-lc.html, multi-clock.html, clock_presets.html, focus.html, stopwatch.html, timer.html, dashboard.html, todo.html, and about.html on exactly one dedicated `.lcl-back-link` arrow with the shared accessible name and tooltip; index.html remains the hub without a back control.
+- Page-Local CSS: Removed obsolete return-anchor sizing, border, hover, glow, and focus rules from nine public tool pages while retaining every navigation container's existing placement and spacing.
+- To Do Shared CSS: Added lcl.css before todo.css so todo.html can use the shared return component while preserving its page-specific tokens, layout, and control overrides.
 - Tests: Added 25-hour duration coverage confirming 90000 seconds formats as 25:00:00.
 - Tests: Added dependency-free Node assertions for Julian dates, 12/24-hour clock formatting, hour labels, duration formatting, negative clamping, and API freezing.
-- Documentation: Updated agents.md, ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, and README.md to define the hybrid shared-foundation/page-controller boundary and phased migration rules; agents.md, COMPONENTS.md, and UI_RULES.md now also establish the icon-only home navigation, accessibility naming, visible focus, click-target, action-label, and visible footer standards.
+- Documentation: Updated agents.md, ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, and README.md to define the hybrid shared-foundation/page-controller boundary and phased migration rules; navigation documentation now defines one `.lcl-back-link` per public spoke, page-specific container placement, accessible icon-control requirements, clarity-first label minimization, and existing-public-notice copyright rules.
 - LocalStorage: No keys added or changed; the existing 12/24-hour preference behavior remains unchanged.
-- Footer: Updated visible footer text in index.html, clock.html, about.html, focus.html, and multi-clock.html from 2025 to 2025–2026 without changing footer structure, styling, or legal files.
-- Navigation/SEO/Dark mode: No changes.
+- Footer: Normalized existing public notices in index.html, clock.html, task-planner-lc.html, multi-clock.html, clock_presets.html, focus.html, stopwatch.html, timer.html, dashboard.html, and about.html to display © 2025–2026 jm5k without changing footer structure, styling, functional content, or legal files; todo.html remains without a copyright notice.
+- SEO/Metadata/Dark mode: No changes.
 - Accessibility: The new value has an explicit ordinal YYYY-DDD Julian-date aria-label.
 - Accessibility: The gear and back arrow have descriptive aria-label and title attributes, with visible keyboard focus states.
 
@@ -51,6 +55,10 @@ Files Touched:
 - about.html
 - focus.html
 - multi-clock.html
+- task-planner-lc.html
+- stopwatch.html
+- timer.html
+- dashboard.html
 - todo.html
 - sitemap.xml
 - site.webmanifest
@@ -65,6 +73,9 @@ Testing Notes:
 - Preset Themes Automated: Compile the extracted clock_presets.html controller, validate HTML structure and script ordering, confirm all shared formatting calls, verify all 16 themes and five LocalStorage keys remain, and run the 25-hour duration assertion.
 - Preset Themes Manual: Verify every preset and custom control, one-second clock/countdown updates, DST-safe progress, marker and rail appearance, persistence, reset/collapse behavior, import/export compatibility, navigation, and the synchronized footer.
 - Preset Themes Accessibility: Tab to the back arrow and confirm its accent focus ring, 38px by 38px target, accessible name, tooltip, and index.html destination.
+- Suite Navigation Automated: Audit every sitemap-listed public spoke for exactly one dedicated index.html anchor using `.lcl-back-link`, the required aria-label and title, and arrow-only visible content; confirm index.html has no back control and no conflicting page-local anchor styles remain.
+- Suite Copyright Automated: Confirm no visible 2025-only jm5k notice remains, every existing public notice includes © 2025–2026 jm5k, and todo.html remains without a newly added notice.
+- Suite Navigation Manual: Open every sitemap-listed page at desktop and mobile widths; verify arrow placement, current-page accent hover, visible keyboard focus, the 38px square target, index.html destination, footer content, functional controls, and forced-colors usability.
 - Manual: Load index.html and clock.html at desktop and mobile widths; confirm current-time updates, marker movement, statistics, 12/24-hour toggle, clock.html horizontal/vertical orientations, and forward/backward directions remain correct.
 - Visual: Compare index.html and clock.html to confirm matching clock palette values, including the cyan marker and glow in both Minimal Clock orientations.
 - Layout/Controls: Verify desktop, narrow mobile, and short-height layouts remain top-oriented and scrollable; open the gear panel, change orientation/direction, tab to both utility icons, and follow the back arrow to index.html.
@@ -80,6 +91,7 @@ Risks & Edge Cases:
 - Multi-Clock remains intentionally responsible for timezone conversion, state, card intervals, and import/export behavior; only pure HH:MM formatting is shared.
 - Preset Themes retains its independent theme, custom override, persistence, and controller logic; only pure time formatting is shared.
 - The icon-only home control depends on its aria-label and title for a textual name; keep both synchronized if the destination wording changes.
+- The shared back-link component intentionally owns only anchor presentation; page-local navigation containers retain positioning so top-, header-, fixed-, and bottom-oriented controls do not shift.
 
 ---
 

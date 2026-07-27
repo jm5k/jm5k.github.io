@@ -120,19 +120,6 @@
       .lcl-back-nav {
         margin-bottom: 1rem;
       }
-      .lcl-back-nav a {
-        color: var(--accent);
-        text-decoration: none;
-        font-size: 0.95rem;
-        padding: 0.35rem 0.75rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        transition: all 0.2s ease;
-      }
-      .lcl-back-nav a:hover {
-        border-color: var(--accent);
-        box-shadow: 0 0 10px var(--glow);
-      }
       h1 {
         margin: 0 0 0.75rem;
         font-size: clamp(1.8rem, 3vw, 2.2rem);
@@ -477,8 +464,13 @@
   </head>
   <body>
     <div class="wrap">
-      <nav class="lcl-back-nav" aria-label="Back to home">
-        <a href="index.html">&larr; Home</a>
+      <nav class="lcl-back-nav" aria-label="Return">
+        <a
+          href="index.html"
+          class="lcl-back-link"
+          aria-label="Back to Linear Clock Lab"
+          title="Back to Linear Clock Lab"
+          >&larr;</a>
       </nav>
 
       <header>
@@ -578,7 +570,7 @@
       </section>
 
       <footer>
-        <p>&copy; 2025 <strong>jm5k</strong></p>
+        <p>© 2025–2026 <strong>jm5k</strong></p>
       </footer>
     </div>
 

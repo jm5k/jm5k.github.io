@@ -43,11 +43,16 @@ LCL uses a deliberately simple navigation architecture:
     Lists all tools using a `.grid` of `.card` links.  
     Contains full SEO sharing metadata.
 
-2.  **All other pages = spokes**  
-    Each tool page includes a single back-navigation element:
+2.  **All other public pages = spokes**
+    Each public non-index page includes exactly one dedicated home control:
 
-        <nav class="lcl-back-nav">
-            <a href="index.html">← Home</a>
+        <nav class="lcl-back-nav" aria-label="Return">
+            <a
+                href="index.html"
+                class="lcl-back-link"
+                aria-label="Back to Linear Clock Lab"
+                title="Back to Linear Clock Lab"
+            >&larr;</a>
         </nav>
 
 The intention is:
@@ -56,6 +61,8 @@ The intention is:
 - Zero nav clutter inside tools
 - Users always return to the hub after completing a task
 - No cross-linking among tools
+- Shared anchor presentation through `.lcl-back-link`
+- Page-specific navigation container placement and spacing
 
 This reduces maintenance burden and keeps every tool focused.
 
@@ -80,6 +87,8 @@ This provides:
 - Safe dark-only defaults
 - Stable design tokens
 - Namespaced components shared by multiple pages
+- A compact, icon-only `.lcl-back-link` with shared hover and keyboard-focus
+  behavior
 - Normal cascade behavior for page-level token overrides
 - Compatibility with operating-system forced-colors behavior
 
@@ -314,6 +323,7 @@ Contains only:
 - Stable shared design tokens
 - Accessibility-safe dark foundations
 - Namespaced components used by multiple pages
+- The compact `.lcl-back-link` return-control presentation
 
 Page-specific layout does not belong here.
 
@@ -326,7 +336,8 @@ Contains only the frozen, pure `LCLTime` formatting API. Page controllers remain
 # 9. Accessibility Architecture
 
 - High contrast always maintained (dark + accent).
-- aria-labels used for controls.
+- Icon-only controls use matching aria-labels and title tooltips.
+- Keyboard focus is visibly indicated.
 - aria-hidden applied to decorative separators.
 - Large, touch-friendly click targets.
 - No reliance on color-only interactions.
@@ -355,7 +366,7 @@ When adding new tools:
 - They must follow existing layout + typography patterns.
 - They must begin with the canonical `<head>` block.
 - They inherit shared tokens and declare only necessary local overrides or page-specific tokens.
-- They must contain a Home link.
+- Public non-index pages must contain exactly one `.lcl-back-link` home control.
 - They must store user prefs via `localStorage`.
 - They must use grid/flex patterns that match existing pages.
 - They must not introduce new dark/light logic.

@@ -251,8 +251,7 @@
         border-color: var(--accent);
         background: rgba(255, 255, 255, 0.04);
       }
-      summary:focus-visible,
-      .returnnav a:focus-visible {
+      summary:focus-visible {
         outline: 2px solid var(--accent);
         outline-offset: 2px;
       }
@@ -304,26 +303,6 @@
       /* Return link */
       .returnnav {
         margin: 0;
-      }
-      .returnnav a {
-        box-sizing: border-box;
-        display: grid;
-        width: 38px;
-        height: 38px;
-        place-items: center;
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 1.1rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        padding: 0;
-        transition: color 0.2s ease, border-color 0.2s ease,
-          background 0.2s ease;
-      }
-      .returnnav a:hover {
-        background: rgba(255, 255, 255, 0.04);
-        border-color: var(--accent);
-        color: var(--accent);
       }
 
       footer {
@@ -397,6 +376,7 @@
         <nav class="returnnav" aria-label="Return">
           <a
             href="index.html"
+            class="lcl-back-link"
             aria-label="Back to Linear Clock Lab"
             title="Back to Linear Clock Lab"
             >&larr;</a>

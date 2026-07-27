@@ -99,10 +99,6 @@
         position: absolute;
         left: 24px;
       }
-      .returnlink a {
-        color: var(--accent);
-        font-size: 0.95rem;
-      }
       .brand {
         font-size: 1.2rem;
         letter-spacing: 0.5px;
@@ -309,7 +305,12 @@
   <body>
     <header>
       <div class="returnlink">
-        <a href="index.html">← Back to Linear Clock Lab</a>
+        <a
+          href="index.html"
+          class="lcl-back-link"
+          aria-label="Back to Linear Clock Lab"
+          title="Back to Linear Clock Lab"
+          >&larr;</a>
       </div>
       <div class="brand">Experimental Dashboard</div>
     </header>
@@ -368,7 +369,7 @@
       <hr class="thin-line" />
       <div class="tagline">Minimal time, Maximum clarity.</div>
       <div class="legal">
-        © jm5k 2025 — Made by <a href="https://linearclocklab.com/">jm5k</a>
+        © 2025–2026 jm5k — Made by <a href="https://linearclocklab.com/">jm5k</a>
       </div>
     </footer>
 

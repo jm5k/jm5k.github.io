@@ -449,6 +449,7 @@ Rules:
 <nav class="lcl-back-nav" aria-label="Return">
   <a
     href="index.html"
+    class="lcl-back-link"
     aria-label="Back to Linear Clock Lab"
     title="Back to Linear Clock Lab"
   >&larr;</a>
@@ -457,19 +458,22 @@ Rules:
 
 Rules:
 
-- Placed near top.
-- One link only.
-- Home navigation uses the suite's compact icon-only back arrow.
+- Every public non-index page has exactly one dedicated return control.
+- Home navigation uses the shared `.lcl-back-link` icon-only back arrow.
 - The compact back arrow follows the established 38px by 38px control pattern.
+- `.lcl-back-link` owns anchor sizing, border, hover, and focus presentation.
+- Navigation container placement and spacing remain page-specific.
 - Icon-only controls require an `aria-label`, matching `title`, visible
   `:focus-visible` state, and an adequate click target.
 - Remove redundant visible labels only when the action remains unmistakable.
 - Keep visible text labels for ambiguous, destructive, or data-changing actions.
+- Do not pursue minimalism at the expense of clarity.
 
 ## 7.3 Visible Copyright Footer
 
-- User-facing copyright footers display exactly `© 2025–2026 jm5k`.
+- Existing public copyright notices display exactly `© 2025–2026 jm5k`.
 - Keep the footer text in HTML so it remains visible without JavaScript.
+- Do not add a copyright notice to a page that does not already have one.
 
 ---
 
@@ -577,6 +581,7 @@ Rules:
   target.
 - Remove a visible label only when the action remains unmistakable.
 - Keep visible text labels for ambiguous, destructive, or data-changing actions.
+- Do not pursue minimalism at the expense of clarity.
 - Use `aria-hidden` for decorative items.
 - Maintain high contrast.
 - No flashing.

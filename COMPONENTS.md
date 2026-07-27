@@ -111,16 +111,18 @@ Rules:
 - Must not appear on tool pages
 - Accent underline on hover
 
-## 3.2 Back Navigation (`.lcl-back-nav`)
+## 3.2 Back Navigation (`.lcl-back-link`)
 
 Purpose:  
-Every tool page returns to index via a simple and predictable link.
+Every public non-index page returns to the hub through one simple and
+predictable dedicated control.
 
 Structure:
 
 <nav class="lcl-back-nav" aria-label="Return">
 <a
   href="index.html"
+  class="lcl-back-link"
   aria-label="Back to Linear Clock Lab"
   title="Back to Linear Clock Lab"
 >&larr;</a>
@@ -129,13 +131,15 @@ Structure:
 Rules:
 
 - Home navigation uses the suite's icon-only back arrow
-- Only one link
-- Must appear near top of page
+- Every public non-index page has exactly one dedicated return control
 - Compact back arrows follow the established 38px by 38px control pattern
+- `.lcl-back-link` owns anchor sizing, border, hover, and focus presentation
+- Navigation containers own page-specific placement and spacing
 - Icon-only controls require an `aria-label`, matching `title`, visible
   `:focus-visible` state, and an adequate click target
 - Remove redundant visible labels only when the action remains unmistakable
 - Keep visible text labels for ambiguous, destructive, or data-changing actions
+- Do not pursue minimalism at the expense of clarity
 - No multi-link rows
 
 ## 3.3 Visible Copyright Footer
@@ -145,9 +149,10 @@ Keep suite ownership consistent and available without JavaScript.
 
 Rules:
 
-- User-facing copyright footers display exactly `© 2025–2026 jm5k`
+- Existing public copyright notices display exactly `© 2025–2026 jm5k`
 - Preserve each page's existing footer structure, styling, and placement
 - Keep the copyright text in HTML rather than generating it with JavaScript
+- Do not add a copyright notice to a page that does not already have one
 
 ---
 
@@ -426,6 +431,7 @@ Rules:
   click target
 - Remove visible labels only when the action remains unmistakable
 - Keep visible text labels for ambiguous, destructive, or data-changing actions
+- Do not pursue minimalism at the expense of clarity
 - Decorative elements must use aria-hidden="true"
 
 ---
