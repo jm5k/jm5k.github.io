@@ -178,6 +178,7 @@
       <div>Day elapsed: <b id="pctElapsed">--%</b></div>
       <div>Remaining: <b id="pctRemain">--%</b></div>
       <div>Time left: <b id="timeLeft">--:--:--</b></div>
+      <div>Julian date: <b id="julianDate">----</b></div>
     </div>
 
     <div class="utility-actions">
@@ -271,6 +272,7 @@
   const marker        = document.querySelector('.marker');
   const nowTop        = document.getElementById('currentTimeTop');
   const timeLeft      = document.getElementById('timeLeft');
+  const julianDate    = document.getElementById('julianDate');
   const pctElapsed    = document.getElementById('pctElapsed');
   const pctRemain     = document.getElementById('pctRemain');
   const hourLabels    = document.getElementById('hourLabels');
@@ -347,6 +349,7 @@
 
       // Countdown to midnight
       if (timeLeft) timeLeft.textContent = LCLTime.formatDurationHMS(Math.floor(msRemain / 1000));
+      if (julianDate) julianDate.textContent = LCLTime.formatJulianDate(d);
     } catch(e){
       console.error('Clock update error:', e);
     }
