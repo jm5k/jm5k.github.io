@@ -236,6 +236,51 @@ for (const card of homepageCards) {
     );
 }
 
+const julianDatePages = ["index.html", "clock.html", "clock_presets.html"];
+for (const pageFile of julianDatePages) {
+    const html = fs.readFileSync(path.join(projectRoot, pageFile), "utf8");
+    const julianIdCount = (html.match(/\bid\s*=\s*["']julianDate["']/gi) || []).length;
+    check(
+        julianIdCount === 1,
+        pageFile,
+        "must contain exactly one julianDate element",
+        `${julianIdCount} found`
+    );
+    check(
+        !/Julian date:/i.test(visibleText(html)),
+        pageFile,
+        "must not visibly contain the redundant Julian date prefix",
+        "Julian date: found in static visible text"
+    );
+}
+
+for (const pageFile of ["index.html", "clock.html"]) {
+    const html = fs.readFileSync(path.join(projectRoot, pageFile), "utf8");
+    const julianElement = getOpeningTags(html, "div").find(
+        (tag) => getAttribute(tag, "id") === "julianDate"
+    );
+    check(
+        getAttribute(julianElement || "", "aria-label") ===
+            "Julian date in ordinal YYYY-DDD format",
+        pageFile,
+        "must retain the ordinal Julian-date accessible label",
+        getAttribute(julianElement || "", "aria-label")
+    );
+}
+
+const presetThemesHtml = fs.readFileSync(
+    path.join(projectRoot, "clock_presets.html"),
+    "utf8"
+);
+check(
+    /<div class="stats"[^>]*>[\s\S]*?<div>Time left:[\s\S]*?<\/div>\s*<div\b[^>]*aria-label="Ordinal Julian date in YYYY-DDD format"[^>]*>[\s\S]*?<b id="julianDate"/i.test(
+        presetThemesHtml
+    ),
+    "clock_presets.html",
+    "must retain the Julian value after Time left with an accessible label",
+    "statistics-row Julian item missing or misplaced"
+);
+
 for (const { location, pageFile, pagePath } of publicPages) {
     const html = fs.readFileSync(pagePath, "utf8");
     const headMatches = [...html.matchAll(/<head\b[^>]*>([\s\S]*?)<\/head\s*>/gi)];

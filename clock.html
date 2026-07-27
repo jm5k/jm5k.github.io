@@ -320,7 +320,7 @@
         class="lcl-julian-date"
         aria-label="Julian date in ordinal YYYY-DDD format"
       >
-        Julian date: ---- ---
+        ----
       </div>
 
       <!-- Rail + labels cluster -->
@@ -498,9 +498,7 @@
         }
 
         current.textContent = LCLTime.formatClockTime(h, m, use24h);
-        julianDate.textContent = `Julian date: ${LCLTime.formatJulianDate(
-          now
-        )}`;
+        julianDate.textContent = LCLTime.formatJulianDate(now);
         const pct = frac * 100;
         const remaining = secondsPerDay - secondsSinceMidnight;
         stats.textContent = `${pct.toFixed(

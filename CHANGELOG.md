@@ -1,4 +1,54 @@
 Date: 2026-07-27
+Short Title: Minimize Julian Date Labels
+Summary:
+
+Removed the redundant visible "Julian date:" prefix from the Main, Minimal,
+and Preset Themes clocks. Each page now visibly renders only the ordinal
+YYYY-DDD value while retaining its accessible explanation and existing local
+midnight rollover behavior.
+
+LCL Technical Details:
+
+- HTML: index.html and clock.html retain their `julianDate` IDs, classes, and
+  ordinal Julian-date aria-labels while their static placeholders and update
+  assignments display only YYYY-DDD.
+- Preset Themes: clock_presets.html retains the bold fourth statistic
+  immediately after Time left, now with an aria-label on its containing element
+  and no visible replacement prefix.
+- JavaScript: Existing `LCLTime.formatJulianDate(now)` and
+  `LCLTime.formatJulianDate(d)` calls remain the sole formatters; no calculation,
+  Date creation, interval, settings, theme, storage, or import/export behavior
+  changed.
+- Tests: site-audit.test.js now verifies one julianDate element per clock,
+  absence of the visible prefix, retained accessible labels, and Preset Themes
+  statistics-row order.
+
+Files Touched:
+
+- index.html
+- clock.html
+- clock_presets.html
+- tests/site-audit.test.js
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: Run `node tests/time-utils.test.js`, `node tests/site-audit.test.js`,
+  `node tests/docs-audit.test.js`, `node --check tests/site-audit.test.js`, and
+  `git diff --check`.
+- Manual: Confirm each clock shows YYYY-DDD only, the accessible descriptions
+  remain available, and existing clock, orientation, direction, settings, and
+  theme behavior remains unchanged.
+
+Risks & Edge Cases:
+
+- The local ordinal-date formatter remains shared and unchanged; verify local
+  midnight rollover during future browser smoke tests.
+- This entry intentionally leaves the historical 2026-07-26 entry unchanged.
+
+---
+
+Date: 2026-07-27
 Short Title: Documentation Accuracy Audit
 Summary:
 

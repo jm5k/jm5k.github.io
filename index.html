@@ -209,7 +209,7 @@
       class="lcl-julian-date"
       aria-label="Julian date in ordinal YYYY-DDD format"
     >
-      Julian date: ---- ---
+      ----
     </div>
     <div id="bar">
       <div id="ticks"></div>
@@ -352,7 +352,7 @@
           LCLTime.formatClockTime(h, m, use24h);
         document.getElementById(
           "julianDate"
-        ).textContent = `Julian date: ${LCLTime.formatJulianDate(now)}`;
+        ).textContent = LCLTime.formatJulianDate(now);
         const secondsSinceMidnight = h * 3600 + m * 60 + s;
         const secondsPerDay = 86400;
         const pct = (secondsSinceMidnight / secondsPerDay) * 100;
