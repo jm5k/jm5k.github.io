@@ -140,6 +140,6 @@ If you enjoy the Linear Clock Lab and want to support future updates:
 ---
 
 ## ⚖️ License
-© 2025 **jm5k** — Released under the [MIT License](https://linearclocklab.com/LICENSE).  
+© 2025-2026 **jm5k** — Released under the [MIT License](https://linearclocklab.com/LICENSE).  
 Minimal time, maximum clarity.  
 [https://linearclocklab.com/](https://linearclocklab.com/)
