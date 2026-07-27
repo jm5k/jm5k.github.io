@@ -148,8 +148,22 @@
   .theme-actions button{ background:#111; color:var(--fg); border:1px solid #222; padding:8px 10px; border-radius:6px; cursor:pointer; }
 
   .returnnav{text-align:center;margin:40px auto 0;}
-  .returnnav a{ color:var(--accent); text-decoration:none; font-size:0.95rem; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:6px 12px; transition:all .2s ease; }
-  .returnnav a:hover{ background:rgba(255,255,255,0.04); border-color:var(--accent); text-shadow:0 0 6px var(--accent); }
+  .returnnav a{
+    box-sizing:border-box;
+    display:inline-grid;
+    width:38px;
+    height:38px;
+    place-items:center;
+    color:var(--muted);
+    text-decoration:none;
+    font-size:1.1rem;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:6px;
+    padding:0;
+    transition:color .2s ease,border-color .2s ease,background .2s ease;
+  }
+  .returnnav a:hover{ background:rgba(255,255,255,0.04); border-color:var(--accent); color:var(--accent); }
+  .returnnav a:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 
   .foot{ margin-top:22px; color:var(--muted); font-size:.9rem; }
   .foot a{ color:var(--accent); text-decoration:none; }
@@ -235,12 +249,17 @@
     </div>
 
     <nav class="returnnav" aria-label="Return">
-      <a href="index.html">← Back to Linear Clock Lab</a>
+      <a
+        href="index.html"
+        aria-label="Back to Linear Clock Lab"
+        title="Back to Linear Clock Lab"
+        >&larr;</a>
     </nav>
 
-    <div class="foot"><span>© jm5k 2025</span></div>
+    <div class="foot"><span>© 2025–2026 jm5k</span></div>
   </div>
 
+<script src="lcl-time.js"></script>
 <script>
 (() => {
   /* Build ticks */
@@ -268,8 +287,13 @@
 
   const css   = (k,v)=> root.style.setProperty(k,v);
   const getVar= k => getComputedStyle(root).getPropertyValue(k).trim();
-  const pad   = n => String(n).padStart(2,'0');
   const clamp = (n,min,max)=> Math.min(max, Math.max(min, n));
+
+  function formatCurrentTime(date){
+    const hoursAndMinutes = LCLTime.formatClockTime(date.getHours(), date.getMinutes(), true);
+    const seconds = String(date.getSeconds()).padStart(2,'0');
+    return `${hoursAndMinutes}:${seconds}`;
+  }
 
   const loadLabelOffset = () => {
     const raw = localStorage.getItem(LABEL_OFFSET_KEY);
@@ -287,7 +311,7 @@
   if (hourLabels){
     for (let h=1; h<=24; h++){
       const label = document.createElement('span');
-      label.textContent = pad(h);
+      label.textContent = LCLTime.formatHourLabel(h, true);
       let frac = h/24;
       if (h < 24) frac = Math.max(0, frac - (1/48));
       label.style.left = (frac * 100).toFixed(6) + '%';
@@ -313,8 +337,7 @@
       if (marker) marker.style.left = (pct*100).toFixed(6) + '%';
 
       // Top current time
-      const hh = pad(d.getHours()), mm = pad(d.getMinutes()), ss = pad(d.getSeconds());
-      if (nowTop) nowTop.textContent = `${hh}:${mm}:${ss}`;
+      if (nowTop) nowTop.textContent = formatCurrentTime(d);
 
       // Percentages
       const pe = pct*100;
@@ -322,10 +345,7 @@
       if (pctRemain)  pctRemain.textContent  = (100 - pe).toFixed(2) + '%';
 
       // Countdown to midnight
-      const hLeft = Math.floor(msRemain / 3600000);
-      const mLeft = Math.floor((msRemain % 3600000) / 60000);
-      const sLeft = Math.floor((msRemain % 60000) / 1000);
-      if (timeLeft) timeLeft.textContent = `${pad(hLeft)}:${pad(mLeft)}:${pad(sLeft)}`;
+      if (timeLeft) timeLeft.textContent = LCLTime.formatDurationHMS(Math.floor(msRemain / 1000));
     } catch(e){
       console.error('Clock update error:', e);
     }

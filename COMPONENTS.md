@@ -118,17 +118,36 @@ Every tool page returns to index via a simple and predictable link.
 
 Structure:
 
-<nav class="lcl-back-nav">
-<a href="index.html">← Home</a>
+<nav class="lcl-back-nav" aria-label="Return">
+<a
+  href="index.html"
+  aria-label="Back to Linear Clock Lab"
+  title="Back to Linear Clock Lab"
+>&larr;</a>
 </nav>
 
 Rules:
 
+- Home navigation uses the suite's icon-only back arrow
 - Only one link
 - Must appear near top of page
-- Accent hover underline
-- No icons unless chosen suite-wide
+- Compact back arrows follow the established 38px by 38px control pattern
+- Icon-only controls require an `aria-label`, matching `title`, visible
+  `:focus-visible` state, and an adequate click target
+- Remove redundant visible labels only when the action remains unmistakable
+- Keep visible text labels for ambiguous, destructive, or data-changing actions
 - No multi-link rows
+
+## 3.3 Visible Copyright Footer
+
+Purpose:
+Keep suite ownership consistent and available without JavaScript.
+
+Rules:
+
+- User-facing copyright footers display exactly `© 2025–2026 jm5k`
+- Preserve each page's existing footer structure, styling, and placement
+- Keep the copyright text in HTML rather than generating it with JavaScript
 
 ---
 
@@ -402,7 +421,11 @@ Structure:
 
 Rules:
 
-- Required on icon-only elements
+- `aria-label` and a matching `title` are required on icon-only elements
+- Icon-only controls require a visible `:focus-visible` state and an adequate
+  click target
+- Remove visible labels only when the action remains unmistakable
+- Keep visible text labels for ambiguous, destructive, or data-changing actions
 - Decorative elements must use aria-hidden="true"
 
 ---

@@ -1,8 +1,8 @@
 Date: 2026-07-26
-Short Title: Expand Shared Clock Foundation
+Short Title: Extend Shared Clock Foundation
 Summary:
 
-Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established a dependency-free shared CSS and time-formatting foundation while keeping page-specific layouts and clock controllers independent, then migrated Multi-Clock where exact semantic matches existed.
+Added live ordinal Julian date displays to the main homepage and minimal clock view. The displays use local calendar values in YYYY-DDD format, not the astronomical Julian Day system, and update as part of each page's existing clock cycle; visible site footers now show 2025–2026, the Minimal Clock shares the homepage clock palette, its layout is now top-oriented with compact utility controls, and site metadata and document structure have been validated. Established a dependency-free shared CSS and time-formatting foundation while keeping page-specific layouts and clock controllers independent, then migrated Multi-Clock and Preset Themes where exact semantic matches existed. Preset Themes now uses the suite's compact icon-only home control, and the suite documentation defines accessible icon-control, visible-label, and footer conventions.
 
 LCL Technical Details:
 
@@ -22,8 +22,14 @@ LCL Technical Details:
 - Multi-Clock CSS: Removed the exact-match --cyan and --marker aliases and now uses the shared --accent token for links, clock titles, current-time readouts, and marker color; retained the distinct back-link accent and all page-specific card, rail, tick, glow, control, and text values.
 - Multi-Clock Metadata: Removed duplicate charset and viewport declarations while preserving the canonical URL and all remaining SEO, social, icon, title, and description metadata.
 - Multi-Clock Compatibility: Timezone calculations, dropdown contents and sorting, pinned zones, one-second card timers, stored data under jm5k_multi_clocks_v2, JSON import/export formats, editing, reordering, removal, and independent page control remain unchanged.
+- Preset Themes Migration: clock_presets.html now loads lcl-time.js before its inline controller; 01-24 labels use LCLTime.formatHourLabel(), the current HH:MM portion uses LCLTime.formatClockTime(), and its narrow page helper continues to append zero-padded seconds.
+- Preset Themes Countdown: The DST-aware startOfDay/endOfDay calculation remains unchanged, while its clamped seconds-to-midnight value is formatted through LCLTime.formatDurationHMS() so 23-, 24-, and 25-hour local days remain supported.
+- Preset Themes Compatibility: All 16 theme dictionaries, custom overrides, glow and label-offset behavior, panel state, reset behavior, import/export payload, and five LocalStorage keys remain unchanged.
+- Preset Themes Footer: Synchronized the visible footer to © 2025–2026 jm5k without changing its styling or placement.
+- Preset Themes Navigation: Replaced the visible return label with the established 38px by 38px back arrow while preserving the index.html destination; added matching aria-label and title text plus an accent focus-visible state.
+- Tests: Added 25-hour duration coverage confirming 90000 seconds formats as 25:00:00.
 - Tests: Added dependency-free Node assertions for Julian dates, 12/24-hour clock formatting, hour labels, duration formatting, negative clamping, and API freezing.
-- Documentation: Updated agents.md, ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, and README.md to define the hybrid shared-foundation/page-controller boundary and phased migration rules.
+- Documentation: Updated agents.md, ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, and README.md to define the hybrid shared-foundation/page-controller boundary and phased migration rules; agents.md, COMPONENTS.md, and UI_RULES.md now also establish the icon-only home navigation, accessibility naming, visible focus, click-target, action-label, and visible footer standards.
 - LocalStorage: No keys added or changed; the existing 12/24-hour preference behavior remains unchanged.
 - Footer: Updated visible footer text in index.html, clock.html, about.html, focus.html, and multi-clock.html from 2025 to 2025–2026 without changing footer structure, styling, or legal files.
 - Navigation/SEO/Dark mode: No changes.
@@ -34,6 +40,7 @@ Files Touched:
 
 - index.html
 - clock.html
+- clock_presets.html
 - lcl.css
 - lcl-time.js
 - tests/time-utils.test.js
@@ -55,6 +62,9 @@ Testing Notes:
 - Automated: Run node tests/time-utils.test.js and node --check for lcl-time.js, the test file, and extracted inline scripts; the test suite covers all required Julian-date, clock, hour-label, and duration cases.
 - Multi-Clock Automated: Compile the extracted multi-clock.html controller, validate HTML structure and script ordering, confirm one charset and viewport declaration, verify shared accent migration, and confirm storage/JSON compatibility constants remain unchanged.
 - Multi-Clock Manual: Exercise UTC, America/New_York, America/Los_Angeles, Europe/London, and Asia/Tokyo clocks; verify ticking, offsets, progress, labels, ordering, removal, persistence, import/export, empty state, return navigation, footer, and unchanged visual appearance.
+- Preset Themes Automated: Compile the extracted clock_presets.html controller, validate HTML structure and script ordering, confirm all shared formatting calls, verify all 16 themes and five LocalStorage keys remain, and run the 25-hour duration assertion.
+- Preset Themes Manual: Verify every preset and custom control, one-second clock/countdown updates, DST-safe progress, marker and rail appearance, persistence, reset/collapse behavior, import/export compatibility, navigation, and the synchronized footer.
+- Preset Themes Accessibility: Tab to the back arrow and confirm its accent focus ring, 38px by 38px target, accessible name, tooltip, and index.html destination.
 - Manual: Load index.html and clock.html at desktop and mobile widths; confirm current-time updates, marker movement, statistics, 12/24-hour toggle, clock.html horizontal/vertical orientations, and forward/backward directions remain correct.
 - Visual: Compare index.html and clock.html to confirm matching clock palette values, including the cyan marker and glow in both Minimal Clock orientations.
 - Layout/Controls: Verify desktop, narrow mobile, and short-height layouts remain top-oriented and scrollable; open the gear panel, change orientation/direction, tab to both utility icons, and follow the back arrow to index.html.
@@ -68,6 +78,8 @@ Risks & Edge Cases:
 - The expanded utility panel reserves vertical space so it does not overlap the footer on narrow viewports.
 - Removing forced-color suppression allows the operating system to adapt colors in high-contrast modes; browser forced-colors behavior should be included in future accessibility smoke tests.
 - Multi-Clock remains intentionally responsible for timezone conversion, state, card intervals, and import/export behavior; only pure HH:MM formatting is shared.
+- Preset Themes retains its independent theme, custom override, persistence, and controller logic; only pure time formatting is shared.
+- The icon-only home control depends on its aria-label and title for a textual name; keep both synchronized if the destination wording changes.
 
 ---
 

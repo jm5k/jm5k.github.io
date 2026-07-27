@@ -446,8 +446,12 @@ Rules:
 
 ---
 
-<nav class="lcl-back-nav">
-  <a href="index.html">← Home</a>
+<nav class="lcl-back-nav" aria-label="Return">
+  <a
+    href="index.html"
+    aria-label="Back to Linear Clock Lab"
+    title="Back to Linear Clock Lab"
+  >&larr;</a>
 </nav>
 ---
 
@@ -455,7 +459,17 @@ Rules:
 
 - Placed near top.
 - One link only.
-- Accent underline on hover.
+- Home navigation uses the suite's compact icon-only back arrow.
+- The compact back arrow follows the established 38px by 38px control pattern.
+- Icon-only controls require an `aria-label`, matching `title`, visible
+  `:focus-visible` state, and an adequate click target.
+- Remove redundant visible labels only when the action remains unmistakable.
+- Keep visible text labels for ambiguous, destructive, or data-changing actions.
+
+## 7.3 Visible Copyright Footer
+
+- User-facing copyright footers display exactly `© 2025–2026 jm5k`.
+- Keep the footer text in HTML so it remains visible without JavaScript.
 
 ---
 
@@ -550,13 +564,19 @@ Rules:
 
 ## 10.3 Touch Targets
 
-- Minimum height: 40–44px.
+- General interactive controls use a minimum height of 40–44px.
+- Established compact utility controls, including the suite back arrow, may use
+  the 38px by 38px pattern when they retain clear spacing and visible focus.
 
 ---
 
 # 11. Accessibility Rules
 
-- Use `aria-label` for icon-only elements.
+- Use `aria-label` and a matching `title` for icon-only controls.
+- Give icon-only controls a visible `:focus-visible` state and an adequate click
+  target.
+- Remove a visible label only when the action remains unmistakable.
+- Keep visible text labels for ambiguous, destructive, or data-changing actions.
 - Use `aria-hidden` for decorative items.
 - Maintain high contrast.
 - No flashing.

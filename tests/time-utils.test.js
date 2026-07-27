@@ -37,6 +37,7 @@ assert.equal(LCLTime.formatDurationHMS(0), "00:00:00");
 assert.equal(LCLTime.formatDurationHMS(59), "00:00:59");
 assert.equal(LCLTime.formatDurationHMS(60), "00:01:00");
 assert.equal(LCLTime.formatDurationHMS(3661), "01:01:01");
+assert.equal(LCLTime.formatDurationHMS(90000), "25:00:00");
 assert.equal(LCLTime.formatDurationHMS(-1), "00:00:00");
 
 assert.ok(Object.isFrozen(LCLTime));
