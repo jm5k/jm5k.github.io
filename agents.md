@@ -1,4 +1,4 @@
-# AGENTS.md — Linear Clock Lab (LCL)
+# agents.md — Linear Clock Lab (LCL)
 
 This document defines the complete operational ruleset for all automation, coding, and documentation agents working within Linear Clock Lab (LCL). It expands the architecture, design, behavior, constraints, and workflows inferred from the current HTML/CSS, ensuring all future work remains consistent, safe, and predictable.
 
@@ -31,11 +31,12 @@ LCL conforms to these universal rules:
 
    - No frameworks, build systems, bundlers, preprocessors, TypeScript, or external libraries.
 
-3. **Offline-first**
+3. **Backend-free and local-first**
 
-   - No CDNs.
-   - No analytics.
-   - No imports from remote URLs.
+   - Core tools are client-side and locally serveable.
+   - No analytics or tracking.
+   - No remote JavaScript or CSS libraries; external hyperlinks and decorative
+     remote images may exist without being required for core behavior.
 
 4. **Tool pages use a hybrid shared/page-specific architecture**
    Each page uses:
@@ -43,14 +44,17 @@ LCL conforms to these universal rules:
    - `lcl.css` for stable design tokens, accessibility-safe foundations, and components shared by multiple pages.
    - Shared dependency-free utilities, such as `lcl-time.js`, only when multiple pages need the same pure logic.
    - Inline `<style>` for page-specific layout and component styling.
-   - Inline controller `<script>` at the bottom of `<body>` for DOM access, tool state, events, and timers.
-   - A “Home” link back to `index.html`.
+   - Either an inline controller `<script>` at the bottom of `<body>` or a
+     repository-local external controller loaded with `defer` in `<head>`.
+   - Exactly one `.lcl-back-link` icon-only left arrow back to `index.html`,
+     with an accessible label and title in a page-specific container.
    - `index.html` as the only multi-link hub.
 
 5. **Design tokens rule everything**
 
    - All new UI must use CSS variables.
-   - No hard-coded colors except pure black (`#000`) in hard-fallback blocks.
+   - Shared and theme-sensitive colors use CSS variables; deliberate
+     page-specific colors may remain local when they are not reusable.
 
 6. **Neon accent identity**
 
@@ -244,7 +248,7 @@ Plus:
 
 - `<title>`
 - Description
-- Keywords
+- Keywords (optional)
 - Author
 - Robots
 - Canonical URL
@@ -252,7 +256,9 @@ Plus:
 - Twitter cards
 - Favicon / apple-touch icon pointing to `https://linearclocklab.com/profile.png`
 
-Scripts must be placed at the bottom of `<body>`. Shared utility scripts load before the page's inline controller.
+Controllers may be inline at the bottom of `<body>` or repository-local external
+scripts loaded with `defer` in `<head>`. Shared utility scripts load before any
+controller that uses them.
 
 ## 3.2 Head/Meta Checklist
 
@@ -260,12 +266,13 @@ Scripts must be placed at the bottom of `<body>`. Shared utility scripts load be
 - `viewport` present.
 - `color-scheme="dark light"` and `theme-color="#000000"`.
 - `lcl.css` linked in `<head>`.
-- Title, description, keywords, author, robots, canonical present.
+- Title, description, author, robots, and canonical present; keywords are optional.
 - OG/Twitter cards present; images use `https://linearclocklab.com/profile.png`.
 - Icons set correctly.
 - No duplicate or missing core meta entries.
 - No light-mode media queries.
-- Scripts live at end of `<body>`.
+- Inline controllers live at the end of `<body>`; repository-local external
+  controllers may instead load with `defer` in `<head>`.
 
 ---
 
@@ -411,9 +418,10 @@ Rules:
 
 ## 6.5 Visible Copyright Footer
 
-- Existing public copyright notices display exactly `© 2025–2026 jm5k`.
-- Keep the footer text in HTML so it remains visible without JavaScript.
-- Do not add a copyright notice to a page that does not already have one.
+- Every sitemap-listed public page visibly contains exactly `© 2025–2026 jm5k`.
+- Keep the footer text static in HTML rather than generating it with JavaScript.
+- Page-specific footer content may surround the notice, and functional footer
+  content must be preserved.
 
 ---
 
@@ -422,7 +430,9 @@ Rules:
 - Vanilla JS only (no libraries).
 - Shared utilities must be dependency-free, pure, narrowly scoped, and documented.
 - Shared utilities must not own DOM state, LocalStorage, events, timers, or page initialization.
-- Inline controller `<script>` remains at the bottom of `<body>`, after any shared utility script.
+- Controllers may be inline at the bottom of `<body>` or repository-local
+  external scripts loaded with `defer` in `<head>`; shared utility scripts load
+  before every controller that uses them.
 - Query via `document.getElementById` for main controls.
 - Attach event listeners once per element.
 - Keep scopes narrow.
@@ -432,14 +442,28 @@ Rules:
 
 ---
 
-# 8. Responsiveness & Accessibility
+## 7.1 LocalStorage Compatibility
 
-- Use percentage widths, flex-wrap, and auto-fit grids.
-- Apply `clamp()` for text on visually dense tools.
-- Use `aria-label` for controls.
-- Use `aria-hidden` on decorative items.
-- Maintain high contrast (dark background + accent + readable text).
-- Avoid purely color-based indicators when possible; use shape/position plus color.
+- Existing production LocalStorage keys are compatibility contracts and must
+  never be renamed solely for consistency.
+- New persistent keys should use a clear page or tool namespace. Established
+  styles such as `lcl-...`, `focusline:...`, and documented legacy keys remain
+  valid.
+- Do not force migrations that discard or rename existing user data.
+- Temporary session-only state does not need LocalStorage.
+
+---
+
+# 8. Desktop-First Direction & Accessibility
+
+- Linear Clock Lab is desktop-first: desktop layouts and testing are the
+  primary design target.
+- Do not perform mobile-specific redesigns unless explicitly requested.
+- Existing flexible CSS may remain; avoid catastrophic horizontal overflow and
+  unusable clipping.
+- Keyboard accessibility, visible focus, readable contrast, semantic markup,
+  `aria-label` controls, and `aria-hidden` decorative items remain required.
+- Run mobile checks only when a task explicitly affects responsive behavior.
 
 ---
 
@@ -487,14 +511,14 @@ Rules:
 1. Copy a correct head/meta block.
 2. Declare local design tokens via `:root`.
 3. Keep page-specific CSS and controllers inline; reuse stable shared tokens/components and pure utilities when multiple pages need them.
-4. Load shared utility scripts before the inline page controller.
-5. Add a top “Home” back link (`.lcl-back-nav`).
+4. Load shared utility scripts before any controller that uses them.
+5. Add exactly one `.lcl-back-link` icon-only left arrow with the shared
+   accessible label and title; its container placement remains page-specific.
 6. Build UI with flex/grid following existing page patterns.
-7. Persist user settings with `localStorage`.
-8. Validate responsiveness with `min()`, `max()`, and `clamp()`.
-9. Confirm no light-mode media queries remain.
-10. Test in Chrome, Firefox, Edge, Safari.
-11. Confirm dark enforcement on system-light machines.
+7. Preserve existing LocalStorage keys as compatibility contracts; new keys use
+   a clear page or tool namespace, and temporary session-only state need not persist.
+8. Confirm no light-mode media queries remain.
+9. Run task-relevant desktop, browser, and responsive checks.
 
 ## 10.1 Required Automated Checks
 
@@ -504,6 +528,8 @@ Rules:
   shared local assets, navigation, copyright, or metadata changes.
 - A migrated time page is also public HTML, so changes to one require both
   checks.
+- Run `node tests/docs-audit.test.js` whenever README.md, agents.md,
+  ARCHITECTURE.md, COMPONENTS.md, UI_RULES.md, or about.html changes.
 
 ---
 
@@ -587,7 +613,7 @@ List every affected file:
 - Inline `<style>` / `<script>` changes.
 - `lcl.css` (if touched).
 - JS blocks inside pages.
-- Markdown/docs (e.g., `AGENTS.md`, `UI_RULES.md`, `STYLEGUIDE.md`, etc.).
+- Markdown/docs (e.g., `agents.md`, `UI_RULES.md`, `STYLEGUIDE.md`, etc.).
 
 ## 12.6 Testing Notes
 
@@ -595,7 +621,7 @@ Specify:
 
 - Manual tests to run (e.g., “Load `clock.html` on light-mode systems”).
 - Browser compatibility checks (Chrome, Firefox, Edge, Safari).
-- Responsive checks (mobile/desktop).
+- Desktop checks, plus mobile checks only when the task changes responsive behavior.
 - Behavior tests (rails, markers, timers, presets, dashboard).
 - `localStorage` persistence checks.
 - Accessibility tests (screen reader, keyboard navigation).
@@ -623,9 +649,11 @@ Small, targeted improvements for future updates:
 
 ## 12.9 Operational Rules
 
-1. The newest entry is always added at the **top**.
+1. Each completed change receives a new entry at the **top**; multiple entries
+   may share a date.
 2. Entries must be factual, concise, and specific.
-3. Codex must not modify older entries unless explicitly instructed.
+3. Historical entries are immutable except for a factual correction explicitly
+   requested by the user; do not keep extending an older mega-entry.
 4. All entries must reflect actual changes performed during the task.
 5. No task is considered complete until its changelog entry is created and validated.
 6. If a task results in no file modifications, a short note entry must still be added indicating “No changes required”.
@@ -645,4 +673,4 @@ ASCII and arrow rules for LCL
 
 # 13. Final Notes
 
-This `AGENTS.md` is the authoritative specification for all code, design, UX, JS, and documentation operations inside Linear Clock Lab. All future work must follow this guide to preserve the suite’s identity, consistency, performance, and maintainability.
+This `agents.md` document is the authoritative specification for all code, design, UX, JS, and documentation operations inside Linear Clock Lab. All future work must follow this guide to preserve the suite’s identity, consistency, performance, and maintainability.

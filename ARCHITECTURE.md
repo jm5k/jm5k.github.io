@@ -8,8 +8,8 @@ LCL is a suite of standalone, static HCJ (HTML/CSS/JavaScript) applications unif
 - A consistent token-based design system
 - A shared interaction philosophy
 - A hub-and-spoke navigation model
-- Full offline compatibility
-- Zero external dependencies
+- Backend-free, client-side, and local-first operation
+- No runtime JavaScript or CSS library dependencies
 
 This overview documents the internal structure, module behaviors, responsibilities, and rules that govern the entire LCL ecosystem.
 
@@ -29,9 +29,11 @@ LCL consists of:
 - A theme system powered by CSS variables
 - LocalStorage-driven user preferences
 
-There is **no build system**, **no bundler**, **no framework**, and **no external scripts**.
-
-Everything runs in browser-native HCJ only.
+There is **no build system**, **no bundler**, and **no framework**. Core
+behavior uses browser-native HCJ with no remote JavaScript or CSS libraries,
+analytics, or tracking. The suite is locally serveable; it does not claim
+service-worker caching or guaranteed offline installation. External hyperlinks
+and decorative remote images may exist without being required for core behavior.
 
 ---
 
@@ -128,6 +130,12 @@ This pattern is supported and reusable for future customizable pages.
 
 # 4. Layout Architecture
 
+LCL is desktop-first: desktop layouts and testing are the primary design target.
+Existing flexible CSS may remain, but mobile-specific redesigns are performed
+only when requested. Avoid catastrophic horizontal overflow and unusable
+clipping while retaining keyboard accessibility, visible focus, readable
+contrast, and semantic markup.
+
 LCL uses a combination of:
 
 - Flexbox layouts
@@ -205,8 +213,10 @@ Range inputs explicitly use:
 
 Standard pattern:
 
-    <nav class="lcl-back-nav">
-        <a href="index.html">← Home</a>
+    <nav class="lcl-back-nav" aria-label="Return">
+        <a href="index.html" class="lcl-back-link"
+           aria-label="Back to Linear Clock Lab"
+           title="Back to Linear Clock Lab">&larr;</a>
     </nav>
 
 Design:
@@ -219,7 +229,10 @@ Design:
 
 # 6. JavaScript Architecture
 
-LCL uses a hybrid JavaScript architecture: shared files hold only pure, reused utilities, while each page keeps its independent inline controller at the end of `<body>`.
+LCL uses a hybrid JavaScript architecture: shared files hold only pure, reused
+utilities, while each page keeps an independent controller. Controllers may be
+inline at the end of `<body>` or repository-local external scripts loaded with
+`defer` in `<head>`.
 
 ## 6.1 Principles
 
@@ -245,11 +258,11 @@ Used for:
 - Theme selections on customizable pages
 - Timer/stopwatch session state
 
-All keys must use:
-
-    lcl-<feature>-<setting>
-
-to avoid collisions.
+Existing production LocalStorage keys are compatibility contracts and must not
+be renamed solely for consistency. New persistent keys should use a clear
+page/tool namespace; established `lcl-...`, `focusline:...`, and documented
+legacy styles remain valid. Do not force user-data migrations, and do not use
+LocalStorage for temporary session-only state.
 
 ## 6.4 Interval-Driven Tools
 
@@ -272,7 +285,7 @@ All pages include:
 - theme-color
 - canonical URL
 - robots
-- keywords
+- keywords (optional)
 - description
 - Open Graph metadata
 - Twitter cards
@@ -281,9 +294,14 @@ Images point to:
 
     https://linearclocklab.com/profile.png
 
-These ensure consistent previews across platforms.
+These ensure consistent previews across platforms. Required metadata is charset,
+viewport, title, description, author, robots, canonical, theme-color,
+color-scheme, `lcl.css`, Open Graph metadata, and Twitter metadata; keywords
+are optional.
 
-Scripts go at the bottom of `<body>` to avoid blocking rendering.
+Inline controllers go at the bottom of `<body>`. Repository-local external
+controllers may use `defer` in `<head>`; a shared utility loads before a
+controller that uses it.
 
 ---
 
@@ -313,7 +331,8 @@ Scripts go at the bottom of `<body>` to avoid blocking rendering.
 ## 8.4 dashboard.html
 
 - Tile-based workspace.
-- Mirrors `.grid` and `.card` logic from index.
+- Uses its own tile workspace and absolute positioning rather than mirroring
+  the index grid.
 - Uses toolbar/header sections consistent with other UIs.
 
 ## 8.5 lcl.css
@@ -339,7 +358,8 @@ Contains only the frozen, pure `LCLTime` formatting API. Page controllers remain
 - Icon-only controls use matching aria-labels and title tooltips.
 - Keyboard focus is visibly indicated.
 - aria-hidden applied to decorative separators.
-- Large, touch-friendly click targets.
+- Accessible click targets with visible keyboard focus; touch optimization is
+  not a mandatory design target.
 - No reliance on color-only interactions.
 
 ---
@@ -351,8 +371,9 @@ Agents must ensure:
 - No `@media (prefers-color-scheme: light)` exists anywhere.
 - No light-mode tokens remain.
 - No tool replicates the multi-link navigation of index.
-- No accidental introduction of external scripts or CDN assets.
-- No rearrangement of script positions.
+- No accidental introduction of remote JavaScript or CSS libraries.
+- Shared utilities load before controllers that use them; preserve either
+  supported controller placement pattern.
 - No page-specific layout is added to `lcl.css`.
 - No shared utility takes ownership of DOM state, LocalStorage, events, or intervals.
 - No mixing of UI patterns across tool contexts without preserving identity.
@@ -367,7 +388,8 @@ When adding new tools:
 - They must begin with the canonical `<head>` block.
 - They inherit shared tokens and declare only necessary local overrides or page-specific tokens.
 - Public non-index pages must contain exactly one `.lcl-back-link` home control.
-- They must store user prefs via `localStorage`.
+- Existing LocalStorage contracts remain unchanged; new persistence is added
+  only when it has a clear user benefit.
 - They must use grid/flex patterns that match existing pages.
 - They must not introduce new dark/light logic.
 - They must avoid global namespace pollution.
@@ -377,14 +399,17 @@ When adding new tools:
 
 # 12. Summary
 
-Linear Clock Lab operates as a collection of highly consistent, tightly scoped, fully static tools held together by a shared dark theme, a synchronized design-token system, a hub-and-spoke navigation model, and strict architectural rules.
+Linear Clock Lab operates as a collection of highly consistent, tightly scoped,
+static, client-side, backend-free, local-first tools held together by a shared
+dark theme, a synchronized design-token system, a hub-and-spoke navigation
+model, and strict architectural rules.
 
 All future work must remain:
 
 - Deterministic
 - Minimalist
 - Dark-only
-- Offline-native
+- Locally serveable
 - Neon-accented
 - Consistent in design and function
 - Compatible with existing patterns

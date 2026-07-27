@@ -11,6 +11,12 @@ All components:
 - Use `lcl.css` for stable tokens and genuinely shared components, with page-specific layout kept inline
 - Must remain consistent across all tools
 
+LCL is desktop-first: desktop layouts and testing are the primary component
+target. Do not perform mobile-specific redesigns unless requested; retain
+existing flexible CSS while avoiding catastrophic overflow or unusable clipping.
+Keyboard accessibility, visible focus, readable contrast, and semantic markup
+remain required.
+
 Each component described here includes:
 
 - Purpose
@@ -49,13 +55,13 @@ Rules:
 ## 2.1 `.grid` (Responsive Auto-Fit Grid)
 
 Purpose:  
-Used on index.html and dashboard sections.
+Used by the index.html hub. Dashboard uses its own purpose-driven tile workspace.
 
 Structure:
 
 <div class="grid">
-<div class="card">...</div>
-<div class="card">...</div>
+<a class="card" href="clock.html">...</a>
+<a class="card" href="clock_presets.html">...</a>
 ...
 </div>
 
@@ -63,7 +69,8 @@ Rules:
 
 - repeat(auto-fit, minmax(220px, 1fr))
 - Gap around 1rem
-- Must remain flexible across all screen sizes
+- Desktop-first layouts are the primary target; retain existing flexible CSS and
+  avoid catastrophic horizontal overflow or unusable clipping.
 
 ## 2.2 `.card` (Feature Tile)
 
@@ -85,7 +92,8 @@ Styling Rules:
 
 - Background ~ #0a0a0a
 - 1px border using var(--accent) or low-opacity border
-- Small 6px radius
+- Cards and panels may use approximately 10–16px radii when that preserves the
+  existing page identity.
 - Hover: accent glow only; no size or layout changes
 - Click targets must be full-card when linked
 
@@ -149,10 +157,10 @@ Keep suite ownership consistent and available without JavaScript.
 
 Rules:
 
-- Existing public copyright notices display exactly `© 2025–2026 jm5k`
-- Preserve each page's existing footer structure, styling, and placement
-- Keep the copyright text in HTML rather than generating it with JavaScript
-- Do not add a copyright notice to a page that does not already have one
+- Every sitemap-listed public page visibly contains `© 2025–2026 jm5k`
+- Preserve each page's existing footer structure, styling, placement, and any
+  functional footer content
+- Keep the copyright text static in HTML rather than generating it with JavaScript
 
 ---
 
@@ -256,12 +264,15 @@ Structure:
 
 Rules:
 
-- Background: #111
+- Shared and theme-sensitive colors use tokens; deliberate page-specific colors
+  may remain local when they are not reusable.
 - Border: 1px solid var(--accent) or a muted tone
 - Hover: accent glow or underline
 - Font: monospace or system-ui depending on tool
 - No heavy shadows
-- No large radii (>8px)
+- Compact controls generally use 6–10px radii; pill controls may use 999px.
+- A restrained filled-accent primary action is allowed when a page already uses
+  that pattern, such as FocusLine.
 
 ## 5.2 Range Input Components
 
@@ -343,9 +354,10 @@ box-shadow: 0 0 10px var(--glow);
 
 Rules:
 
-- Glow must use --glow token
-- Blur must remain subtle (<=15px)
-- No warm or off-brand glow colors
+- Default glow is restrained and must not reduce readability or shift layout.
+- Theme-sensitive glows use their established tokens where available.
+- Intentional multi-layer glows are allowed for themed rails, markers, Timer,
+  and Stopwatch effects.
 
 ## 7.2 Active State Indicators
 
@@ -442,7 +454,8 @@ Rules:
 
 Purpose:
 
-- Switch themes using data-theme on <html>
+- Switch themes using `<html data-theme>` while keeping the clock-first view
+  compact.
 
 Structure:
 
@@ -454,7 +467,12 @@ Rules:
 
 - Token sets must be full and consistent
 - No light-mode semantics
-- Accent color must remain neon
+- The top-oriented view keeps the current time, rail, labels, and statistics
+  visible; the ordinal Julian YYYY-DDD date is part of the statistics row.
+- All preset, display, theme-data, and custom-color controls live in
+  `<details id="themePanel">` behind a compact gear summary.
+- The gear and `.lcl-back-link` share a centered utility row.
+- Data-changing actions retain visible text labels.
 
 ## 11.2 Dashboard Tiles
 
@@ -467,8 +485,17 @@ Structure:
 
 Rules:
 
-- Shares `.card` DNA
+- Uses an asymmetric, purpose-driven workspace that may share `.card` DNA
 - No additional shadows beyond glow
+
+## 11.3 LocalStorage Compatibility
+
+- Existing production LocalStorage keys are compatibility contracts and must
+  remain unchanged.
+- New keys should use a clear page or tool namespace; established `lcl-...`,
+  `focusline:...`, and documented legacy styles remain valid.
+- Do not force migrations of existing user data. Temporary session-only state
+  does not need LocalStorage.
 
 ---
 

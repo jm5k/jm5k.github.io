@@ -1,3 +1,64 @@
+Date: 2026-07-27
+Short Title: Documentation Accuracy Audit
+Summary:
+
+Updated project documentation to match the current static, client-side,
+backend-free, local-first suite without changing application behavior. The
+documentation now reflects the public-page contract, desktop-first direction,
+shared utility boundary, compatibility-safe storage guidance, and implemented
+tool features.
+
+LCL Technical Details:
+
+- README: Corrected the ten-tool Core Tools list, implemented clock, Preset
+  Themes, Timer, and Stopwatch capabilities, planned-update claims, project
+  structure, testing guidance, navigation wording, and copyright text.
+- agents.md: Corrected the lowercase tracked filename, current icon-only
+  `.lcl-back-link` navigation rule, metadata requirements, supported controller
+  placement, desktop-first direction, LocalStorage compatibility contracts, and
+  per-change changelog policy.
+- Architecture and Components: Replaced unsupported offline/install claims,
+  obsolete navigation and Dashboard descriptions, strict storage naming, and
+  outdated component examples with current shared-foundation and page-controller
+  guidance.
+- UI Rules: Documented purpose-driven local colors, radii, glows, filled
+  primary actions, asymmetric layouts, desktop-first testing, and static public
+  copyright requirements.
+- About: Corrected Main Clock work-hour wording, Preset Themes gear/Julian
+  details, Stopwatch duration display, and removed empty Planned cards.
+- Tests: Added the dependency-free `tests/docs-audit.test.js` to protect README
+  sitemap-file coverage, known stale claims, lowercase agents.md naming,
+  navigation, metadata, storage, desktop-first, and copyright documentation.
+
+Files Touched:
+
+- README.md
+- agents.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- about.html
+- CHANGELOG.md
+- tests/docs-audit.test.js
+
+Testing Notes:
+
+- Automated: Run `node tests/time-utils.test.js`, `node tests/site-audit.test.js`,
+  `node tests/docs-audit.test.js`, `node --check tests/docs-audit.test.js`, and
+  `git diff --check`.
+- Manual: Documentation-only change; verify About's completed cards remain
+  readable after empty Planned cards are removed. Desktop is the default review
+  target; narrow-screen review is needed only for responsive changes.
+
+Risks & Edge Cases:
+
+- The documentation audit intentionally checks stable publishing and wording
+  contracts rather than subjective prose quality.
+- Historical entries remain unchanged; this new entry records the audit instead
+  of extending the 2026-07-26 mega-entry.
+
+---
+
 Date: 2026-07-26
 Short Title: Extend Shared Suite Foundation
 Summary:

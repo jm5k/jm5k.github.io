@@ -26,8 +26,10 @@ XL = 2rem
 
 Rules:
 
-- All elements must use these increments.
-- No arbitrary pixel spacing unless matching existing code.
+- Treat this scale as guidance, not a mathematical requirement for every legacy
+  element.
+- Preserve deliberate page-specific spacing when it supports an existing page
+  identity.
 - Vertical spacing defaults to M (1rem) unless the page uses denser layouts.
 - Horizontal spacing typically S to M.
 
@@ -92,7 +94,8 @@ small/muted = 0.85rem
 
 Rules:
 
-- Headings scale down on mobile with clamp().
+- Use `clamp()` when appropriate for a task; desktop layouts are the primary
+  design target.
 - No text smaller than 0.8rem.
 - No exaggerated sizes unless part of a numeric display.
 
@@ -101,7 +104,8 @@ Rules:
 - Must use monospace fonts.
 - Must have high contrast (`var(--fg)`).
 - No blurs.
-- No shadows.
+- Numeric displays may use a subtle theme-controlled glow where already
+  established, without reducing readability.
 - No gradients.
 
 ---
@@ -139,10 +143,14 @@ All UI must use these tokens:
 
 Rules:
 
-- No hard-coded colors except `#000` for fallback blocks.
-- Accent must be neon-cyan.
-- Muted must remain neutral gray.
+- Shared and theme-sensitive colors should use tokens. Deliberate page-specific
+  colors may remain local when they are not reusable.
+- Accent follows the established page or theme palette, including the suite's
+  neon-accent identity.
+- Muted text remains readable against the active theme.
 - Stable shared defaults belong in `lcl.css`; pages may define local overrides and page-specific tokens.
+- Zone colors continue to use approved Task Planner tokens; do not duplicate a
+  reusable semantic color unnecessarily.
 
 ## 3.2 Glow Standards
 
@@ -154,10 +162,12 @@ Glow behavior:
 
 Rules:
 
-- Glow must use `var(--glow)` or `var(--accent)` for the shared current-time marker.
-- Glow radius ≤ 15px.
-- No multi-layer glows.
-- Glow appears only on:
+- Default glow should be restrained and must not reduce readability or shift
+  layout.
+- Theme-controlled glow may use established page tokens.
+- Intentional multi-layer glows are permitted for themed rails, markers, Timer,
+  and Stopwatch effects.
+- Glow commonly appears on:
 
   - card hovers
   - markers
@@ -353,10 +363,13 @@ Rules:
 
 Prohibited:
 
-- Radii > 8px
-- Multi-layer shadows
-- Bright filled buttons
+- Radii that conflict with the existing page identity; compact controls generally
+  use 6–10px, cards/panels may use approximately 10–16px, and pills may use 999px
+- Heavy, decorative shadows that reduce readability
 - Unrequested animations
+
+A restrained filled-accent primary action is permitted where a page already
+uses that pattern, such as FocusLine.
 
 ## 5.2 Text Inputs
 
@@ -409,16 +422,11 @@ Index:
 
 ## repeat(auto-fit, minmax(220px, 1fr))
 
-Dashboard:
-
----
-
-## repeat(auto-fit, minmax(250px, 1fr))
-
 Rules:
 
 - Cards consistent width.
-- No asymmetric grids.
+- Asymmetric layouts are allowed when purpose-driven, such as Dashboard or
+  productivity views.
 
 ## 6.3 Wrapper Widths
 
@@ -471,9 +479,10 @@ Rules:
 
 ## 7.3 Visible Copyright Footer
 
-- Existing public copyright notices display exactly `© 2025–2026 jm5k`.
-- Keep the footer text in HTML so it remains visible without JavaScript.
-- Do not add a copyright notice to a page that does not already have one.
+- Every sitemap-listed public page visibly contains exactly `© 2025–2026 jm5k`.
+- Keep the footer text static in HTML rather than generating it with JavaScript.
+- Page-specific footer content may surround the notice; preserve functional
+  footer content.
 
 ---
 
@@ -505,8 +514,9 @@ Not allowed:
 ## 9.1 DOM Access
 
 - Use `document.getElementById`.
-- Keep page controller scripts at the bottom of `<body>`.
-- Load any shared utility script before the inline page controller.
+- Use either an inline controller at the bottom of `<body>` or a
+  repository-local external controller loaded with `defer` in `<head>`.
+- Load any shared utility script before the controller that uses it.
 - No layout rewrites beyond existing patterns.
 
 ## 9.2 Shared Utility Boundary
@@ -525,13 +535,11 @@ Not allowed:
 
 ## 9.4 LocalStorage
 
-Keys must follow:
-
----
-
-## lcl-<tool>-<setting>
-
-Never store UI-only temporary state.
+Existing production LocalStorage keys are compatibility contracts and must not
+be renamed solely for consistency. New persistent keys should use a clear page
+or tool namespace; established `lcl-...`, `focusline:...`, and documented
+legacy styles remain valid. Do not force migrations of existing user data.
+Temporary session-only state does not need LocalStorage.
 
 ## 9.5 Task Planner Clock – Storage Keys
 
@@ -555,22 +563,27 @@ Rules:
 
 # 10. Responsiveness Rules
 
+Linear Clock Lab is desktop-first: desktop layouts and testing are the primary
+design target. Do not perform mobile-specific redesigns unless explicitly
+requested. Existing flexible CSS may remain, but avoid catastrophic horizontal
+overflow and unusable clipping. Keyboard accessibility, visible focus, readable
+contrast, and semantic markup remain required.
+
 ## 10.1 Scaling
 
 - Use clamp() where appropriate.
-- Grids must handle narrow screens.
-- Cards must remain readable.
+- Preserve existing flexible layouts when they remain usable; perform narrow
+  screen checks only when a task explicitly affects responsive behavior.
 
 ## 10.2 No Horizontal Scroll
 
-- No horizontal overflow.
-- Time rails must scale to width.
+- Avoid catastrophic horizontal overflow and unusable rail clipping.
 
 ## 10.3 Touch Targets
 
-- General interactive controls use a minimum height of 40–44px.
-- Established compact utility controls, including the suite back arrow, may use
-  the 38px by 38px pattern when they retain clear spacing and visible focus.
+- Maintain adequate, visible controls for the page context. Established compact
+  utility controls, including the suite back arrow, may use the 38px by 38px
+  pattern when they retain clear spacing and visible focus.
 
 ---
 
@@ -598,7 +611,6 @@ Never allowed:
 - Hamburger menus.
 - Heavy shadows.
 - Skeuomorphic elements.
-- Multi-layer glows.
 - External fonts/CDNs.
 - Excessive padding.
 - Bright/white UI elements that break dark mode.
@@ -618,7 +630,8 @@ Following them ensures all pages remain:
 - Lightweight
 - Cohesive
 
-Any new UI element must obey these rules exactly.
+Apply these rules with purpose-driven judgment while preserving each page's
+existing identity.
 
 ---
 
