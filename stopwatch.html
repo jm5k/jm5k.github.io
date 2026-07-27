@@ -132,7 +132,6 @@
     <header>
       <h1>Stopwatch Lab</h1>
       <p>Radiant chronometers — left ➜ right growth. Persistent, sortable, and color-tunable.</p>
-	  <p>Chronometers persist locally; leaving this page pauses them automatically.</p>
     </header>
 
     <hr class="navline" />
@@ -153,6 +152,7 @@
     <footer>Minimal time, Maximum clarity. · © 2025–2026 jm5k</footer>
   </div>
 
+  <script src="lcl-time.js"></script>
   <script>
   (() => {
     const STORAGE_KEY = 'lcl_stopwatches_v1';
@@ -171,15 +171,10 @@
 
     const now = () => performance.now();
 
-    const fmt = (ms) => {
-      ms = Math.max(0, Math.floor(ms));
-      const s = Math.floor(ms/1000);
-      const h = Math.floor(s/3600);
-      const m = Math.floor((s%3600)/60);
-      const r = Math.floor(s%60);
-      const hh = h>0 ? String(h).padStart(2,'0')+':' : '';
-      return hh + String(m).padStart(2,'0') + ':' + String(r).padStart(2,'0');
-    };
+    function formatDisplayDuration(milliseconds) {
+      const fullDuration = LCLTime.formatDurationHMS(milliseconds / 1000);
+      return fullDuration.startsWith('00:') ? fullDuration.slice(3) : fullDuration;
+    }
 
     // ---------- Persistence ----------
     function saveState(){
@@ -316,7 +311,7 @@
 
       fill.style.width = pct + '%';
       marker.style.left = pct + '%';
-      elapsedEl.textContent = fmt(r.elapsedMs);
+      elapsedEl.textContent = formatDisplayDuration(r.elapsedMs);
     }
 
     function render(){
@@ -341,7 +336,7 @@
 
         // Meta
         const meta=document.createElement('div'); meta.className='meta';
-        meta.innerHTML=`<span class="elapsed">${fmt(r.elapsedMs)}</span> elapsed <span class="small">Scale: ${fmt(r.targetMs)}</span>`;
+        meta.innerHTML=`<span class="elapsed">${formatDisplayDuration(r.elapsedMs)}</span> elapsed <span class="small">Scale: ${formatDisplayDuration(r.targetMs)}</span>`;
         left.append(rail, meta);
 
         // Right controls

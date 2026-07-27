@@ -155,6 +155,7 @@
     <footer>Minimal time, Maximum clarity. · © 2025–2026 jm5k</footer>
   </div>
 
+  <script src="lcl-time.js"></script>
   <script>
   (() => {
     const STORAGE_KEY = 'lcl_timers_v1';
@@ -179,15 +180,10 @@
     let notifAsked = false;     // ask once per session
     const pageTitle = document.title;
 
-    const fmt = (ms) => {
-      ms = Math.max(0, Math.floor(ms));
-      const s = Math.floor(ms/1000);
-      const h = Math.floor(s/3600);
-      const m = Math.floor((s%3600)/60);
-      const r = Math.floor(s%60);
-      const hh = h>0 ? String(h).padStart(2,'0')+':' : '';
-      return hh + String(m).padStart(2,'0') + ':' + String(r).padStart(2,'0');
-    };
+    function formatDisplayDuration(milliseconds) {
+      const fullDuration = LCLTime.formatDurationHMS(milliseconds / 1000);
+      return fullDuration.startsWith('00:') ? fullDuration.slice(3) : fullDuration;
+    }
     const now = () => performance.now();
 
     // ---------- Persistence ----------
@@ -398,7 +394,7 @@
 
         // Meta
         const meta=document.createElement('div');meta.className='meta';
-        meta.innerHTML=`<span class="timeleft">${fmt(t.remainingMs)}</span> remaining <span class="small">Total: ${fmt(t.totalMs)}</span>`;
+        meta.innerHTML=`<span class="timeleft">${formatDisplayDuration(t.remainingMs)}</span> remaining <span class="small">Total: ${formatDisplayDuration(t.totalMs)}</span>`;
         left.append(rail,meta);
 
         // Right controls
@@ -442,7 +438,7 @@
       // Left-anchored fill, shrinking width ⇒ boundary moves LEFT toward 0
       fill.style.width = w + '%';
       marker.style.left = w + '%';
-      timeleftEl.textContent = fmt(t.remainingMs);
+      timeleftEl.textContent = formatDisplayDuration(t.remainingMs);
 
       rail.style.boxShadow = 'inset 0 0 0 1px #0b0b0b';
       rail.style.outline = '1px solid #0f0f0f';
