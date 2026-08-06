@@ -34,6 +34,7 @@ for (const page of publicPages) {
 
 for (const testFile of [
     "tests/time-utils.test.js",
+    "tests/duration-utils.test.js",
     "tests/site-audit.test.js",
     "tests/docs-audit.test.js"
 ]) {
@@ -82,5 +83,8 @@ for (const file of ["agents.md", "ARCHITECTURE.md", "COMPONENTS.md", "UI_RULES.m
 }
 
 assert.ok(readme.includes("© 2025–2026 jm5k"), "README.md must use the current copyright");
+assert.match(readme, /nanoseconds through decades/i);
+assert.match(readme, /365\.2425 days/i);
+assert.match(readme, /marked approximate/i);
 
 console.log(`docs-audit.test.js: passed ${publicPages.length} public-page and documentation contracts`);

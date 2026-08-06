@@ -16,6 +16,7 @@ const migratedTimePages = new Set([
     "focus.html",
     "stopwatch.html",
     "timer.html",
+    "time-calculator.html",
     "task-planner-lc.html"
 ]);
 const requiredSocialMetadata = [
@@ -503,6 +504,61 @@ for (const { location, pageFile, pagePath } of publicPages) {
                 pageFile,
                 "lcl-time.js must load before the controller that uses LCLTime",
                 `shared script at ${sharedScripts[0].index}, controller at ${controller.index}`
+            );
+        }
+    }
+
+    if (pageFile === "time-calculator.html") {
+        const scriptBlocks = [
+            ...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)
+        ];
+        const durationScripts = scriptBlocks.filter((match) => {
+            const src = getAttribute(match[0], "src");
+            if (!src) return false;
+            const local = staticLocalReference(src);
+            return local
+                ? local.replace(/^\.?\//, "").toLowerCase() === "lcl-duration.js"
+                : false;
+        });
+        check(
+            durationScripts.length === 1,
+            pageFile,
+            "must load lcl-duration.js exactly once",
+            `${durationScripts.length} references found`
+        );
+        const calculatorController = scriptBlocks.find(
+            (match) =>
+                !getAttribute(match[0], "src") &&
+                /\bLCLDuration\b/.test(match[2])
+        );
+        check(
+            Boolean(calculatorController),
+            pageFile,
+            "must contain an inline controller that uses LCLDuration",
+            calculatorController ? "controller found" : "controller not found"
+        );
+        const durationSelectorCount = getOpeningTags(html, "select").filter(
+            (tag) => /\bdata-duration-units(?:\s|=|>)/i.test(tag)
+        ).length;
+        check(
+            durationSelectorCount === 5,
+            pageFile,
+            "must source all five duration selectors from LCLDuration.units",
+            `${durationSelectorCount} data-duration-units attributes found`
+        );
+        check(
+            Boolean(calculatorController) &&
+                /\bLCLDuration\.units\b/.test(calculatorController[2]),
+            pageFile,
+            "calculator controller must populate selectors from LCLDuration.units",
+            "LCLDuration.units use not found"
+        );
+        if (durationScripts.length === 1 && calculatorController) {
+            check(
+                durationScripts[0].index < calculatorController.index,
+                pageFile,
+                "lcl-duration.js must load before the calculator controller",
+                `shared script at ${durationScripts[0].index}, controller at ${calculatorController.index}`
             );
         }
     }

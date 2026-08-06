@@ -507,6 +507,18 @@ Not allowed:
 - Layout shifts
 - Size changes
 
+## 8.3 Mode Selectors
+
+- Multi-mode tools may use a compact `tablist` when only one work surface is
+  needed at a time.
+- The selected tab uses the page accent, exposes `aria-selected="true"`, and
+  controls one visible `tabpanel`.
+- Arrow, Home, and End keys move selection and focus without reloading.
+- Switching modes must be immediate and must not alter unrelated form values.
+- Approximate duration results use an unobtrusive approximation symbol and
+  muted `Average Gregorian duration` note; they must not resemble exact calendar
+  arithmetic.
+
 ---
 
 # 9. JavaScript Interaction Rules
@@ -523,6 +535,9 @@ Not allowed:
 
 - Shared JavaScript contains only pure, dependency-free functions used by multiple pages.
 - Shared utilities expose a narrow documented API and do not access the DOM, LocalStorage, events, timers, or page state.
+- `lcl-duration.js` owns pure calculator math and formatting; the Time
+  Calculator controller owns validation feedback, tabs, and DOM output. Unit
+  factors and ordered selector choices come only from the shared utility.
 - Page scripts remain independent; do not create a monolithic controller.
 - Do not extract one-page code or migrate unrelated pages solely for consistency.
 - Refactor in small, testable phases.

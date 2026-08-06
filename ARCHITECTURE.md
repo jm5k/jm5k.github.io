@@ -23,6 +23,7 @@ LCL consists of:
 - Multiple independent tool pages
 - A shared CSS foundation (`lcl.css`) for stable tokens and reused components
 - A narrow shared time-formatting utility (`lcl-time.js`)
+- A pure duration-calculation utility (`lcl-duration.js`)
 - Page-specific inline CSS and controller JS
 - A small shared image/profile resource
 - A consistent SEO + metadata layer
@@ -250,7 +251,31 @@ inline at the end of `<body>` or repository-local external scripts loaded with
 
 `lcl-time.js` exposes the dependency-free `window.LCLTime` API for formatting hour labels, clock times, durations, and ordinal `YYYY-DDD` dates. It has no DOM, LocalStorage, event, interval, or page-state responsibilities and also supports `module.exports` for direct Node tests.
 
-## 6.3 LocalStorage System
+## 6.3 Duration Calculator Utilities
+
+`lcl-duration.js` exposes the frozen, dependency-free `window.LCLDuration` API.
+It owns the single ordered unit definition for nanoseconds, microseconds,
+milliseconds, seconds, minutes, hours, days, weeks, months, years, and decades;
+deterministic interval division; elapsed-duration and time-shift calculations;
+conversion precision metadata; and human-readable duration formatting.
+
+Each unit factor is stored as an integer BigInt number of nanoseconds. Decimal
+inputs are parsed as rational BigInt values, so exact integer results can remain
+exact beyond `Number.MAX_SAFE_INTEGER`; browser input strings are passed to the
+utility without first losing precision. Numeric compatibility fields remain
+available for ordinary time-of-day rendering, and the API reports when a caller
+supplies an already-unsafe Number. Display formatting uses grouped decimal
+notation where practical and scientific notation only for extreme magnitudes.
+
+Nanoseconds through weeks are fixed durations. Months, years, and decades use
+the average Gregorian definitions of 365.2425 days per year, one twelfth of that
+per month, and ten average years per decade. Calculations involving those units
+carry approximation metadata; exact calendar operations belong in a future Date
+Calculator. The utility supports `module.exports` for direct Node tests.
+`time-calculator.html` keeps input validation, tabs, approximation notes, and
+result rendering in its inline controller.
+
+## 6.4 LocalStorage System
 
 Used for:
 
@@ -264,7 +289,7 @@ page/tool namespace; established `lcl-...`, `focusline:...`, and documented
 legacy styles remain valid. Do not force user-data migrations, and do not use
 LocalStorage for temporary session-only state.
 
-## 6.4 Interval-Driven Tools
+## 6.5 Interval-Driven Tools
 
 Clock, stopwatch, timer, and dashboard rely on:
 
@@ -349,6 +374,18 @@ Page-specific layout does not belong here.
 ## 8.6 lcl-time.js
 
 Contains only the frozen, pure `LCLTime` formatting API. Page controllers remain inline and independent.
+
+## 8.7 lcl-duration.js / time-calculator.html
+
+- `lcl-duration.js` contains only the frozen, pure `LCLDuration` calculation
+  and duration-formatting API, including the single BigInt-backed unit table and
+  Average Gregorian approximation metadata.
+- `time-calculator.html` owns its four-mode tab interface, DOM validation, and
+  result presentation. Duration selectors are populated from
+  `LCLDuration.units` rather than duplicating unit factors or lists.
+- The page loads `lcl-time.js` for 12-hour clock result formatting and
+  `lcl-duration.js` for calculation behavior before its inline controller.
+- Calculator inputs are temporary session state and are not stored.
 
 ---
 

@@ -4,7 +4,7 @@
 A suite of minimalist, client-side time tools that visualize your day as a single continuous line — extended with timers, stopwatches, multi-timezone support, themes, and focus-tracking utilities.
 Built by **[jm5k](https://linearclocklab.com/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
 
-The project uses a small hybrid foundation: stable design tokens and reused components live in `lcl.css`, pure multi-page time formatting lives in `lcl-time.js`, and each tool keeps its own inline layout and controller logic.
+The project uses a small hybrid foundation: stable design tokens and reused components live in `lcl.css`, pure multi-page time formatting lives in `lcl-time.js`, deterministic duration math lives in `lcl-duration.js`, and each tool keeps its own inline layout and controller logic.
 
 ---
 
@@ -23,6 +23,7 @@ Explore the full suite — all pages load locally, with instant switching and ze
 - **FocusLine** — Pomodoro cycles, notes, and local focus tracking
 - **Timer** — multiple persistent countdowns
 - **Stopwatch** — multiple persistent elapsed-time tools
+- **Time Calculator** — intervals, elapsed durations, time shifts, and unit conversions
 - **Dashboard** — configurable tile workspace
 - **To Do Lists** — local planners and prioritized task boards
 
@@ -63,6 +64,12 @@ consistent dark design and privacy-first, browser-local behavior.
   - Sorting and browser-local persistence
   - MM:SS below one hour and HH:MM:SS at one hour and above
   - Paused after reload
+- **Time Calculator**
+  - Complete-interval counts with remainders and exact totals
+  - Same-day and midnight-crossing elapsed durations
+  - Add/subtract time shifts with day offsets
+  - Fixed-duration conversions from nanoseconds through weeks
+  - Average Gregorian month, year, and decade conversions with approximation labels
 
 ---
 
@@ -98,6 +105,17 @@ A clean, responsive stopwatch that visualizes progress as a glowing line filling
 
 ---
 
+## Time Calculator Overview
+The **Time Calculator** provides four compact, instantly updating modes for
+practical duration work: interval division, duration between times, adding or
+subtracting durations, and conversion from nanoseconds through decades.
+Nanoseconds through weeks use fixed ratios. Months, years, and decades use the
+average Gregorian year of 365.2425 days and are marked approximate; they are not
+calendar arithmetic. Calculations stay in the browser and do not persist input
+data.
+
+---
+
 ## 🕒 FocusLine Overview
 **FocusLine** ties your focus blocks to the real passage of time — combining Pomodoro cycles and note capture.
 Privacy-first, backend-free, and client-side.
@@ -126,15 +144,18 @@ also shows the ordinal Julian YYYY-DDD date.
 - `focus.html` — FocusLine
 - `stopwatch.html` — Stopwatch
 - `timer.html` — Timer
+- `time-calculator.html` — Time Calculator
 - `dashboard.html` — Dashboard
 - `todo.html` — To Do Lists
 - `about.html` — Suite overview and license
 - `lcl.css` — Shared design tokens and reusable UI foundations
 - `lcl-time.js` — Pure shared clock-formatting utilities
+- `lcl-duration.js` — BigInt-backed duration units, calculation, precision metadata, and formatting utilities
 - `todo.css` / `todo.js` — To Do Lists page assets
 - `site.webmanifest` — Browser application metadata
 - `sitemap.xml` — Public-page sitemap
 - `tests/time-utils.test.js` — Shared time-formatting regression test
+- `tests/duration-utils.test.js` — Duration calculation and validation regression test
 - `tests/site-audit.test.js` — Sitemap-driven public HTML publishing-contract audit
 - `tests/docs-audit.test.js` — Documentation architecture and stale-claim audit
 - `agents.md` — Repository agent rules
@@ -150,15 +171,18 @@ Run the dependency-free Node checks directly:
 
 ```text
 node tests/time-utils.test.js
+node tests/duration-utils.test.js
 node tests/site-audit.test.js
 node tests/docs-audit.test.js
 ```
 
-The time utility tests protect shared formatting behavior. The site audit
-protects public HTML publishing contracts: metadata, navigation, copyright,
-sitemap coverage, shared script ordering, and local assets. The documentation
-audit protects documented architecture, file coverage, naming, and known stale
-claims.
+The time utility tests protect shared clock formatting behavior, and the
+duration utility tests protect interval, elapsed-time, time-shift, fixed and
+Average Gregorian conversion, formatting, precision, and validation behavior.
+The site audit protects public HTML
+publishing contracts: metadata, navigation, copyright, sitemap coverage,
+shared script ordering, and local assets. The documentation audit protects
+documented architecture, file coverage, naming, and known stale claims.
 
 ---
 

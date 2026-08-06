@@ -488,7 +488,31 @@ Rules:
 - Uses an asymmetric, purpose-driven workspace that may share `.card` DNA
 - No additional shadows beyond glow
 
-## 11.3 LocalStorage Compatibility
+## 11.3 Time Calculator Modes
+
+Purpose:
+
+- Keep four practical calculators in one compact page without presenting four
+  full forms at once.
+
+Rules:
+
+- Use one keyboard-accessible `tablist` with one visible `tabpanel`.
+- Selected mode controls use the accent border, restrained glow, and
+  `aria-selected`; selection must not shift layout.
+- Results use a compact bordered panel with one prominent accent value and
+  muted secondary totals.
+- Duration selectors are populated from the ordered `LCLDuration.units`
+  definition so Intervals, Add/Subtract, and Convert stay synchronized.
+- Months, years, and decades retain the same visual result treatment but add a
+  subtle `Average Gregorian duration` note and an approximation symbol.
+- Group large exact integer results; use scientific notation only for genuinely
+  extreme magnitudes, and preserve readable subsecond output.
+- Each mode updates immediately and has a visible Reset action.
+- DOM and tab behavior remain page-local; deterministic calculations use the
+  pure `LCLDuration` API.
+
+## 11.4 LocalStorage Compatibility
 
 - Existing production LocalStorage keys are compatibility contracts and must
   remain unchanged.

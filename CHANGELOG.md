@@ -1,3 +1,198 @@
+Date: 2026-08-06
+Short Title: Expand Duration Unit Range
+Summary:
+
+Expanded Time Calculator duration math from nanoseconds through decades while
+preserving the existing four-mode layout. Fixed units remain exact, decimal
+inputs and large integer results use BigInt-backed rational calculations, and
+months, years, and decades are visibly identified as Average Gregorian
+approximations rather than exact calendar arithmetic.
+
+LCL Technical Details:
+
+- Shared Units: lcl-duration.js now owns one ordered frozen definition for
+  nanoseconds, microseconds, milliseconds, seconds, minutes, hours, days, weeks,
+  months, years, and decades; all five page selectors populate from that API.
+- Fixed Durations: Nanoseconds through weeks use integer nanosecond factors.
+- Average Gregorian Durations: One year is 365.2425 days, one month is one
+  twelfth of that year, and one decade is ten average years. Conversions,
+  interval calculations, and time shifts involving those units return
+  approximation metadata.
+- Precision: Decimal strings are parsed into BigInt rational values, allowing
+  exact grouped integer output beyond Number.MAX_SAFE_INTEGER. Numeric
+  compatibility fields remain for time-of-day rendering, unsafe Number inputs
+  are flagged, and extreme magnitudes use scientific notation with display
+  rounding metadata.
+- JavaScript: Added the frozen LCLDuration.units table and
+  convertDurationDetailed() API; expanded calculateIntervals(), shiftTime(),
+  convertDuration(), and formatDuration() for the new range and exact text
+  fields while preserving existing ordinary numeric behavior.
+- Human Formatting: Large fixed durations decompose through weeks, days,
+  hours, minutes, and seconds; subsecond values select milliseconds,
+  microseconds, or nanoseconds instead of rounding to zero.
+- HTML: Updated Intervals, Add/Subtract, and Convert to use the shared unit list.
+  Duration Between Times remains unchanged because it has no duration-unit
+  selector.
+- CSS: Added only a muted page-local result-note style; the calculator layout,
+  tabs, forms, spacing, result panels, colors, and shared lcl.css remain
+  unchanged.
+- Result Formatting: Large exact values use grouped decimal notation; genuinely
+  extreme values use scientific notation. Approximate results use an
+  unobtrusive approximation symbol and `Average Gregorian duration` note.
+- Accessibility: Existing labelled selects, tab semantics, focus treatment,
+  aria-live results, validation, and Reset controls are preserved; approximation
+  notes are included in the live result panels.
+- SEO/Metadata: Updated the Time Calculator description and keywords for the
+  nanosecond-through-decade range.
+- Tests: Expanded duration-utils.test.js for all unit ratios, both directions,
+  fractional, zero, invalid, very large, very small, nanosecond precision,
+  unsafe Number detection, human formatting, and approximation behavior.
+- Audits: site-audit.test.js now verifies five shared-unit selectors populated
+  from LCLDuration.units; docs-audit.test.js verifies the documented range,
+  average-year constant, and approximation statement.
+- Documentation: Updated README.md, ARCHITECTURE.md, COMPONENTS.md, and
+  UI_RULES.md with the unit range, BigInt/rational boundary, Average Gregorian
+  contract, shared selector source, formatting behavior, and future Date
+  Calculator boundary.
+- Navigation, Storage, and Dark Mode: No navigation, sitemap, LocalStorage,
+  shared CSS, light-mode, framework, dependency, or unrelated-page behavior
+  changed.
+
+Files Touched:
+
+- lcl-duration.js
+- time-calculator.html
+- tests/duration-utils.test.js
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: `node tests/time-utils.test.js`,
+  `node tests/duration-utils.test.js`, `node tests/site-audit.test.js`, and
+  `node tests/docs-audit.test.js` all pass.
+- Syntax: `node --check` passes for lcl-duration.js and all modified test files.
+- Browser Layout: Chrome headless at 1440x1000 confirms the existing compact
+  four-tab design, form geometry, result prominence, footer, and back link.
+- Browser Behavior: The interaction smoke test verified all five selectors have
+  the ordered 11-unit list, exact grouped decade-to-nanosecond output,
+  nanosecond-to-second output, millisecond human formatting, nanosecond interval
+  counts, nanosecond time shifting, Average Gregorian interval/shift/conversion
+  indicators, one visible panel, and unchanged Reset defaults.
+- Manual Follow-Up: Confirm native number/select control presentation in Chrome,
+  Firefox, Edge, and Safari and verify approximation notes with a screen reader.
+
+Risks & Edge Cases:
+
+- Callers that pass an unsafe JavaScript Number have already lost integer
+  precision; the detailed API flags this. The page passes the input string so
+  browser-entered integers retain exact rational conversion behavior.
+- Human time-of-day display receives a Number compatibility value after exact
+  modular arithmetic. This is sufficient for practical subsecond display, while
+  exact conversion text remains BigInt-backed.
+- Repeating decimal results are rounded for display and identified by metadata;
+  their calculation remains rational internally.
+- Months, years, and decades are duration averages only. Exact month-end,
+  leap-day, and calendar-date behavior remains intentionally out of scope.
+
+---
+
+Date: 2026-08-06
+Short Title: Add Practical Time Calculator
+Summary:
+
+Added a compact desktop-first Time Calculator with interval division,
+same-day or midnight-crossing elapsed durations, add/subtract time shifts, and
+day/hour/minute/second conversions. The feature uses a directly testable pure
+calculation utility while keeping validation, tab behavior, and DOM rendering
+inside the page controller.
+
+LCL Technical Details:
+
+- HTML: Added time-calculator.html with four keyboard-accessible tab panels,
+  one visible calculator at a time, live result regions, sensible numeric and
+  time inputs, mode-scoped Reset controls, canonical metadata, the shared
+  icon-only back link, and the static current copyright footer.
+- Hub: Added the Time Calculator card and requested description to the
+  index.html tool grid without changing existing cards or clock behavior.
+- CSS: Added page-local calculator tokens and compact tab, form, panel, result,
+  validation, focus, and desktop-first grid rules; lcl.css was reused unchanged.
+- JavaScript: Added the frozen LCLDuration API in lcl-duration.js for interval
+  division, duration-between-times calculations, add/subtract wrapping with day
+  offsets, unit conversions, and human-readable formatting. The page controller
+  owns input parsing, immediate updates, error output, tab keyboard behavior,
+  reset behavior, and LCLTime-based 12-hour result formatting.
+- Validation: Non-finite and negative durations are rejected, interval sizes
+  must be greater than zero, and time-of-day inputs must stay within one day.
+- Storage: No LocalStorage keys or persistence behavior were added or changed.
+- Navigation and Sitemap: Added time-calculator.html to sitemap.xml; the page
+  contains exactly one accessible .lcl-back-link to index.html.
+- SEO/Metadata: Added page-specific title, description, canonical, Open Graph,
+  Twitter, author, robots, theme, color-scheme, and icon metadata.
+- Accessibility: Added tablist/tabpanel relationships, aria-selected state,
+  arrow/Home/End keyboard navigation, visible focus rings, labelled controls,
+  aria-live result regions, validation status output, and an accessible Reset
+  action with visible text.
+- Documentation: Extended README.md, ARCHITECTURE.md, COMPONENTS.md, and
+  UI_RULES.md for the new tool, pure utility boundary, mode selector, results,
+  project structure, and test command.
+- Tests: Added tests/duration-utils.test.js and extended the site and
+  documentation audits for the twelfth public page, shared calculator script
+  ordering, and README test coverage.
+- Responsive Layout: Uses auto-fit grids and a min()/viewport wrapper to avoid
+  horizontal overflow while retaining the desktop-first four-tab layout.
+- Dark Mode: Uses only dark page tokens and the existing shared dark foundation;
+  no light-mode media query or remote dependency was introduced.
+
+Files Touched:
+
+- time-calculator.html
+- lcl-duration.js
+- tests/duration-utils.test.js
+- index.html
+- sitemap.xml
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: `node tests/time-utils.test.js`,
+  `node tests/duration-utils.test.js`, `node tests/site-audit.test.js`, and
+  `node tests/docs-audit.test.js` all pass.
+- Syntax and Scope: `node --check` passes for the new and modified JavaScript
+  test files, new source files contain ASCII text only, and `git diff --check`
+  reports no whitespace errors.
+- Browser: Chrome headless at 1440x1000 rendered the compact desktop layout.
+  The interaction smoke test verified tab switching, exactly one visible panel,
+  10 hours / 45 minutes = 13 complete intervals with 15 minutes remaining,
+  interval validation and Reset, midnight crossing, previous-day subtraction,
+  and day-to-hour conversion.
+- Manual Browser Follow-Up: Confirm native number, select, and time controls in
+  Chrome, Firefox, Edge, and Safari; verify keyboard tab selection, focus rings,
+  live result announcements, and the back link.
+
+Risks & Edge Cases:
+
+- Native time and number input presentation varies by browser, but calculations
+  use normalized numeric seconds after page-local parsing.
+- Equal start and end times intentionally produce zero elapsed duration; an end
+  time earlier than the start is interpreted as crossing midnight once.
+- Large add/subtract durations preserve multi-day offsets while displaying the
+  wrapped time of day.
+- Calculator state is intentionally session-only and resets on page reload.
+
+---
+
 Date: 2026-07-27
 Short Title: Minimize Julian Date Labels
 Summary:
