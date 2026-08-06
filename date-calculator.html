@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#000000">
+  <link rel="stylesheet" href="lcl.css">
+
+  <title>Date Calculator | Linear Clock Lab</title>
+  <meta name="description" content="Calculate exact Gregorian calendar dates, date differences, weekdays, and recurring calendar patterns with Linear Clock Lab.">
+  <meta name="keywords" content="date calculator, days between dates, day of week, calendar arithmetic, Gregorian calendar, calendar pattern finder">
+  <meta name="author" content="jm5k">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://linearclocklab.com/date-calculator.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Date Calculator | Linear Clock Lab">
+  <meta property="og:description" content="Calculate exact calendar shifts, date differences, weekdays, and recurring Gregorian patterns in a compact local tool.">
+  <meta property="og:url" content="https://linearclocklab.com/date-calculator.html">
+  <meta property="og:image" content="https://linearclocklab.com/profile.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Date Calculator | Linear Clock Lab">
+  <meta name="twitter:description" content="Exact Gregorian date calculations in a compact, private, browser-local tool.">
+  <meta name="twitter:image" content="https://linearclocklab.com/profile.png">
+
+  <link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png">
+  <link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png">
+
+  <style>
+    :root {
+      --bg: #000;
+      --fg: #e0e0e0;
+      --muted: #8a8a8a;
+      --accent: #0ff;
+      --line: #202020;
+      --panel: #0a0a0a;
+      --field: #111;
+      --glow: rgba(0, 255, 255, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+        "Liberation Mono", monospace;
+    }
+
+    .lcl-back-nav {
+      position: fixed;
+      top: 18px;
+      left: 22px;
+      z-index: 10;
+    }
+
+    .wrap {
+      width: min(900px, 92vw);
+      margin: 38px auto 56px;
+    }
+
+    header { text-align: center; }
+
+    h1 {
+      margin: 0 0 7px;
+      color: var(--accent);
+      font-size: clamp(1.45rem, 3vw, 2rem);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .hairline {
+      margin: 24px 0;
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    button,
+    input,
+    select { font: inherit; }
+
+    button {
+      color: var(--fg);
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .mode-tab {
+      min-height: 44px;
+      padding: 8px 10px;
+      color: var(--muted);
+      transition: color 0.15s ease, border-color 0.15s ease,
+        background 0.15s ease;
+    }
+
+    .mode-tab[aria-selected="true"] {
+      color: var(--accent);
+      background: rgba(0, 255, 255, 0.06);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--glow);
+    }
+
+    .calculator-card {
+      min-height: 370px;
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: inset 0 0 0 1px #080808;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .reset-button {
+      min-width: 74px;
+      padding: 7px 11px;
+      color: var(--accent);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+    }
+
+    .field label,
+    .field-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 10px;
+      color: var(--fg);
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    input[aria-invalid="true"],
+    select[aria-invalid="true"] { border-color: #ff6b6b; }
+
+    .today-button {
+      padding: 2px 7px;
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+
+    .result-card {
+      margin-top: 22px;
+      padding: 18px;
+      background: #080808;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+    }
+
+    .result-label {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .result-value {
+      color: var(--accent);
+      font-size: clamp(1.55rem, 3.6vw, 2.2rem);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .result-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px 18px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .result-details strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--fg);
+      font-weight: 500;
+    }
+
+    .error {
+      margin-top: 18px;
+      color: #ff9d9d;
+      font-size: 0.9rem;
+    }
+
+    [hidden] { display: none !important; }
+
+    footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <nav class="lcl-back-nav" aria-label="Return">
+    <a
+      href="index.html"
+      class="lcl-back-link"
+      aria-label="Back to Linear Clock Lab"
+      title="Back to Linear Clock Lab"
+    >&larr;</a>
+  </nav>
+
+  <main class="wrap">
+    <header>
+      <h1>Date Calculator</h1>
+      <p class="subtitle">Exact Gregorian calendar math, calculated locally.</p>
+    </header>
+
+    <hr class="hairline" aria-hidden="true">
+
+    <div class="mode-tabs" role="tablist" aria-label="Calculation mode">
+      <button id="tab-from-now" class="mode-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-from-now">From Now</button>
+      <button id="tab-between" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-between" tabindex="-1">Between Dates</button>
+      <button id="tab-shift" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-shift" tabindex="-1">Add / Subtract</button>
+      <button id="tab-weekday" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-weekday" tabindex="-1">Day of Week</button>
+      <button id="tab-pattern" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-pattern" tabindex="-1">Pattern Finder</button>
+    </div>
+
+    <div class="calculator-card">
+      <section id="panel-from-now" role="tabpanel" aria-labelledby="tab-from-now">
+        <div class="panel-head">
+          <h2>Days From Now</h2>
+          <button class="reset-button" type="button" data-reset="from-now">Reset</button>
+        </div>
+        <form id="form-from-now" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="from-days">Number of days</label>
+              <input id="from-days" type="number" min="0" step="1" value="100" required>
+            </div>
+            <div class="field">
+              <label for="from-direction">Direction</label>
+              <select id="from-direction">
+                <option value="future" selected>Future</option>
+                <option value="past">Past</option>
+              </select>
+            </div>
+          </div>
+        </form>
+        <div id="result-from-now" class="result-card" aria-live="polite">
+          <div class="result-label">Resulting date</div>
+          <div id="from-result" class="result-value">--</div>
+          <div class="result-details">
+            <div>Weekday<strong id="from-weekday">--</strong></div>
+            <div>Summary<strong id="from-summary">--</strong></div>
+          </div>
+        </div>
+        <div id="error-from-now" class="error" role="status" hidden></div>
+      </section>
+
+      <section id="panel-between" role="tabpanel" aria-labelledby="tab-between" hidden>
+        <div class="panel-head">
+          <h2>Days Until / Between Dates</h2>
+          <button class="reset-button" type="button" data-reset="between">Reset</button>
+        </div>
+        <form id="form-between" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <div class="field-label-row">
+                <label for="between-start">Start date</label>
+                <button id="between-today" class="today-button" type="button">Today</button>
+              </div>
+              <input id="between-start" type="date" min="0001-01-01" max="9999-12-31" required>
+            </div>
+            <div class="field">
+              <label for="between-end">End date</label>
+              <input id="between-end" type="date" min="0001-01-01" max="9999-12-31" required>
+            </div>
+          </div>
+        </form>
+        <div id="result-between" class="result-card" aria-live="polite">
+          <div class="result-label">Calendar days</div>
+          <div id="between-result" class="result-value">--</div>
+          <div class="result-details">
+            <div>Weeks + days<strong id="between-breakdown">--</strong></div>
+            <div>Direction<strong id="between-direction">--</strong></div>
+          </div>
+        </div>
+        <div id="error-between" class="error" role="status" hidden></div>
+      </section>
+
+      <section id="panel-shift" role="tabpanel" aria-labelledby="tab-shift" hidden>
+        <div class="panel-head">
+          <h2>Add / Subtract Calendar Time</h2>
+          <button class="reset-button" type="button" data-reset="shift">Reset</button>
+        </div>
+        <form id="form-shift" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="shift-start">Starting date</label>
+              <input id="shift-start" type="date" min="0001-01-01" max="9999-12-31" required>
+            </div>
+            <div class="field">
+              <label for="shift-operation">Operation</label>
+              <select id="shift-operation">
+                <option value="add" selected>Add</option>
+                <option value="subtract">Subtract</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="shift-amount">Amount</label>
+              <input id="shift-amount" type="number" min="0" step="1" value="1" required>
+            </div>
+            <div class="field">
+              <label for="shift-unit">Calendar unit</label>
+              <select id="shift-unit">
+                <option value="days">days</option>
+                <option value="weeks">weeks</option>
+                <option value="months" selected>months</option>
+                <option value="years">years</option>
+              </select>
+            </div>
+          </div>
+        </form>
+        <div id="result-shift" class="result-card" aria-live="polite">
+          <div class="result-label">Resulting date</div>
+          <div id="shift-result" class="result-value">--</div>
+          <div class="result-details">
+            <div>Weekday<strong id="shift-weekday">--</strong></div>
+            <div>Calendar rule<strong id="shift-rule">Clamp to valid date</strong></div>
+          </div>
+        </div>
+        <div id="error-shift" class="error" role="status" hidden></div>
+      </section>
+
+      <section id="panel-weekday" role="tabpanel" aria-labelledby="tab-weekday" hidden>
+        <div class="panel-head">
+          <h2>Day of Week</h2>
+          <button class="reset-button" type="button" data-reset="weekday">Reset</button>
+        </div>
+        <form id="form-weekday" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="weekday-year">Year</label>
+              <input id="weekday-year" type="number" min="1" max="9999" step="1" value="2743" required>
+            </div>
+            <div class="field">
+              <label for="weekday-month">Month</label>
+              <select id="weekday-month" data-months data-default-month="3"></select>
+            </div>
+            <div class="field">
+              <label for="weekday-day">Day</label>
+              <input id="weekday-day" type="number" min="1" max="31" step="1" value="2" required>
+            </div>
+          </div>
+        </form>
+        <div id="result-weekday" class="result-card" aria-live="polite">
+          <div class="result-label">Weekday</div>
+          <div id="weekday-result" class="result-value">Tuesday</div>
+          <div class="result-details">
+            <div>Full date<strong id="weekday-date">Tuesday, March 2, 2743</strong></div>
+          </div>
+        </div>
+        <div id="error-weekday" class="error" role="status" hidden></div>
+      </section>
+
+      <section id="panel-pattern" role="tabpanel" aria-labelledby="tab-pattern" hidden>
+        <div class="panel-head">
+          <h2>Calendar Pattern Finder</h2>
+          <button class="reset-button" type="button" data-reset="pattern">Reset</button>
+        </div>
+        <form id="form-pattern" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="pattern-occurrence">Occurrence</label>
+              <select id="pattern-occurrence">
+                <option value="1" selected>First</option>
+                <option value="2">Second</option>
+                <option value="3">Third</option>
+                <option value="4">Fourth</option>
+                <option value="5">Fifth</option>
+                <option value="last">Last</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pattern-weekday">Weekday</label>
+              <select id="pattern-weekday" data-weekdays data-default-weekday="2"></select>
+            </div>
+            <div class="field">
+              <label for="pattern-month">Month</label>
+              <select id="pattern-month" data-months data-default-month="3"></select>
+            </div>
+            <div class="field">
+              <label for="pattern-year">Year</label>
+              <input id="pattern-year" type="number" min="1" max="9999" step="1" value="2743" required>
+            </div>
+          </div>
+        </form>
+        <div id="result-pattern" class="result-card" aria-live="polite">
+          <div class="result-label">Resolved date</div>
+          <div id="pattern-result" class="result-value">Tuesday, March 2, 2743</div>
+          <div class="result-details">
+            <div>Weekday<strong id="pattern-day">Tuesday</strong></div>
+            <div>Status<strong id="pattern-status">Pattern found</strong></div>
+          </div>
+        </div>
+        <div id="error-pattern" class="error" role="status" hidden></div>
+      </section>
+    </div>
+
+    <footer>Minimal time, maximum clarity. | &copy; 2025&ndash;2026 jm5k</footer>
+  </main>
+
+  <script src="lcl-date.js"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const modes = ["from-now", "between", "shift", "weekday", "pattern"];
+      const tabs = modes.map((mode) => document.getElementById(`tab-${mode}`));
+      const panels = Object.fromEntries(
+        modes.map((mode) => [mode, document.getElementById(`panel-${mode}`)])
+      );
+
+      function currentLocalDate() {
+        const now = new Date();
+        return LCLDate.createDate(
+          now.getFullYear(),
+          now.getMonth() + 1,
+          now.getDate()
+        );
+      }
+
+      const today = currentLocalDate();
+      const todayIso = LCLDate.formatIsoDate(today);
+
+      function setDefaultValue(id, value) {
+        const input = document.getElementById(id);
+        input.value = value;
+        input.defaultValue = value;
+      }
+
+      function initializeDefaults() {
+        setDefaultValue("between-start", todayIso);
+        const eventYear = today.month === 12 && today.day >= 25
+          ? today.year + 1
+          : today.year;
+        setDefaultValue(
+          "between-end",
+          LCLDate.formatIsoDate(LCLDate.createDate(eventYear, 12, 25))
+        );
+        setDefaultValue("shift-start", todayIso);
+      }
+
+      function populateNamedSelectors() {
+        document.querySelectorAll("[data-months]").forEach((select) => {
+          const selectedMonth = Number(select.dataset.defaultMonth);
+          LCLDate.months.forEach((month, index) => {
+            const option = document.createElement("option");
+            option.value = String(index + 1);
+            option.textContent = month;
+            option.defaultSelected = index + 1 === selectedMonth;
+            option.selected = index + 1 === selectedMonth;
+            select.appendChild(option);
+          });
+        });
+        document.querySelectorAll("[data-weekdays]").forEach((select) => {
+          const selectedWeekday = Number(select.dataset.defaultWeekday);
+          LCLDate.weekdays.forEach((weekday, index) => {
+            const option = document.createElement("option");
+            option.value = String(index);
+            option.textContent = weekday;
+            option.defaultSelected = index === selectedWeekday;
+            option.selected = index === selectedWeekday;
+            select.appendChild(option);
+          });
+        });
+      }
+
+      function groupInteger(value) {
+        return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+
+      function plural(value, singular) {
+        return `${singular}${value === 1 ? "" : "s"}`;
+      }
+
+      function readInteger(id, label, minimum = 0, maximum = Number.MAX_SAFE_INTEGER) {
+        const input = document.getElementById(id);
+        const value = input.valueAsNumber;
+        const valid =
+          Number.isSafeInteger(value) && value >= minimum && value <= maximum;
+        input.setAttribute("aria-invalid", String(!valid));
+        if (!valid) {
+          throw new RangeError(`${label} must be an integer from ${minimum} to ${maximum}.`);
+        }
+        return value;
+      }
+
+      function readDate(id, label) {
+        const input = document.getElementById(id);
+        try {
+          const date = LCLDate.parseDateOnly(input.value);
+          input.setAttribute("aria-invalid", "false");
+          return date;
+        } catch {
+          input.setAttribute("aria-invalid", "true");
+          throw new RangeError(`${label} must be a valid Gregorian date.`);
+        }
+      }
+
+      function readStructuredDate(prefix) {
+        const year = readInteger(`${prefix}-year`, "Year", 1, 9999);
+        const month = Number(document.getElementById(`${prefix}-month`).value);
+        const dayInput = document.getElementById(`${prefix}-day`);
+        const day = readInteger(`${prefix}-day`, "Day", 1, 31);
+        try {
+          const date = LCLDate.createDate(year, month, day);
+          dayInput.setAttribute("aria-invalid", "false");
+          dayInput.max = String(LCLDate.daysInMonth(year, month));
+          return date;
+        } catch {
+          dayInput.setAttribute("aria-invalid", "true");
+          throw new RangeError("Day does not exist in the selected month and year.");
+        }
+      }
+
+      function showResult(mode, callback) {
+        const result = document.getElementById(`result-${mode}`);
+        const error = document.getElementById(`error-${mode}`);
+        try {
+          callback();
+          result.hidden = false;
+          error.hidden = true;
+          error.textContent = "";
+        } catch (problem) {
+          result.hidden = true;
+          error.textContent = problem.message;
+          error.hidden = false;
+        }
+      }
+
+      function updateFromNow() {
+        showResult("from-now", () => {
+          const days = readInteger("from-days", "Day count");
+          const direction = document.getElementById("from-direction").value;
+          const result = LCLDate.dateFromReference(today, days, direction);
+          document.getElementById("from-result").textContent =
+            LCLDate.formatDate(result);
+          document.getElementById("from-weekday").textContent =
+            LCLDate.weekdayForDate(result);
+          document.getElementById("from-summary").textContent =
+            `${groupInteger(days)} ${plural(days, "day")} ${
+              direction === "future" ? "after" : "before"
+            } ${LCLDate.formatDate(today)}`;
+        });
+      }
+
+      function updateBetween() {
+        showResult("between", () => {
+          const start = readDate("between-start", "Start date");
+          const end = readDate("between-end", "End date");
+          const signedDays = LCLDate.daysBetween(start, end);
+          const days = Math.abs(signedDays);
+          const weeks = Math.floor(days / 7);
+          const remainingDays = days % 7;
+          document.getElementById("between-result").textContent =
+            `${groupInteger(days)} ${plural(days, "day")}`;
+          document.getElementById("between-breakdown").textContent =
+            `${groupInteger(weeks)} ${plural(weeks, "week")} ${
+              remainingDays
+            } ${plural(remainingDays, "day")}`;
+          document.getElementById("between-direction").textContent =
+            signedDays === 0
+              ? "Dates are the same"
+              : `End is ${groupInteger(days)} ${plural(days, "day")} ${
+                  signedDays > 0 ? "after" : "before"
+                } start`;
+        });
+      }
+
+      function updateShift() {
+        showResult("shift", () => {
+          const start = readDate("shift-start", "Starting date");
+          const amount = readInteger("shift-amount", "Amount");
+          const operation = document.getElementById("shift-operation").value;
+          const unit = document.getElementById("shift-unit").value;
+          const signedAmount = operation === "add" ? amount : -amount;
+          const functions = {
+            days: LCLDate.addCalendarDays,
+            weeks: LCLDate.addCalendarWeeks,
+            months: LCLDate.addCalendarMonths,
+            years: LCLDate.addCalendarYears
+          };
+          const result = functions[unit](start, signedAmount);
+          const clamped =
+            (unit === "months" || unit === "years") &&
+            amount !== 0 &&
+            result.day !== start.day;
+          document.getElementById("shift-result").textContent =
+            LCLDate.formatDate(result);
+          document.getElementById("shift-weekday").textContent =
+            LCLDate.weekdayForDate(result);
+          document.getElementById("shift-rule").textContent = clamped
+            ? "Clamped to destination month's last valid day"
+            : "Original day retained; clamp applies only when needed";
+        });
+      }
+
+      function updateWeekday() {
+        showResult("weekday", () => {
+          const date = readStructuredDate("weekday");
+          document.getElementById("weekday-result").textContent =
+            LCLDate.weekdayForDate(date);
+          document.getElementById("weekday-date").textContent =
+            LCLDate.formatDate(date);
+        });
+      }
+
+      function occurrenceName(value) {
+        return {
+          "1": "First",
+          "2": "Second",
+          "3": "Third",
+          "4": "Fourth",
+          "5": "Fifth",
+          last: "Last"
+        }[value];
+      }
+
+      function updatePattern() {
+        showResult("pattern", () => {
+          const occurrence = document.getElementById("pattern-occurrence").value;
+          const weekday = Number(document.getElementById("pattern-weekday").value);
+          const month = Number(document.getElementById("pattern-month").value);
+          const year = readInteger("pattern-year", "Year", 1, 9999);
+          const result = occurrence === "last"
+            ? LCLDate.lastWeekdayOfMonth(year, month, weekday)
+            : LCLDate.nthWeekdayOfMonth(
+                year,
+                month,
+                weekday,
+                Number(occurrence)
+              );
+          if (!result) {
+            document.getElementById("pattern-result").textContent =
+              "No matching date";
+            document.getElementById("pattern-day").textContent =
+              LCLDate.weekdays[weekday];
+            document.getElementById("pattern-status").textContent =
+              `${occurrenceName(occurrence)} ${LCLDate.weekdays[weekday]} does not occur in ${
+                LCLDate.months[month - 1]
+              } ${year}`;
+            return;
+          }
+          document.getElementById("pattern-result").textContent =
+            LCLDate.formatDate(result);
+          document.getElementById("pattern-day").textContent =
+            LCLDate.weekdayForDate(result);
+          document.getElementById("pattern-status").textContent =
+            `${occurrenceName(occurrence)} ${LCLDate.weekdays[weekday]} found`;
+        });
+      }
+
+      const renderers = {
+        "from-now": updateFromNow,
+        between: updateBetween,
+        shift: updateShift,
+        weekday: updateWeekday,
+        pattern: updatePattern
+      };
+
+      function activateMode(mode, focusTab = false) {
+        modes.forEach((candidate, index) => {
+          const selected = candidate === mode;
+          tabs[index].setAttribute("aria-selected", String(selected));
+          tabs[index].tabIndex = selected ? 0 : -1;
+          panels[candidate].hidden = !selected;
+        });
+        renderers[mode]();
+        if (focusTab) tabs[modes.indexOf(mode)].focus();
+      }
+
+      populateNamedSelectors();
+      initializeDefaults();
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => activateMode(modes[index]));
+        tab.addEventListener("keydown", (event) => {
+          let nextIndex = index;
+          if (event.key === "ArrowRight") nextIndex = (index + 1) % modes.length;
+          else if (event.key === "ArrowLeft") nextIndex = (index - 1 + modes.length) % modes.length;
+          else if (event.key === "Home") nextIndex = 0;
+          else if (event.key === "End") nextIndex = modes.length - 1;
+          else return;
+          event.preventDefault();
+          activateMode(modes[nextIndex], true);
+        });
+      });
+
+      modes.forEach((mode) => {
+        const form = document.getElementById(`form-${mode}`);
+        form.addEventListener("submit", (event) => event.preventDefault());
+        form.addEventListener("input", renderers[mode]);
+        form.addEventListener("change", renderers[mode]);
+        document
+          .querySelector(`[data-reset="${mode}"]`)
+          .addEventListener("click", () => {
+            form.reset();
+            form.querySelectorAll("input, select").forEach((control) =>
+              control.removeAttribute("aria-invalid")
+            );
+            renderers[mode]();
+          });
+      });
+
+      document.getElementById("between-today").addEventListener("click", () => {
+        const input = document.getElementById("between-start");
+        input.value = todayIso;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+
+      activateMode("from-now");
+    })();
+  </script>
+</body>
+</html>

@@ -562,6 +562,60 @@ for (const { location, pageFile, pagePath } of publicPages) {
             );
         }
     }
+
+    if (pageFile === "date-calculator.html") {
+        const scriptBlocks = [
+            ...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)
+        ];
+        const dateScripts = scriptBlocks.filter((match) => {
+            const src = getAttribute(match[0], "src");
+            if (!src) return false;
+            const local = staticLocalReference(src);
+            return local
+                ? local.replace(/^\.?\//, "").toLowerCase() === "lcl-date.js"
+                : false;
+        });
+        check(
+            dateScripts.length === 1,
+            pageFile,
+            "must load lcl-date.js exactly once",
+            `${dateScripts.length} references found`
+        );
+        const dateController = scriptBlocks.find(
+            (match) =>
+                !getAttribute(match[0], "src") &&
+                /\bLCLDate\b/.test(match[2])
+        );
+        check(
+            Boolean(dateController),
+            pageFile,
+            "must contain an inline controller that uses LCLDate",
+            dateController ? "controller found" : "controller not found"
+        );
+        const dateTabs = getOpeningTags(html, "button").filter(
+            (tag) => getAttribute(tag, "role") === "tab"
+        );
+        check(
+            dateTabs.length === 5,
+            pageFile,
+            "must expose five calculator mode tabs",
+            `${dateTabs.length} role=tab buttons found`
+        );
+        check(
+            !/new\s+Date\s*\(\s*["']/.test(html),
+            pageFile,
+            "must not parse date-only strings through the Date constructor",
+            "string Date constructor found"
+        );
+        if (dateScripts.length === 1 && dateController) {
+            check(
+                dateScripts[0].index < dateController.index,
+                pageFile,
+                "lcl-date.js must load before the date calculator controller",
+                `shared script at ${dateScripts[0].index}, controller at ${dateController.index}`
+            );
+        }
+    }
 }
 
 if (failures.length) {

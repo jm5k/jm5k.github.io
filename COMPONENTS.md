@@ -512,7 +512,27 @@ Rules:
 - DOM and tab behavior remain page-local; deterministic calculations use the
   pure `LCLDuration` API.
 
-## 11.4 LocalStorage Compatibility
+## 11.4 Date Calculator Modes
+
+Purpose:
+
+- Keep exact Gregorian calendar operations separate from duration conversion
+  while matching the Time Calculator's compact tab and result-card pattern.
+
+Rules:
+
+- Use one five-item keyboard-accessible `tablist` with one visible `tabpanel`.
+- Native date inputs serve ordinary date selection; structured year/month/day
+  controls support broad-range weekday and pattern lookup.
+- Results use the established prominent accent value and muted secondary facts.
+- Month and year shifts visibly report whether the original day was retained or
+  clamped to the destination month's last valid day.
+- Invalid fifth-weekday patterns show `No matching date` as a valid result, not
+  as a malformed-input error.
+- DOM behavior remains page-local; all calendar calculations use the pure
+  `LCLDate` API and date-only records.
+
+## 11.5 LocalStorage Compatibility
 
 - Existing production LocalStorage keys are compatibility contracts and must
   remain unchanged.

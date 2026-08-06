@@ -538,6 +538,10 @@ Not allowed:
 - `lcl-duration.js` owns pure calculator math and formatting; the Time
   Calculator controller owns validation feedback, tabs, and DOM output. Unit
   factors and ordered selector choices come only from the shared utility.
+- `lcl-date.js` owns Gregorian date-only math and formatting; the Date
+  Calculator controller owns current-local-date capture, validation feedback,
+  tabs, and DOM output. Never parse an ISO date input through the Date
+  constructor.
 - Page scripts remain independent; do not create a monolithic controller.
 - Do not extract one-page code or migrate unrelated pages solely for consistency.
 - Refactor in small, testable phases.

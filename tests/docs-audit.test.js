@@ -35,6 +35,7 @@ for (const page of publicPages) {
 for (const testFile of [
     "tests/time-utils.test.js",
     "tests/duration-utils.test.js",
+    "tests/date-utils.test.js",
     "tests/site-audit.test.js",
     "tests/docs-audit.test.js"
 ]) {
@@ -86,5 +87,7 @@ assert.ok(readme.includes("© 2025–2026 jm5k"), "README.md must use the curren
 assert.match(readme, /nanoseconds through decades/i);
 assert.match(readme, /365\.2425 days/i);
 assert.match(readme, /marked approximate/i);
+assert.match(readme, /clamp-to-valid-date/i);
+assert.match(readme, /date-only/i);
 
 console.log(`docs-audit.test.js: passed ${publicPages.length} public-page and documentation contracts`);

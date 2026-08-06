@@ -24,6 +24,7 @@ LCL consists of:
 - A shared CSS foundation (`lcl.css`) for stable tokens and reused components
 - A narrow shared time-formatting utility (`lcl-time.js`)
 - A pure duration-calculation utility (`lcl-duration.js`)
+- A pure Gregorian date-only utility (`lcl-date.js`)
 - Page-specific inline CSS and controller JS
 - A small shared image/profile resource
 - A consistent SEO + metadata layer
@@ -275,7 +276,24 @@ Calculator. The utility supports `module.exports` for direct Node tests.
 `time-calculator.html` keeps input validation, tabs, approximation notes, and
 result rendering in its inline controller.
 
-## 6.4 LocalStorage System
+## 6.4 Gregorian Date Calculator Utilities
+
+`lcl-date.js` exposes the frozen, dependency-free `window.LCLDate` API for
+Gregorian date-only parsing and formatting, signed day differences, day/week/
+month/year shifts, weekday lookup, and nth/last weekday patterns. It operates on
+immutable `{ year, month, day }` records and integer civil-day serials rather
+than timestamps. ISO date input is parsed manually; it is never passed to
+`new Date("YYYY-MM-DD")`, so UTC offsets cannot change the selected calendar
+day. The utility supports `module.exports` for direct Node tests.
+
+The supported public range is years 1 through 9999. Month and year arithmetic
+retains the original day when valid and otherwise clamps to the destination
+month's last valid day. Gregorian century leap rules are applied consistently.
+`date-calculator.html` uses `Date` only to read the current local year, month,
+and day as separate fields for the From Now reference; all subsequent math is
+handled by `LCLDate`.
+
+## 6.5 LocalStorage System
 
 Used for:
 
@@ -289,7 +307,7 @@ page/tool namespace; established `lcl-...`, `focusline:...`, and documented
 legacy styles remain valid. Do not force user-data migrations, and do not use
 LocalStorage for temporary session-only state.
 
-## 6.5 Interval-Driven Tools
+## 6.6 Interval-Driven Tools
 
 Clock, stopwatch, timer, and dashboard rely on:
 
@@ -385,6 +403,18 @@ Contains only the frozen, pure `LCLTime` formatting API. Page controllers remain
   `LCLDuration.units` rather than duplicating unit factors or lists.
 - The page loads `lcl-time.js` for 12-hour clock result formatting and
   `lcl-duration.js` for calculation behavior before its inline controller.
+- Calculator inputs are temporary session state and are not stored.
+
+## 8.8 lcl-date.js / date-calculator.html
+
+- `lcl-date.js` contains only frozen, deterministic Gregorian date-only logic;
+  it has no DOM, LocalStorage, event, timer, or page-state responsibilities.
+- `date-calculator.html` owns five compact tab panels: From Now, Between Dates,
+  Add/Subtract, Day of Week, and Pattern Finder.
+- Native date inputs are used for ordinary date selection. Structured numeric
+  controls keep Day of Week and Pattern Finder reliable through year 9999.
+- Calendar month/year shifts use the documented clamp-to-valid-date rule and do
+  not reuse Time Calculator's Average Gregorian duration factors.
 - Calculator inputs are temporary session state and are not stored.
 
 ---

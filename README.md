@@ -24,6 +24,7 @@ Explore the full suite — all pages load locally, with instant switching and ze
 - **Timer** — multiple persistent countdowns
 - **Stopwatch** — multiple persistent elapsed-time tools
 - **Time Calculator** — intervals, elapsed durations, time shifts, and unit conversions
+- **Date Calculator** — exact calendar shifts, date differences, weekdays, and patterns
 - **Dashboard** — configurable tile workspace
 - **To Do Lists** — local planners and prioritized task boards
 
@@ -70,6 +71,12 @@ consistent dark design and privacy-first, browser-local behavior.
   - Add/subtract time shifts with day offsets
   - Fixed-duration conversions from nanoseconds through weeks
   - Average Gregorian month, year, and decade conversions with approximation labels
+- **Date Calculator**
+  - Days before or after the current local calendar date
+  - Signed date differences with weeks-and-days breakdowns
+  - Exact day, week, month, and year calendar shifts
+  - Day-of-week lookup and structured recurring pattern resolution through year 9999
+  - Predictable clamp-to-valid-date behavior for month and year boundaries
 
 ---
 
@@ -116,6 +123,17 @@ data.
 
 ---
 
+## Date Calculator Overview
+The **Date Calculator** complements duration math with exact proleptic Gregorian
+calendar operations. It uses timezone-safe date-only records for days from now,
+date differences, calendar shifts, weekday lookup, and nth/last weekday
+patterns. Month and year shifts retain the original day when possible and use a
+clamp-to-valid-date rule otherwise, so January 31 plus one month becomes the
+last valid day of February. Inputs are session-only and years 1 through 9999 are
+supported.
+
+---
+
 ## 🕒 FocusLine Overview
 **FocusLine** ties your focus blocks to the real passage of time — combining Pomodoro cycles and note capture.
 Privacy-first, backend-free, and client-side.
@@ -145,17 +163,20 @@ also shows the ordinal Julian YYYY-DDD date.
 - `stopwatch.html` — Stopwatch
 - `timer.html` — Timer
 - `time-calculator.html` — Time Calculator
+- `date-calculator.html` — Date Calculator
 - `dashboard.html` — Dashboard
 - `todo.html` — To Do Lists
 - `about.html` — Suite overview and license
 - `lcl.css` — Shared design tokens and reusable UI foundations
 - `lcl-time.js` — Pure shared clock-formatting utilities
 - `lcl-duration.js` — BigInt-backed duration units, calculation, precision metadata, and formatting utilities
+- `lcl-date.js` — Pure timezone-safe Gregorian date-only calculation and formatting utilities
 - `todo.css` / `todo.js` — To Do Lists page assets
 - `site.webmanifest` — Browser application metadata
 - `sitemap.xml` — Public-page sitemap
 - `tests/time-utils.test.js` — Shared time-formatting regression test
 - `tests/duration-utils.test.js` — Duration calculation and validation regression test
+- `tests/date-utils.test.js` — Gregorian date arithmetic, weekday, pattern, and validation regression test
 - `tests/site-audit.test.js` — Sitemap-driven public HTML publishing-contract audit
 - `tests/docs-audit.test.js` — Documentation architecture and stale-claim audit
 - `agents.md` — Repository agent rules
@@ -172,6 +193,7 @@ Run the dependency-free Node checks directly:
 ```text
 node tests/time-utils.test.js
 node tests/duration-utils.test.js
+node tests/date-utils.test.js
 node tests/site-audit.test.js
 node tests/docs-audit.test.js
 ```
@@ -179,7 +201,9 @@ node tests/docs-audit.test.js
 The time utility tests protect shared clock formatting behavior, and the
 duration utility tests protect interval, elapsed-time, time-shift, fixed and
 Average Gregorian conversion, formatting, precision, and validation behavior.
-The site audit protects public HTML
+The date utility tests protect timezone-safe date-only parsing, Gregorian leap
+rules, calendar shifts, date differences, weekdays, recurrence patterns, and
+invalid-input handling. The site audit protects public HTML
 publishing contracts: metadata, navigation, copyright, sitemap coverage,
 shared script ordering, and local assets. The documentation audit protects
 documented architecture, file coverage, naming, and known stale claims.

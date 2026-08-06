@@ -1,4 +1,108 @@
 Date: 2026-08-06
+Short Title: Add Exact Date Calculator
+Summary:
+
+Added a compact Date Calculator for exact proleptic Gregorian date arithmetic,
+including relative dates, date differences, calendar shifts, weekday lookup,
+and recurring weekday patterns. Date-only values use immutable calendar records
+and integer civil-day math so calculations do not depend on time zones or
+daylight-saving transitions.
+
+LCL Technical Details:
+
+- HTML: Added date-calculator.html with five keyboard-accessible modes: Days
+  From Now, Between Dates, Add/Subtract Calendar Time, Day of Week, and Pattern
+  Finder. One calculator panel is visible at a time, with prominent live results
+  and mode-scoped Reset actions.
+- Gregorian Logic: Added the frozen LCLDate API in lcl-date.js for validated
+  date-only records, ISO parsing and formatting, civil-day differences,
+  calendar-day/week/month/year shifts, weekday lookup, and nth/last weekday
+  patterns across years 1 through 9999.
+- Timezone Safety: ISO date inputs are parsed manually and never passed to the
+  JavaScript Date constructor. The page reads the browser's current local
+  year, month, and day once for the From Now reference, then performs all date
+  calculations with pure integer Gregorian math.
+- Calendar Shifts: Month and year operations retain the source day when valid
+  and otherwise clamp to the destination month's last valid day. The result
+  panel unobtrusively identifies when clamping occurs.
+- Broad Dates: Structured year, month, and day controls support historical and
+  far-future weekday calculations, including March 2, 2743, without relying on
+  browser-native date parsing for those modes.
+- Pattern Finder: Supports first through fifth and last weekday occurrences;
+  nonexistent fifth occurrences produce a clear no-match result.
+- CSS: Added only page-local calculator layout, tab, form, validation, and
+  result styles while reusing lcl.css tokens and shared back-link behavior.
+  No shared CSS or unrelated page styling changed.
+- Navigation and Sitemap: Added a Date Calculator card to the index.html tool
+  grid and listed date-calculator.html in sitemap.xml. The new page includes
+  exactly one accessible icon-only back link.
+- SEO/Metadata: Added canonical, description, author, robots, Open Graph,
+  Twitter, color-scheme, theme-color, and icon metadata for the new public page.
+- Accessibility: Added labelled controls, tablist/tabpanel relationships,
+  aria-selected state, arrow/Home/End tab navigation, visible focus treatment,
+  aria-live results, validation status, and visible Reset actions.
+- Storage and Dependencies: Added no LocalStorage keys, frameworks, external
+  scripts, remote runtime dependencies, or time-zone functionality.
+- Tests: Added tests/date-utils.test.js for leap-century rules, historical and
+  far-future weekdays, date differences, forward/reverse shifts, month-end and
+  leap-day clamping, weekday patterns, zero values, and invalid inputs.
+- Documentation and Audits: Updated README.md, ARCHITECTURE.md, COMPONENTS.md,
+  UI_RULES.md, site-audit.test.js, and docs-audit.test.js for the new page,
+  utility boundary, date-only contract, documented clamp rule, sitemap entry,
+  script ordering, and test command.
+- Responsive Layout and Dark Mode: Uses a desktop-first min()/grid layout with
+  safe narrow-screen wrapping, the existing dark-only visual language, and no
+  light-mode media query.
+
+Files Touched:
+
+- date-calculator.html
+- lcl-date.js
+- tests/date-utils.test.js
+- index.html
+- sitemap.xml
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: `node tests/time-utils.test.js`,
+  `node tests/duration-utils.test.js`, `node tests/date-utils.test.js`,
+  `node tests/site-audit.test.js`, and `node tests/docs-audit.test.js` all pass.
+- Syntax and Source: `node --check` passes for lcl-date.js and the new/modified
+  test files; new HTML and JavaScript source files contain ASCII text only.
+- Browser Layout: Chrome headless at 1440x1000 confirms the compact five-tab
+  desktop layout, result prominence, back link, and footer.
+- Browser Behavior: The interaction smoke test verified From Now calculation,
+  forward and reverse differences, Today and Reset actions, January 31 and
+  leap-day clamping, subtraction across month boundaries, historical and 2743
+  weekday lookup, first/last/fifth weekday patterns, invalid leap-day handling,
+  keyboard tab state, and exactly one visible panel.
+- Manual Follow-Up: Confirm native date, number, and select control presentation
+  in Chrome, Firefox, Edge, and Safari and verify live results with a screen
+  reader.
+
+Risks & Edge Cases:
+
+- The public calculation range is intentionally years 1 through 9999. Native
+  date-input presentation varies by browser, so broad-year lookup and pattern
+  modes use structured numeric controls.
+- The calendar model is the proleptic Gregorian calendar, including dates before
+  a region's historical adoption of that calendar.
+- The From Now reference is the browser's local calendar date captured at page
+  load; a page left open across local midnight should be refreshed before use.
+- Month and year arithmetic intentionally clamps invalid destination days, so
+  January 31 plus one month can become February 28 or 29 and is not reversible
+  in every sequence.
+
+---
+
+Date: 2026-08-06
 Short Title: Expand Duration Unit Range
 Summary:
 
