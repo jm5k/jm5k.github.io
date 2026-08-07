@@ -25,6 +25,8 @@ LCL consists of:
 - A narrow shared time-formatting utility (`lcl-time.js`)
 - A pure duration-calculation utility (`lcl-duration.js`)
 - A pure Gregorian date-only utility (`lcl-date.js`)
+- A pure IANA timezone utility (`lcl-timezone.js`)
+- Shared timezone selector data (`lcl-timezone-select.js`)
 - Page-specific inline CSS and controller JS
 - A small shared image/profile resource
 - A consistent SEO + metadata layer
@@ -293,7 +295,35 @@ month's last valid day. Gregorian century leap rules are applied consistently.
 and day as separate fields for the From Now reference; all subsequent math is
 handled by `LCLDate`.
 
-## 6.5 LocalStorage System
+## 6.5 Timezone Conversion Utilities
+
+`lcl-timezone.js` exposes the frozen, dependency-free `window.LCLTimeZone` API
+for source wall-clock resolution, instant-to-zone conversion, UTC offset
+metadata, DST transition detection, and calendar-day comparison. It uses
+`Intl.DateTimeFormat` as the timezone-rule source and does not contain fixed
+offsets, daylight-saving tables, selector presentation, DOM access, storage,
+events, or network logic.
+
+`lcl-timezone-select.js` separately exposes the frozen `window.LCLTimeZoneSelect`
+API consumed by both Multi-Clock and Time Zone Converter. It owns the supported
+IANA/fallback list, the single pinned and major-zone definitions, readable
+region/location labels, UTC-offset formatting, offset-then-name sorting, and
+offset deduplication. It returns immutable option-group data and does not own
+DOM elements or page state. Multi-Clock builds these groups for the current
+instant; Time Zone Converter rebuilds them from the resolved conversion instant
+so winter and summer labels remain date-aware.
+
+An arbitrary source wall time is never parsed as a browser-local `Date`.
+Instead, the utility validates its numeric calendar fields, samples the source
+zone's actual offsets around that date, derives candidate instants, and
+round-trips each candidate through `Intl`. Zero candidates identifies a
+nonexistent spring-forward time; multiple candidates identify an ambiguous
+fall-back time. `time-zone-converter.html` requires an explicit earlier/later
+choice for an overlap and rewrites the wall-clock inputs from the preserved
+instant when zones are swapped. Input years are limited to 1900 through 9999;
+historical and future authority depends on the browser/OS IANA database.
+
+## 6.6 LocalStorage System
 
 Used for:
 
@@ -307,7 +337,7 @@ page/tool namespace; established `lcl-...`, `focusline:...`, and documented
 legacy styles remain valid. Do not force user-data migrations, and do not use
 LocalStorage for temporary session-only state.
 
-## 6.6 Interval-Driven Tools
+## 6.7 Interval-Driven Tools
 
 Clock, stopwatch, timer, and dashboard rely on:
 
@@ -417,6 +447,24 @@ Contains only the frozen, pure `LCLTime` formatting API. Page controllers remain
   not reuse Time Calculator's Average Gregorian duration factors.
 - Calculator inputs are temporary session state and are not stored.
 
+## 8.9 lcl-timezone.js / lcl-timezone-select.js / timezone pages
+
+- `lcl-timezone.js` contains pure `Intl`-backed wall-clock resolution,
+  conversion, and day-boundary logic.
+- `lcl-timezone-select.js` contains the shared pinned/common lists, supported
+  zone fallback, region/location labels, offsets, sorting, and deduplication
+  used by Multi-Clock and Time Zone Converter.
+- `time-zone-converter.html` owns native dropdown controls, validation,
+  Reset, DST occurrence choice, result presentation, and instant-preserving
+  Swap behavior.
+- `multi-clock.html` retains its current-time dropdown presentation and clock
+  behavior while sourcing its option groups and card offset/name text from the
+  shared selector API.
+- The page reuses `LCLTime` for the established `use24h` display preference and
+  `LCLDate` for full Gregorian destination-date formatting.
+- Conversion inputs are temporary session state and are not stored. No external
+  timezone service, geolocation, or network request is used.
+
 ---
 
 # 9. Accessibility Architecture
@@ -443,6 +491,8 @@ Agents must ensure:
   supported controller placement pattern.
 - No page-specific layout is added to `lcl.css`.
 - No shared utility takes ownership of DOM state, LocalStorage, events, or intervals.
+- No arbitrary-zone wall-clock input is parsed through a browser-local Date or
+  converted with a hard-coded current offset.
 - No mixing of UI patterns across tool contexts without preserving identity.
 
 ---

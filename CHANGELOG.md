@@ -1,4 +1,124 @@
 Date: 2026-08-06
+Short Title: Add Time Zone Converter
+Summary:
+
+Added a compact Time Zone Converter for dated conversion between real IANA
+time zones. The converter uses browser-native timezone rules, detects DST gaps
+and overlaps explicitly, preserves the represented instant when zones are
+swapped, and performs every calculation locally without fixed-offset tables or
+external services.
+
+LCL Technical Details:
+
+- HTML: Added time-zone-converter.html with date, minute-precision time,
+  searchable From/To timezone controls, Swap zones, Reset, an on-demand DST
+  occurrence selector, validation status, and a prominent converted result.
+- Timezone Utility: Added the frozen, dependency-free LCLTimeZone API in
+  lcl-timezone.js for supported-zone discovery, browser-zone defaults,
+  wall-clock parsing, arbitrary-zone resolution, instant conversion, UTC
+  offsets, short zone names, calendar-day comparison, and input formatting.
+- IANA Data: Uses Intl.DateTimeFormat and Intl.supportedValuesOf("timeZone")
+  where available. A compact fallback list retains UTC and major zones when
+  native enumeration is unavailable; no offsets or daylight-saving schedules
+  are hard-coded.
+- Source-Zone Safety: Arbitrary wall-clock input is represented as validated
+  numeric fields, never parsed as a browser-local Date. The utility samples
+  actual source-zone offsets around the requested date, derives candidate
+  instants, and round-trips each through Intl before accepting it.
+- DST Gaps: A wall time with zero matching instants is rejected with the clear
+  message that it does not exist because of a daylight-saving transition.
+- DST Overlaps: A wall time with multiple matching instants exposes an explicit
+  earlier/later selector. Offset and short-name details distinguish the two
+  occurrences, and no result is displayed until the user chooses.
+- Swap: Swap is enabled only for a valid resolved instant. It exchanges zones,
+  rewrites the date/time fields from that same instant in the new source zone,
+  and retains the matching overlap occurrence when applicable.
+- Result Formatting: Displays the converted time, full weekday/date, readable
+  destination, source and destination short names with UTC offsets, and the
+  previous/same/next calendar-day relationship.
+- Preferences: Reuses the established use24h LocalStorage compatibility key for
+  result display and defaults to unambiguous 24-hour output when no preference
+  exists. Converter inputs remain session-only.
+- CSS: Added page-local dark calculator, form, action, ambiguity, status, and
+  result styles matching Time Calculator and Date Calculator. lcl.css remains
+  unchanged.
+- Navigation and Sitemap: Added the requested Time Zone Converter tile and copy
+  to index.html, added the page to sitemap.xml, and included exactly one shared
+  accessible icon-only back link.
+- SEO/Metadata: Added canonical, description, keywords, author, robots, Open
+  Graph, Twitter, theme, color-scheme, and icon metadata for the new public page.
+- Accessibility: Added explicit labels, status/live regions, visible focus,
+  aria-invalid validation, descriptive visible actions, and a disabled Swap
+  state when no valid instant exists.
+- Tests: Added tests/timezone-utils.test.js for standard and DST-season
+  New York/London conversions, Tokyo and previous-day boundaries, UTC,
+  Kolkata, Kathmandu, gaps, overlaps, Swap, historical/future dates, offsets,
+  parsing, supported zones, zero day difference, and invalid inputs.
+- Documentation and Audits: Updated README.md, ARCHITECTURE.md, COMPONENTS.md,
+  UI_RULES.md, site-audit.test.js, and docs-audit.test.js for the utility
+  boundary, DST contracts, searchable controls, script ordering, sitemap,
+  public-page count, and new test command.
+- Privacy and Dark Mode: Added no API call, geolocation request, telemetry,
+  remote runtime dependency, framework, light-mode rule, or unrelated-page
+  behavior change.
+
+Files Touched:
+
+- time-zone-converter.html
+- lcl-timezone.js
+- tests/timezone-utils.test.js
+- index.html
+- sitemap.xml
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: `node tests/time-utils.test.js`,
+  `node tests/duration-utils.test.js`, `node tests/date-utils.test.js`,
+  `node tests/timezone-utils.test.js`, `node tests/site-audit.test.js`, and
+  `node tests/docs-audit.test.js` all pass.
+- Syntax and Source: `node --check` passes for lcl-timezone.js and all new or
+  modified test files; the inline controller parses successfully, new source
+  files contain ASCII text only, and `git diff --check` reports no errors.
+- Browser Layout: Chrome headless at 1440x1000 confirms the compact two-column
+  form, result prominence, cyan emphasis, shared back link, and footer.
+- Browser Behavior: The interaction smoke test verified winter and summer
+  New York/London conversion, EDT/BST offsets, New York-to-Tokyo next-day
+  conversion, instant-preserving reverse Swap, spring gap rejection, explicit
+  later fall-overlap selection, saved 12-hour preference reuse, invalid-zone
+  handling, Reset, readable New York/Tokyo labels, and one visible result.
+- Manual Follow-Up: Confirm native search/datalist and date/time control
+  presentation in Chrome, Firefox, Edge, and Safari and verify live validation
+  and ambiguity selection with a screen reader.
+
+Risks & Edge Cases:
+
+- Historical and future results are only as authoritative as the browser and
+  operating system's installed IANA timezone data. Political rule changes
+  after that data release cannot be predicted.
+- Short timezone names are localized by Intl and may appear as abbreviations
+  such as EDT/BST or as GMT offset forms depending on the browser's ICU data;
+  the explicit UTC offset remains authoritative within that same database.
+- Searchable datalist filtering and native date/time control presentation vary
+  across browsers, though typed IANA identifiers remain directly valid.
+- Source input years are intentionally limited to 1900 through 9999. Extreme
+  boundary conversions that leave the Date Calculator's year range are not
+  promised.
+- Some zones have more complex historical changes than modern one-hour DST.
+  Candidate matching uses the actual nearby Intl offsets rather than assuming
+  a transition size, but coverage still depends on the installed zone data.
+- Comparison mode remains a future extension; this change prioritizes the
+  requested two-zone converter and keeps the utility API reusable for it.
+
+---
+
+Date: 2026-08-06
 Short Title: Add Exact Date Calculator
 Summary:
 

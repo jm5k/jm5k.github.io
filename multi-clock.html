@@ -146,6 +146,7 @@
   </div>
 
 <script src="lcl-time.js"></script>
+<script src="lcl-timezone-select.js"></script>
 <script>
 /* ---------- Constants & DOM ---------- */
 const LS_KEY = 'jm5k_multi_clocks_v2'; // persistent; includes label editing support
@@ -176,77 +177,31 @@ function formatZonedTime(date){
   return `${hoursAndMinutes}:${seconds}`;
 }
 
-function getOffsetMinutes(tz, when = new Date()){
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName:'shortOffset' }).formatToParts(when);
-  const name = (parts.find(p => p.type === 'timeZoneName') || {}).value || '';
-  const m = name.match(/(?:UTC|GMT)([+\-]\d{1,2})(?::?(\d{2}))?/i);
-  if (!m){
-    const utc = Date.UTC(when.getUTCFullYear(), when.getUTCMonth(), when.getUTCDate(),
-                         when.getUTCHours(), when.getUTCMilliseconds());
-    const zoned = new Date(when.toLocaleString('en-US', { timeZone: tz })).getTime();
-    return Math.round((zoned - utc)/60000);
-  }
-  const h = parseInt(m[1],10);
-  const mm = m[2] ? parseInt(m[2],10) : 0;
-  return Math.sign(h) * (Math.abs(h)*60 + mm);
-}
-function fmtOffset(mins){ const sign = mins>=0?'+':'-'; const absm=Math.abs(mins); const h=String(Math.floor(absm/60)).padStart(2,'0'); const m=String(absm%60).padStart(2,'0'); return `UTC${sign}${h}:${m}`; }
-function zonePrettyName(tz){ const p = tz.split('/'); return p.length===1 ? tz : `${p[0]} — ${p.slice(1).join(' / ').replace(/_/g,' ')}`; }
-
-/* ---------- Lists ---------- */
-const pinnedZones = ['UTC','America/Phoenix','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','Europe/London','Europe/Berlin','Asia/Tokyo','Asia/Singapore','Australia/Sydney'];
-const majorCityKeepList = new Set(['UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Phoenix','Europe/London','Europe/Paris','Europe/Berlin','Asia/Tokyo','Asia/Shanghai','Asia/Singapore','Asia/Kolkata','Australia/Sydney','Pacific/Auckland']);
-
-/* Fallback zone list if supportedValuesOf isn't available */
-function getAllTimeZones(){
-  if (typeof Intl.supportedValuesOf === 'function'){
-    try { const list = Intl.supportedValuesOf('timeZone'); if (Array.isArray(list) && list.length) return list; } catch {}
-  }
-  return [
-    "UTC","America/New_York","America/Chicago","America/Denver","America/Los_Angeles","America/Phoenix",
-    "America/Toronto","America/Vancouver","America/Winnipeg","America/Regina","America/Edmonton",
-    "Europe/London","Europe/Paris","Europe/Berlin","Europe/Madrid","Europe/Rome","Europe/Amsterdam",
-    "Europe/Zurich","Europe/Stockholm","Europe/Athens","Europe/Helsinki",
-    "Asia/Tokyo","Asia/Seoul","Asia/Shanghai","Asia/Taipei","Asia/Hong_Kong","Asia/Singapore","Asia/Bangkok","Asia/Kolkata",
-    "Australia/Sydney","Australia/Melbourne","Australia/Perth","Pacific/Auckland","Pacific/Honolulu",
-    "Africa/Cairo","Africa/Johannesburg","Africa/Nairobi","America/Bogota","America/Lima","America/Mexico_City",
-    "America/Sao_Paulo","America/Argentina/Buenos_Aires","America/Santiago","Asia/Dubai","Asia/Riyadh","Asia/Jerusalem"
-  ];
-}
-function dedupeZones(sortedTzList, now = new Date()){
-  const seenOffset = new Map(); const result = [];
-  for (const tz of sortedTzList){
-    const off = getOffsetMinutes(tz, now);
-    const keep = majorCityKeepList.has(tz) || pinnedZones.includes(tz);
-    if (!seenOffset.has(off)){ seenOffset.set(off, tz); result.push(tz); }
-    else if (keep){ result.push(tz); }
-  }
-  return result;
-}
-
 /* ---------- Dropdown ---------- */
-function buildDropdown(){
-  const all = getAllTimeZones();
-  const now = new Date();
-  const rows = all.map(tz => ({ tz, offset:getOffsetMinutes(tz, now), isPinned:pinnedZones.includes(tz) }))
-                  .map(r => ({...r, label:`${fmtOffset(r.offset)} — ${zonePrettyName(r.tz)}`}));
-  rows.sort((a,b) => (a.offset - b.offset) || a.tz.localeCompare(b.tz));
-
-  const deduped = new Set(dedupeZones(rows.map(r=>r.tz), now));
-  const pinned = rows.filter(r => r.isPinned);
-  const others = rows.filter(r => !r.isPinned && deduped.has(r.tz));
-
-  tzSelect.innerHTML = '';
-  if (pinned.length){
-    const grp = document.createElement('optgroup'); grp.label = '★ Pinned';
-    for (const r of pinned){ const o=document.createElement('option'); o.value=r.tz; o.textContent=r.label; o.dataset.pinned='true'; grp.appendChild(o); }
-    tzSelect.appendChild(grp);
+function appendTimeZoneGroup(label, rows, markPinned = false){
+  const group = document.createElement('optgroup');
+  group.label = label;
+  for (const row of rows){
+    const option = document.createElement('option');
+    option.value = row.timeZone;
+    option.textContent = row.label;
+    if (markPinned) option.dataset.pinned = 'true';
+    group.appendChild(option);
   }
-  const grp2 = document.createElement('optgroup'); grp2.label = 'Time Zones';
-  for (const r of others){ const o=document.createElement('option'); o.value=r.tz; o.textContent=r.label; grp2.appendChild(o); }
-  tzSelect.appendChild(grp2);
+  tzSelect.appendChild(group);
+}
 
-  if (tzSelect.options.length > 0) tzSelect.selectedIndex = 0;
+function buildDropdown(){
+  const previousValue = tzSelect.value;
+  const groups = LCLTimeZoneSelect.getZoneGroups(Date.now());
+  tzSelect.replaceChildren();
+  appendTimeZoneGroup('\u2605 Pinned', groups.pinned, true);
+  appendTimeZoneGroup('Time Zones', groups.timeZones);
+  if (previousValue && [...tzSelect.options].some(option => option.value === previousValue)) {
+    tzSelect.value = previousValue;
+  } else if (tzSelect.options.length > 0) {
+    tzSelect.selectedIndex = 0;
+  }
 }
 
 /* ---------- Persistence ---------- */
@@ -276,8 +231,11 @@ function createClockCard(entry){
   const el = document.createElement('section');
   el.className = 'clock'; el.id = id; el.dataset.tz = tz; el.draggable = true;
 
-  const off = fmtOffset(getOffsetMinutes(tz));
-  const pretty = zonePrettyName(tz);
+  const now = Date.now();
+  const off = LCLTimeZoneSelect.formatOffset(
+    LCLTimeZoneSelect.getOffsetMinutes(tz, now)
+  );
+  const pretty = LCLTimeZoneSelect.formatZoneName(tz);
 
   el.innerHTML = `
     <div class="head" title="Drag to reorder">

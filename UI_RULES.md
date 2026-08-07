@@ -542,6 +542,13 @@ Not allowed:
   Calculator controller owns current-local-date capture, validation feedback,
   tabs, and DOM output. Never parse an ISO date input through the Date
   constructor.
+- `lcl-timezone.js` owns arbitrary-zone wall-clock resolution, DST gap/overlap
+  detection, and instant conversion. `lcl-timezone-select.js` owns the shared
+  supported/fallback list, pinned zones, readable labels, UTC-offset sorting,
+  and deduplication used by Multi-Clock and Time Zone Converter. Both utilities
+  remain DOM-free; page controllers populate their native selects. Never
+  interpret an arbitrary-zone input with a browser-local Date or a hard-coded
+  UTC offset.
 - Page scripts remain independent; do not create a monolithic controller.
 - Do not extract one-page code or migrate unrelated pages solely for consistency.
 - Refactor in small, testable phases.

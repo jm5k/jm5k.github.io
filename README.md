@@ -4,7 +4,7 @@
 A suite of minimalist, client-side time tools that visualize your day as a single continuous line — extended with timers, stopwatches, multi-timezone support, themes, and focus-tracking utilities.
 Built by **[jm5k](https://linearclocklab.com/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
 
-The project uses a small hybrid foundation: stable design tokens and reused components live in `lcl.css`, pure multi-page time formatting lives in `lcl-time.js`, deterministic duration math lives in `lcl-duration.js`, and each tool keeps its own inline layout and controller logic.
+The project uses a small hybrid foundation: stable design tokens and reused components live in `lcl.css`, pure multi-page time formatting lives in `lcl-time.js`, deterministic duration and date logic lives in narrow shared utilities, timezone conversion lives in `lcl-timezone.js`, shared timezone selector data lives in `lcl-timezone-select.js`, and each tool keeps its own inline layout and controller logic.
 
 ---
 
@@ -25,6 +25,7 @@ Explore the full suite — all pages load locally, with instant switching and ze
 - **Stopwatch** — multiple persistent elapsed-time tools
 - **Time Calculator** — intervals, elapsed durations, time shifts, and unit conversions
 - **Date Calculator** — exact calendar shifts, date differences, weekdays, and patterns
+- **Time Zone Converter** — dated conversions across IANA zones and daylight-saving changes
 - **Dashboard** — configurable tile workspace
 - **To Do Lists** — local planners and prioritized task boards
 
@@ -77,6 +78,12 @@ consistent dark design and privacy-first, browser-local behavior.
   - Exact day, week, month, and year calendar shifts
   - Day-of-week lookup and structured recurring pattern resolution through year 9999
   - Predictable clamp-to-valid-date behavior for month and year boundaries
+- **Time Zone Converter**
+  - Pinned and UTC-offset-sorted IANA timezone dropdowns shared with Multi-Clock
+  - Past and future conversion using the selected source zone's actual dated offset
+  - Previous-, same-, and next-day destination reporting
+  - Explicit rejection of nonexistent DST times and earlier/later choice for ambiguous times
+  - Instant-preserving zone Swap and reuse of the suite's saved 12/24-hour preference
 
 ---
 
@@ -134,6 +141,22 @@ supported.
 
 ---
 
+## Time Zone Converter Overview
+The **Time Zone Converter** converts a specific source wall-clock date and time
+between real IANA time zones. Its From and To dropdowns reuse Multi-Clock's
+pinned zones, readable labels, fallback list, offset sorting, and deduplication;
+the labels use the selected conversion instant rather than today's offset.
+`Intl.DateTimeFormat` supplies browser-native timezone rules and offsets; the
+tool does not use fixed-offset tables, external APIs, location access, or
+network requests. Source times are resolved by
+round-tripping candidate instants through the selected zone, allowing DST gaps
+to be rejected and ambiguous fall-back times to offer an explicit earlier or
+later choice. Swap preserves the represented instant rather than merely
+exchanging zone labels. Results are limited by the browser and operating
+system's installed IANA timezone database.
+
+---
+
 ## 🕒 FocusLine Overview
 **FocusLine** ties your focus blocks to the real passage of time — combining Pomodoro cycles and note capture.
 Privacy-first, backend-free, and client-side.
@@ -164,6 +187,7 @@ also shows the ordinal Julian YYYY-DDD date.
 - `timer.html` — Timer
 - `time-calculator.html` — Time Calculator
 - `date-calculator.html` — Date Calculator
+- `time-zone-converter.html` — Time Zone Converter
 - `dashboard.html` — Dashboard
 - `todo.html` — To Do Lists
 - `about.html` — Suite overview and license
@@ -171,12 +195,16 @@ also shows the ordinal Julian YYYY-DDD date.
 - `lcl-time.js` — Pure shared clock-formatting utilities
 - `lcl-duration.js` — BigInt-backed duration units, calculation, precision metadata, and formatting utilities
 - `lcl-date.js` — Pure timezone-safe Gregorian date-only calculation and formatting utilities
+- `lcl-timezone.js` — Pure Intl-backed IANA timezone resolution and conversion utilities
+- `lcl-timezone-select.js` — Shared pinned, labelled, offset-sorted timezone selector data
 - `todo.css` / `todo.js` — To Do Lists page assets
 - `site.webmanifest` — Browser application metadata
 - `sitemap.xml` — Public-page sitemap
 - `tests/time-utils.test.js` — Shared time-formatting regression test
 - `tests/duration-utils.test.js` — Duration calculation and validation regression test
 - `tests/date-utils.test.js` — Gregorian date arithmetic, weekday, pattern, and validation regression test
+- `tests/timezone-utils.test.js` — IANA conversion, offset, DST transition, and Swap regression test
+- `tests/timezone-select-utils.test.js` — Shared timezone list, pinned group, label, and sorting regression test
 - `tests/site-audit.test.js` — Sitemap-driven public HTML publishing-contract audit
 - `tests/docs-audit.test.js` — Documentation architecture and stale-claim audit
 - `agents.md` — Repository agent rules
@@ -194,6 +222,8 @@ Run the dependency-free Node checks directly:
 node tests/time-utils.test.js
 node tests/duration-utils.test.js
 node tests/date-utils.test.js
+node tests/timezone-utils.test.js
+node tests/timezone-select-utils.test.js
 node tests/site-audit.test.js
 node tests/docs-audit.test.js
 ```
@@ -203,7 +233,11 @@ duration utility tests protect interval, elapsed-time, time-shift, fixed and
 Average Gregorian conversion, formatting, precision, and validation behavior.
 The date utility tests protect timezone-safe date-only parsing, Gregorian leap
 rules, calendar shifts, date differences, weekdays, recurrence patterns, and
-invalid-input handling. The site audit protects public HTML
+invalid-input handling. The timezone utility tests protect dated IANA offsets,
+date boundaries, fractional-hour zones, DST gap and overlap detection, and
+instant-preserving Swap behavior. The selector utility tests protect the shared
+supported list, pinned group, readable labels, offset sorting, deduplication,
+and winter/summer label changes used by Multi-Clock and the converter. The site audit protects public HTML
 publishing contracts: metadata, navigation, copyright, sitemap coverage,
 shared script ordering, and local assets. The documentation audit protects
 documented architecture, file coverage, naming, and known stale claims.

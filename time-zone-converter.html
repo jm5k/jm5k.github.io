@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#000000">
+  <link rel="stylesheet" href="lcl.css">
+
+  <title>Time Zone Converter | Linear Clock Lab</title>
+  <meta name="description" content="Convert a past or future local date and time between real IANA time zones with daylight-saving awareness in Linear Clock Lab.">
+  <meta name="keywords" content="time zone converter, IANA time zones, daylight saving time, world time, date line, UTC offset">
+  <meta name="author" content="jm5k">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://linearclocklab.com/time-zone-converter.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Time Zone Converter | Linear Clock Lab">
+  <meta property="og:description" content="Convert dated local times across real IANA zones, daylight-saving changes, and calendar-day boundaries.">
+  <meta property="og:url" content="https://linearclocklab.com/time-zone-converter.html">
+  <meta property="og:image" content="https://linearclocklab.com/profile.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Time Zone Converter | Linear Clock Lab">
+  <meta name="twitter:description" content="Timezone-aware past and future conversion in a compact, private, browser-local tool.">
+  <meta name="twitter:image" content="https://linearclocklab.com/profile.png">
+
+  <link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png">
+  <link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png">
+
+  <style>
+    :root {
+      --bg: #000;
+      --fg: #e0e0e0;
+      --muted: #8a8a8a;
+      --accent: #0ff;
+      --line: #202020;
+      --panel: #0a0a0a;
+      --field: #111;
+      --glow: rgba(0, 255, 255, 0.18);
+      --warning: #ffd27a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+        "Liberation Mono", monospace;
+    }
+
+    .lcl-back-nav {
+      position: fixed;
+      top: 18px;
+      left: 22px;
+      z-index: 10;
+    }
+
+    .wrap {
+      width: min(900px, 92vw);
+      margin: 38px auto 56px;
+    }
+
+    header { text-align: center; }
+
+    h1 {
+      margin: 0 0 7px;
+      color: var(--accent);
+      font-size: clamp(1.45rem, 3vw, 2rem);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .hairline {
+      margin: 24px 0;
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    button,
+    input,
+    select { font: inherit; }
+
+    button {
+      color: var(--fg);
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover:not(:disabled) { border-color: var(--accent); }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+    }
+
+    .calculator-card {
+      min-height: 430px;
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: inset 0 0 0 1px #080808;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .reset-button,
+    .swap-button {
+      min-height: 38px;
+      padding: 7px 12px;
+      color: var(--accent);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 10px;
+      color: var(--fg);
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    input[aria-invalid="true"],
+    select[aria-invalid="true"] { border-color: #ff6b6b; }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .swap-button {
+      min-width: 126px;
+      background: rgba(0, 255, 255, 0.04);
+    }
+
+    .occurrence-field {
+      width: min(440px, 100%);
+      margin: 18px auto 0;
+      padding: 14px;
+      background: #0d0d0d;
+      border: 1px solid rgba(255, 210, 122, 0.35);
+      border-radius: 10px;
+    }
+
+    .occurrence-field label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--warning);
+      font-size: 0.82rem;
+    }
+
+    .status {
+      margin: 16px 0 0;
+      color: #ff9d9d;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    .status.notice { color: var(--warning); }
+
+    .result-card {
+      margin-top: 22px;
+      padding: 18px;
+      background: #080808;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+    }
+
+    .result-label {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .result-value {
+      color: var(--accent);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.15;
+    }
+
+    .result-date {
+      margin-top: 7px;
+      color: var(--fg);
+      font-size: clamp(1rem, 2vw, 1.15rem);
+    }
+
+    .result-location {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .result-details {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px 18px;
+      margin-top: 16px;
+      padding-top: 14px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .result-details strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--fg);
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    [hidden] { display: none !important; }
+
+    footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    @media (max-width: 620px) {
+      .form-grid,
+      .result-details { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="lcl-back-nav" aria-label="Return">
+    <a
+      href="index.html"
+      class="lcl-back-link"
+      aria-label="Back to Linear Clock Lab"
+      title="Back to Linear Clock Lab"
+    >&larr;</a>
+  </nav>
+
+  <main class="wrap">
+    <header>
+      <h1>Time Zone Converter</h1>
+      <p class="subtitle">Convert dated local times with browser-native IANA timezone data.</p>
+    </header>
+
+    <hr class="hairline" aria-hidden="true">
+
+    <section class="calculator-card" aria-labelledby="converter-title">
+      <div class="panel-head">
+        <h2 id="converter-title">Convert</h2>
+        <button id="reset-button" class="reset-button" type="button">Reset</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="source-date">Date</label>
+          <input id="source-date" type="date" min="1900-01-01" max="9999-12-31">
+        </div>
+        <div class="field">
+          <label for="source-time">Time</label>
+          <input id="source-time" type="time" step="60">
+        </div>
+        <div class="field">
+          <label for="source-zone">From time zone</label>
+          <select id="source-zone"></select>
+        </div>
+        <div class="field">
+          <label for="destination-zone">To time zone</label>
+          <select id="destination-zone"></select>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="swap-button" class="swap-button" type="button" disabled>Swap zones</button>
+      </div>
+
+      <div id="occurrence-field" class="occurrence-field" hidden>
+        <label for="occurrence-select">This local time occurs twice. Choose an occurrence.</label>
+        <select id="occurrence-select">
+          <option value="">Choose earlier or later</option>
+        </select>
+      </div>
+
+      <p id="status" class="status" role="status" aria-live="polite" hidden></p>
+
+      <div id="result-card" class="result-card" aria-live="polite" hidden>
+        <div class="result-label">Converted time</div>
+        <div id="result-time" class="result-value"></div>
+        <div id="result-date" class="result-date"></div>
+        <div id="result-location" class="result-location"></div>
+        <div class="result-details">
+          <div>
+            Source
+            <strong id="result-source-zone"></strong>
+          </div>
+          <div>
+            Destination
+            <strong id="result-destination-zone"></strong>
+          </div>
+          <div>
+            Calendar day
+            <strong id="result-day-relation"></strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>Minimal time, maximum clarity. | &copy; 2025&ndash;2026 jm5k</footer>
+  </main>
+
+  <script src="lcl-time.js"></script>
+  <script src="lcl-date.js"></script>
+  <script src="lcl-timezone-select.js"></script>
+  <script src="lcl-timezone.js"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const sourceDate = document.getElementById("source-date");
+      const sourceTime = document.getElementById("source-time");
+      const sourceZone = document.getElementById("source-zone");
+      const destinationZone = document.getElementById("destination-zone");
+      const resetButton = document.getElementById("reset-button");
+      const swapButton = document.getElementById("swap-button");
+      const occurrenceField = document.getElementById("occurrence-field");
+      const occurrenceSelect = document.getElementById("occurrence-select");
+      const status = document.getElementById("status");
+      const resultCard = document.getElementById("result-card");
+      const resultTime = document.getElementById("result-time");
+      const resultDate = document.getElementById("result-date");
+      const resultLocation = document.getElementById("result-location");
+      const resultSourceZone = document.getElementById("result-source-zone");
+      const resultDestinationZone = document.getElementById("result-destination-zone");
+      const resultDayRelation = document.getElementById("result-day-relation");
+      let currentInstant = null;
+
+      function use24HourPreference() {
+        try {
+          const stored = JSON.parse(localStorage.getItem("use24h") ?? "true");
+          return typeof stored === "boolean" ? stored : true;
+        } catch {
+          return true;
+        }
+      }
+
+      function appendZoneGroup(select, label, rows, markPinned = false) {
+        const group = document.createElement("optgroup");
+        group.label = label;
+        for (const row of rows) {
+          const option = document.createElement("option");
+          option.value = row.timeZone;
+          option.textContent = row.label;
+          if (markPinned) option.dataset.pinned = "true";
+          group.appendChild(option);
+        }
+        select.appendChild(group);
+      }
+
+      function populateZoneSelect(select, groups, selectedTimeZone) {
+        select.replaceChildren();
+        appendZoneGroup(select, "\u2605 Pinned", groups.pinned, true);
+        appendZoneGroup(select, "Time Zones", groups.timeZones);
+        select.value = selectedTimeZone;
+      }
+
+      function refreshZoneSelects(referenceInstant, selections = {}) {
+        const fromTimeZone = selections.fromTimeZone || sourceZone.value;
+        const toTimeZone = selections.toTimeZone || destinationZone.value;
+        const groups = LCLTimeZoneSelect.getZoneGroups(referenceInstant, [
+          fromTimeZone,
+          toTimeZone
+        ]);
+        populateZoneSelect(sourceZone, groups, fromTimeZone);
+        populateZoneSelect(destinationZone, groups, toTimeZone);
+      }
+
+      function setStatus(message, kind = "error") {
+        status.textContent = message;
+        status.classList.toggle("notice", kind === "notice");
+        status.hidden = false;
+      }
+
+      function clearStatus() {
+        status.textContent = "";
+        status.classList.remove("notice");
+        status.hidden = true;
+      }
+
+      function markInvalid(element, invalid) {
+        element.setAttribute("aria-invalid", invalid ? "true" : "false");
+      }
+
+      function clearValidation() {
+        for (const element of [
+          sourceDate,
+          sourceTime,
+          sourceZone,
+          destinationZone
+        ]) {
+          markInvalid(element, false);
+        }
+      }
+
+      function locationName(timeZone) {
+        if (timeZone === "UTC") return "UTC";
+        return timeZone.split("/").pop().replace(/_/g, " ");
+      }
+
+      function offsetDescription(timeZone, offset) {
+        return `${locationName(timeZone)} | ${offset.abbreviation} / ${offset.label}`;
+      }
+
+      function dayRelation(dayDifference) {
+        if (dayDifference === 0) return "Same day";
+        if (dayDifference === 1) return "Next day";
+        if (dayDifference === -1) return "Previous day";
+        return dayDifference > 0
+          ? `${dayDifference} days later`
+          : `${Math.abs(dayDifference)} days earlier`;
+      }
+
+      function hideOccurrence() {
+        occurrenceField.hidden = true;
+        occurrenceSelect.replaceChildren();
+      }
+
+      function showOccurrence(resolution, preferredInstant) {
+        const previousChoice = occurrenceSelect.value;
+        occurrenceSelect.replaceChildren();
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Choose earlier or later";
+        occurrenceSelect.appendChild(placeholder);
+
+        const choices = ["earlier", "later"];
+        for (let index = 0; index < choices.length; index += 1) {
+          const candidate = resolution.candidates[index];
+          const option = document.createElement("option");
+          option.value = choices[index];
+          option.textContent = `${choices[index][0].toUpperCase()}${
+            choices[index].slice(1)
+          } - ${candidate.abbreviation} / ${candidate.offsetLabel}`;
+          occurrenceSelect.appendChild(option);
+        }
+
+        const preferredIndex = resolution.candidates.findIndex(
+          (candidate) => candidate.epochMilliseconds === preferredInstant
+        );
+        if (preferredIndex >= 0) {
+          occurrenceSelect.value = choices[preferredIndex];
+        } else if (choices.includes(previousChoice)) {
+          occurrenceSelect.value = previousChoice;
+        }
+        occurrenceField.hidden = false;
+      }
+
+      function renderResult(conversion, fromTimeZone, toTimeZone) {
+        refreshZoneSelects(conversion.epochMilliseconds, {
+          fromTimeZone,
+          toTimeZone
+        });
+        const destination = conversion.destination;
+        resultTime.textContent = LCLTime.formatClockTime(
+          destination.hour,
+          destination.minute,
+          use24HourPreference()
+        );
+        resultDate.textContent = LCLDate.formatDate({
+          year: destination.year,
+          month: destination.month,
+          day: destination.day
+        });
+        resultLocation.textContent = locationName(toTimeZone);
+        resultSourceZone.textContent = offsetDescription(
+          fromTimeZone,
+          conversion.sourceOffset
+        );
+        resultDestinationZone.textContent = offsetDescription(
+          toTimeZone,
+          conversion.destinationOffset
+        );
+        resultDayRelation.textContent = dayRelation(conversion.dayDifference);
+        resultCard.hidden = false;
+        swapButton.disabled = false;
+        currentInstant = conversion.epochMilliseconds;
+      }
+
+      function invalidateResult(message, kind = "error") {
+        currentInstant = null;
+        resultCard.hidden = true;
+        swapButton.disabled = true;
+        if (message) setStatus(message, kind);
+      }
+
+      function readInput() {
+        clearValidation();
+        let localDateTime;
+        try {
+          localDateTime = LCLTimeZone.parseLocalDateTime(
+            sourceDate.value,
+            sourceTime.value
+          );
+        } catch {
+          markInvalid(sourceDate, true);
+          markInvalid(sourceTime, true);
+          throw new RangeError(
+            "Enter a valid date from 1900 through 9999 and a valid time."
+          );
+        }
+
+        const fromTimeZone = sourceZone.value.trim();
+        const toTimeZone = destinationZone.value.trim();
+        if (!LCLTimeZone.isTimeZoneSupported(fromTimeZone)) {
+          markInvalid(sourceZone, true);
+          throw new RangeError("Choose a valid source IANA time zone.");
+        }
+        if (!LCLTimeZone.isTimeZoneSupported(toTimeZone)) {
+          markInvalid(destinationZone, true);
+          throw new RangeError("Choose a valid destination IANA time zone.");
+        }
+        return { localDateTime, fromTimeZone, toTimeZone };
+      }
+
+      function update(preferredInstant = null) {
+        clearStatus();
+        let input;
+        try {
+          input = readInput();
+        } catch (error) {
+          hideOccurrence();
+          invalidateResult(error.message);
+          return;
+        }
+
+        let resolution;
+        try {
+          resolution = LCLTimeZone.resolveLocalDateTime(
+            input.localDateTime,
+            input.fromTimeZone
+          );
+        } catch (error) {
+          hideOccurrence();
+          invalidateResult(error.message);
+          return;
+        }
+
+        if (resolution.status === "nonexistent") {
+          const reference = new Date(0);
+          reference.setUTCFullYear(
+            input.localDateTime.year,
+            input.localDateTime.month - 1,
+            input.localDateTime.day
+          );
+          reference.setUTCHours(
+            input.localDateTime.hour,
+            input.localDateTime.minute,
+            input.localDateTime.second,
+            0
+          );
+          refreshZoneSelects(reference.getTime(), {
+            fromTimeZone: input.fromTimeZone,
+            toTimeZone: input.toTimeZone
+          });
+          hideOccurrence();
+          invalidateResult(
+            "This local time does not exist because of a daylight-saving transition."
+          );
+          return;
+        }
+
+        let disambiguation = "reject";
+        if (resolution.status === "ambiguous") {
+          refreshZoneSelects(resolution.candidates[0].epochMilliseconds, {
+            fromTimeZone: input.fromTimeZone,
+            toTimeZone: input.toTimeZone
+          });
+          showOccurrence(resolution, preferredInstant);
+          disambiguation = occurrenceSelect.value;
+          if (!disambiguation) {
+            invalidateResult(
+              "This local time occurs twice because of a daylight-saving transition. Choose earlier or later.",
+              "notice"
+            );
+            return;
+          }
+          setStatus(
+            `Using the ${disambiguation} occurrence of this local time.`,
+            "notice"
+          );
+        } else {
+          hideOccurrence();
+        }
+
+        try {
+          const conversion = LCLTimeZone.convertZonedDateTime(
+            input.localDateTime,
+            input.fromTimeZone,
+            input.toTimeZone,
+            disambiguation
+          );
+          renderResult(
+            conversion,
+            input.fromTimeZone,
+            input.toTimeZone
+          );
+        } catch (error) {
+          invalidateResult(error.message);
+        }
+      }
+
+      function reset() {
+        const now = new Date();
+        const localNow = {
+          year: now.getFullYear(),
+          month: now.getMonth() + 1,
+          day: now.getDate(),
+          hour: now.getHours(),
+          minute: now.getMinutes(),
+          second: 0
+        };
+        const browserTimeZone = LCLTimeZone.getBrowserTimeZone();
+        const neutralTimeZone =
+          browserTimeZone === "UTC" &&
+          LCLTimeZone.isTimeZoneSupported("America/New_York")
+            ? "America/New_York"
+            : "UTC";
+        sourceDate.value = LCLTimeZone.formatDateInput(localNow);
+        sourceTime.value = LCLTimeZone.formatTimeInput(localNow);
+        refreshZoneSelects(now.getTime(), {
+          fromTimeZone: browserTimeZone,
+          toTimeZone: neutralTimeZone
+        });
+        occurrenceSelect.value = "";
+        const minuteInstant = Math.floor(now.getTime() / 60000) * 60000;
+        update(minuteInstant);
+      }
+
+      function swapZones() {
+        if (currentInstant === null) return;
+        const preservedInstant = currentInstant;
+        const previousSource = sourceZone.value;
+        sourceZone.value = destinationZone.value;
+        destinationZone.value = previousSource;
+        const newSource = LCLTimeZone.instantToZonedParts(
+          preservedInstant,
+          sourceZone.value
+        );
+        sourceDate.value = LCLTimeZone.formatDateInput(newSource);
+        sourceTime.value = LCLTimeZone.formatTimeInput(newSource);
+        occurrenceSelect.value = "";
+        update(preservedInstant);
+      }
+
+      for (const element of [sourceDate, sourceTime]) {
+        element.addEventListener("input", () => {
+          occurrenceSelect.value = "";
+          update();
+        });
+      }
+      for (const element of [sourceZone, destinationZone]) {
+        element.addEventListener("change", () => {
+          occurrenceSelect.value = "";
+          update();
+        });
+      }
+      occurrenceSelect.addEventListener("change", () => update());
+      resetButton.addEventListener("click", reset);
+      swapButton.addEventListener("click", swapZones);
+
+      reset();
+    })();
+  </script>
+</body>
+</html>

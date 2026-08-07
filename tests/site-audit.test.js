@@ -17,6 +17,7 @@ const migratedTimePages = new Set([
     "stopwatch.html",
     "timer.html",
     "time-calculator.html",
+    "time-zone-converter.html",
     "task-planner-lc.html"
 ]);
 const requiredSocialMetadata = [
@@ -613,6 +614,145 @@ for (const { location, pageFile, pagePath } of publicPages) {
                 pageFile,
                 "lcl-date.js must load before the date calculator controller",
                 `shared script at ${dateScripts[0].index}, controller at ${dateController.index}`
+            );
+        }
+    }
+
+    if (pageFile === "multi-clock.html") {
+        const scriptBlocks = [
+            ...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)
+        ];
+        const selectorScripts = scriptBlocks.filter((match) => {
+            const src = getAttribute(match[0], "src");
+            if (!src) return false;
+            const local = staticLocalReference(src);
+            return local
+                ? local.replace(/^\.?\//, "").toLowerCase() ===
+                    "lcl-timezone-select.js"
+                : false;
+        });
+        const multiClockController = scriptBlocks.find(
+            (match) =>
+                !getAttribute(match[0], "src") &&
+                /\bLCLTimeZoneSelect\b/.test(match[2])
+        );
+        check(
+            selectorScripts.length === 1,
+            pageFile,
+            "must load lcl-timezone-select.js exactly once",
+            `${selectorScripts.length} references found`
+        );
+        check(
+            Boolean(multiClockController),
+            pageFile,
+            "must consume the shared timezone selector API",
+            multiClockController ? "controller found" : "controller not found"
+        );
+        check(
+            !/function\s+(?:getOffsetMinutes|fmtOffset|zonePrettyName|getAllTimeZones|dedupeZones)\b|const\s+(?:pinnedZones|majorCityKeepList)\b/.test(html),
+            pageFile,
+            "must not retain page-local timezone selector data helpers",
+            "obsolete selector helper found"
+        );
+        if (selectorScripts.length === 1 && multiClockController) {
+            check(
+                selectorScripts[0].index < multiClockController.index,
+                pageFile,
+                "shared selector utility must load before the Multi-Clock controller",
+                `selector script at ${selectorScripts[0].index}, controller at ${multiClockController.index}`
+            );
+        }
+    }
+
+    if (pageFile === "time-zone-converter.html") {
+        const scriptBlocks = [
+            ...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)
+        ];
+        const scriptsNamed = (fileName) => scriptBlocks.filter((match) => {
+            const src = getAttribute(match[0], "src");
+            if (!src) return false;
+            const local = staticLocalReference(src);
+            return local
+                ? local.replace(/^\.?\//, "").toLowerCase() === fileName
+                : false;
+        });
+        const dateScripts = scriptsNamed("lcl-date.js");
+        const selectorScripts = scriptsNamed("lcl-timezone-select.js");
+        const timezoneScripts = scriptsNamed("lcl-timezone.js");
+        const converterController = scriptBlocks.find(
+            (match) =>
+                !getAttribute(match[0], "src") &&
+                /\bLCLTimeZoneSelect\b/.test(match[2]) &&
+                /\bLCLTimeZone\b/.test(match[2]) &&
+                /\bLCLDate\b/.test(match[2]) &&
+                /\bLCLTime\b/.test(match[2])
+        );
+        check(
+            dateScripts.length === 1,
+            pageFile,
+            "must load lcl-date.js exactly once",
+            `${dateScripts.length} references found`
+        );
+        check(
+            selectorScripts.length === 1,
+            pageFile,
+            "must load lcl-timezone-select.js exactly once",
+            `${selectorScripts.length} references found`
+        );
+        check(
+            timezoneScripts.length === 1,
+            pageFile,
+            "must load lcl-timezone.js exactly once",
+            `${timezoneScripts.length} references found`
+        );
+        check(
+            Boolean(converterController),
+            pageFile,
+            "must contain an inline controller using all four shared APIs",
+            converterController ? "controller found" : "controller not found"
+        );
+        const zoneSelects = getOpeningTags(html, "select").filter(
+            (tag) => ["source-zone", "destination-zone"].includes(
+                getAttribute(tag, "id")
+            )
+        );
+        check(
+            zoneSelects.length === 2,
+            pageFile,
+            "must expose native From and To timezone dropdowns",
+            `${zoneSelects.length} matching selects found`
+        );
+        check(
+            !/<datalist\b|Type a city or IANA identifier/i.test(html),
+            pageFile,
+            "must not retain the obsolete manual-entry datalist UI",
+            "obsolete datalist markup or helper text found"
+        );
+        check(
+            /id=["']swap-button["']/i.test(html),
+            pageFile,
+            "must expose the instant-preserving Swap action",
+            "swap-button not found"
+        );
+        check(
+            !/new\s+Date\s*\(\s*["']/.test(html),
+            pageFile,
+            "must not parse wall-clock strings through the Date constructor",
+            "string Date constructor found"
+        );
+        if (
+            dateScripts.length === 1 &&
+            selectorScripts.length === 1 &&
+            timezoneScripts.length === 1 &&
+            converterController
+        ) {
+            check(
+                dateScripts[0].index < converterController.index &&
+                    selectorScripts[0].index < converterController.index &&
+                    timezoneScripts[0].index < converterController.index,
+                pageFile,
+                "shared date, selector, and timezone utilities must load before the controller",
+                `date script at ${dateScripts[0].index}, selector script at ${selectorScripts[0].index}, timezone script at ${timezoneScripts[0].index}, controller at ${converterController.index}`
             );
         }
     }

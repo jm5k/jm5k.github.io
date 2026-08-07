@@ -36,6 +36,8 @@ for (const testFile of [
     "tests/time-utils.test.js",
     "tests/duration-utils.test.js",
     "tests/date-utils.test.js",
+    "tests/timezone-utils.test.js",
+    "tests/timezone-select-utils.test.js",
     "tests/site-audit.test.js",
     "tests/docs-audit.test.js"
 ]) {
@@ -89,5 +91,10 @@ assert.match(readme, /365\.2425 days/i);
 assert.match(readme, /marked approximate/i);
 assert.match(readme, /clamp-to-valid-date/i);
 assert.match(readme, /date-only/i);
+assert.match(readme, /IANA time zones/i);
+assert.match(readme, /DST gaps/i);
+assert.match(readme, /ambiguous fall-back times/i);
+assert.match(readme, /lcl-timezone-select\.js/i);
+assert.match(readme, /pinned/i);
 
 console.log(`docs-audit.test.js: passed ${publicPages.length} public-page and documentation contracts`);

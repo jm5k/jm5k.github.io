@@ -532,7 +532,33 @@ Rules:
 - DOM behavior remains page-local; all calendar calculations use the pure
   `LCLDate` API and date-only records.
 
-## 11.5 LocalStorage Compatibility
+## 11.5 Time Zone Converter
+
+Purpose:
+
+- Convert a dated wall-clock value between real IANA zones without expanding
+  the page into a world-clock dashboard.
+
+Rules:
+
+- Use a two-column desktop-first form for date/time and native From/To zone
+  dropdowns, followed by one prominent result card.
+- Build both dropdowns from `LCLTimeZoneSelect.getZoneGroups()`, using the same
+  pinned and offset-sorted groups as Multi-Clock. Readable labels retain IANA
+  identifiers as option values.
+- Multi-Clock uses the current instant for offsets; Time Zone Converter uses
+  the represented conversion instant and preserves both selected values when
+  rebuilding date-aware option labels.
+- Show source and destination short zone names with UTC offsets plus the
+  previous, same, or next calendar-day relationship.
+- Reject nonexistent DST wall times. Ambiguous times expose a compact required
+  earlier/later occurrence selector before displaying a result.
+- Swap must preserve the current instant, rewrite the new source date/time, and
+  retain the correct occurrence if the new source wall time is ambiguous.
+- Reuse the existing `use24h` preference for result time formatting. Inputs are
+  session-only and conversion remains entirely local.
+
+## 11.6 LocalStorage Compatibility
 
 - Existing production LocalStorage keys are compatibility contracts and must
   remain unchanged.
