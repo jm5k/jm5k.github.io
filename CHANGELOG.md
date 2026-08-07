@@ -1,4 +1,124 @@
 Date: 2026-08-06
+Short Title: Share Timezone Selector Data
+Summary:
+
+Refactored Multi-Clock and Time Zone Converter to consume one shared source for
+supported IANA zones, pinned/common zones, readable labels, UTC offsets,
+sorting, and deduplication. The converter now uses native dropdowns with
+date-aware offset labels while retaining its separate DST-safe conversion math
+and instant-preserving Swap behavior.
+
+LCL Technical Details:
+
+- Shared Selector Utility: Added the frozen, dependency-free
+  LCLTimeZoneSelect API in lcl-timezone-select.js. It owns the single pinned and
+  major-zone definitions, browser-supported/fallback list generation, readable
+  region/location names, UTC offset formatting, offset-then-name sorting, and
+  one-per-offset deduplication with common-zone retention.
+- Architecture Boundary: LCLTimeZoneSelect returns immutable option-group data
+  and remains DOM-free. Page controllers create their own native option and
+  optgroup elements, while lcl-timezone.js remains dedicated to wall-clock
+  resolution, DST classification, instant conversion, and result offsets.
+- Multi-Clock: Removed the page-local pinned lists, fallback list,
+  getOffsetMinutes(), fmtOffset(), zonePrettyName(), getAllTimeZones(), and
+  dedupeZones() implementations. Its dropdown and clock cards now use the
+  shared selector API without changing clock storage, Add, ordering, labels,
+  import/export, timers, or layout.
+- Converter HTML: Replaced both manual search/datalist inputs with native From
+  and To select controls. Removed the obsolete datalist, typing instructions,
+  zone-hint CSS, and manual-entry event behavior.
+- Shared Presentation: Both pages render a pinned optgroup and a Time Zones
+  optgroup with labels in the established `UTC+00:00 - Region - Location`
+  structure, using em dashes in rendered text while keeping new source ASCII.
+- Date-Aware Offsets: Multi-Clock builds option data for the current instant.
+  Time Zone Converter rebuilds both lists from the resolved conversion instant;
+  its selected source and destination values are explicitly retained through
+  winter/summer relabeling and offset-based resorting.
+- Defaults: The converter still selects the browser timezone as From and UTC as
+  To. Explicitly included selections survive the shared offset deduplication,
+  including browser-local zones outside the pinned/common list.
+- Swap: Swap still preserves the resolved epoch instant, updates both dropdown
+  selections, rewrites the new source wall time, and retains the correct DST
+  overlap occurrence.
+- Accessibility: Native selects provide established keyboard behavior, retain
+  their explicit labels and visible focus treatment, and avoid free-form
+  invalid-zone entry in normal use.
+- Timezone Math: Removed selector-only list and label functions from
+  lcl-timezone.js and its test API contract. No conversion, DST gap/overlap,
+  abbreviation, result-offset, date-boundary, or precision behavior changed.
+- Tests: Added tests/timezone-select-utils.test.js for supported and pinned
+  lists, label/name/offset formatting, offset sorting, group immutability,
+  deduplication, explicit selected-zone retention, half/quarter-hour offsets,
+  invalid values, and New York/London winter/summer changes.
+- Audits: site-audit.test.js now requires both public pages to load and consume
+  lcl-timezone-select.js, rejects obsolete Multi-Clock helpers and converter
+  datalist markup, checks native From/To selects, and validates dependency
+  ordering. docs-audit.test.js now protects the new utility and test coverage.
+- Documentation: Updated README.md, ARCHITECTURE.md, COMPONENTS.md, and
+  UI_RULES.md only where needed to describe the shared selector-data boundary,
+  native dropdowns, pinned groups, date-aware converter labels, and tests.
+- Navigation, Storage, SEO, and Dark Mode: No hub, sitemap, metadata,
+  LocalStorage key, shared CSS, light-mode, or unrelated-page behavior changed.
+
+Files Touched:
+
+- lcl-timezone-select.js
+- tests/timezone-select-utils.test.js
+- multi-clock.html
+- time-zone-converter.html
+- lcl-timezone.js
+- tests/timezone-utils.test.js
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: `node tests/time-utils.test.js`,
+  `node tests/duration-utils.test.js`, `node tests/date-utils.test.js`,
+  `node tests/timezone-utils.test.js`,
+  `node tests/timezone-select-utils.test.js`,
+  `node tests/site-audit.test.js`, and `node tests/docs-audit.test.js` all pass.
+- Syntax and Source: `node --check` passes for both timezone utilities and all
+  new or modified test files; both inline controllers parse successfully, new
+  source files contain ASCII text only, and `git diff --check` reports no
+  errors.
+- Converter Browser Behavior: Chrome verified eleven pinned zones, local/UTC
+  defaults, native ArrowDown navigation, New York and London winter/summer
+  relabeling, preserved selections after rebuild, From and To changes,
+  conversion correctness, and instant-preserving Tokyo/Los Angeles Swap.
+- Multi-Clock Browser Regression: Chrome verified the shared pinned group,
+  offset/region/city labels, current-offset option list, Add behavior, custom
+  labels, shared card name/offset text, and absence of runtime errors.
+- Desktop Layout: Chrome headless at 1440x1000 confirms the converter remains
+  compact and Multi-Clock's existing control row, empty state, footer, spacing,
+  colors, and typography remain visually unchanged.
+- Manual Follow-Up: Confirm native optgroup presentation and keyboard selection
+  in Firefox, Edge, and Safari.
+
+Risks & Edge Cases:
+
+- Offset labels and ordering depend on the browser/OS IANA timezone database;
+  future political rule changes require an updated browser database.
+- Native select and optgroup presentation varies by browser. This refactor
+  intentionally trades free-form filtering for Multi-Clock's established
+  grouped dropdown behavior.
+- Date/time or completed zone changes may rebuild and reorder converter options
+  when offsets change. Both selected identifiers are retained, and rebuilding
+  does not occur during an open native picker before its change is committed.
+- The supported-zone list is cached for the page lifetime because browser Intl
+  capabilities do not change during a session.
+- The shared list now explicitly retains every pinned identifier even when
+  Intl.supportedValuesOf() omits accepted aliases such as UTC or Asia/Kolkata;
+  this protects the intended pinned section across ICU versions.
+
+---
+
+Date: 2026-08-06
 Short Title: Add Time Zone Converter
 Summary:
 
