@@ -162,19 +162,21 @@ Used primarily for clock views.
 
     .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 16px;
     }
 
-Used on index hub and dashboard-like sections.
+The home grid is capped at 980px, which presents four columns at the established
+desktop width. Dashboard uses its separate tile workspace rather than this
+directory grid.
 
 ## 4.3 Cards
 
     .card {
         background: #0a0a0a;
-        border: 1px solid var(--accent);
-        border-radius: 6px;
-        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 12px;
         transition: box-shadow 0.2s;
     }
 
@@ -273,7 +275,7 @@ notation where practical and scientific notation only for extreme magnitudes.
 Nanoseconds through weeks are fixed durations. Months, years, and decades use
 the average Gregorian definitions of 365.2425 days per year, one twelfth of that
 per month, and ten average years per decade. Calculations involving those units
-carry approximation metadata; exact calendar operations belong in a future Date
+carry approximation metadata; exact calendar operations belong in Date
 Calculator. The utility supports `module.exports` for direct Node tests.
 `time-calculator.html` keeps input validation, tabs, approximation notes, and
 result rendering in its inline controller.
@@ -329,7 +331,10 @@ Used for:
 
 - Preferences (e.g., 12h vs 24h)
 - Theme selections on customizable pages
-- Timer/stopwatch session state
+- Clock collections, labels, and ordering in Multi-Clock
+- Timer, stopwatch, FocusLine, Task Planner, Dashboard, and To Do state
+- JSON-backed layouts, schedules, notes, and planner data where those pages
+  provide import/export
 
 Existing production LocalStorage keys are compatibility contracts and must not
 be renamed solely for consistency. New persistent keys should use a clear
@@ -464,6 +469,21 @@ Contains only the frozen, pure `LCLTime` formatting API. Page controllers remain
   `LCLDate` for full Gregorian destination-date formatting.
 - Conversion inputs are temporary session state and are not stored. No external
   timezone service, geolocation, or network request is used.
+
+## 8.10 Productivity and Planning Pages
+
+- `task-planner-lc.html` stores editable templates as minutes since midnight
+  and renders color-coded schedule zones from page-local controller state.
+- `focus.html` owns Pomodoro phases, local notes, and short local history while
+  reusing `LCLTime` for duration formatting.
+- `timer.html` and `stopwatch.html` own independent collections, ordering,
+  colors, and paused-on-reload state while reusing `LCLTime` formatting.
+- `dashboard.html` owns its movable/resizable tile layout and layout import or
+  export; it does not share the home-page card grid.
+- `todo.html` and `todo.js` own the Work, Home, and Event planners, ordering,
+  due dates, filtering, and JSON import or export.
+- `about.html` is a concise implemented/planned feature inventory and license
+  page. It does not introduce tool-to-tool navigation.
 
 ---
 

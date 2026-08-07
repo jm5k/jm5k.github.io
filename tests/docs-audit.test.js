@@ -9,6 +9,7 @@ const read = (file) => fs.readFileSync(path.join(projectRoot, file), "utf8");
 const readDoc = (file) => read(file);
 const sitemap = read("sitemap.xml");
 const readme = readDoc("README.md");
+const changelog = readDoc("CHANGELOG.md");
 const documentationFiles = [
     "README.md",
     "agents.md",
@@ -96,5 +97,59 @@ assert.match(readme, /DST gaps/i);
 assert.match(readme, /ambiguous fall-back times/i);
 assert.match(readme, /lcl-timezone-select\.js/i);
 assert.match(readme, /pinned/i);
+assert.match(readme, /python -m http\.server 8000/i);
+assert.match(readme, /desktop-first/i);
+assert.match(readme, /robots\.txt/i);
+
+const currentToolNames = [
+    "Task Planner Linear Clock",
+    "Multi-Clock",
+    "Clock Colors",
+    "FocusLine",
+    "Stopwatch",
+    "Timer",
+    "Time Calculator",
+    "Date Calculator",
+    "Time Zone Converter",
+    "Dashboard",
+    "To Do Lists"
+];
+for (const toolName of currentToolNames) {
+    assert.match(
+        documentation["about.html"],
+        new RegExp(`>${toolName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<`, "i"),
+        `about.html must include a ${toolName} section`
+    );
+    assert.match(readme, new RegExp(toolName, "i"), `README.md must mention ${toolName}`);
+}
+
+for (const page of publicPages) {
+    assert.ok(
+        documentation["COMPONENTS.md"].includes(page),
+        `COMPONENTS.md must map ${page} to its component pattern`
+    );
+}
+
+assert.doesNotMatch(
+    documentation["ARCHITECTURE.md"],
+    /future Date\s+Calculator/i,
+    "ARCHITECTURE.md must describe Date Calculator as implemented"
+);
+assert.match(documentation["ARCHITECTURE.md"], /Multi-Clock builds these groups for the current\s+instant/i);
+assert.match(documentation["ARCHITECTURE.md"], /Time Zone Converter rebuilds them from the resolved conversion instant/i);
+assert.match(documentation["UI_RULES.md"], /minmax\(230px, 1fr\)/i);
+assert.match(documentation["UI_RULES.md"], /four\s+columns/i);
+assert.match(documentation["UI_RULES.md"], /Multi-Clock,[\s\S]*Clock Colors,[\s\S]*Task Planner Clock,[\s\S]*Timer/i);
+
+for (const recentChange of [
+    "Add Practical Time Calculator",
+    "Expand Duration Unit Range",
+    "Add Exact Date Calculator",
+    "Add Time Zone Converter",
+    "Share Timezone Selector Data",
+    "Reorder Home Tool Grid"
+]) {
+    assert.ok(changelog.includes(recentChange), `CHANGELOG.md must retain ${recentChange}`);
+}
 
 console.log(`docs-audit.test.js: passed ${publicPages.length} public-page and documentation contracts`);

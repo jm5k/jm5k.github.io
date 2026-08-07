@@ -308,7 +308,8 @@ Rules:
 
 - No thick borders.
 - No drop shadows beyond glow.
-- Rounded corners: 4–6px.
+- Compact controls generally use 4–10px radii; established cards and panels
+  may use approximately 10–16px.
 
 ## 4.2 Hairline Divider
 
@@ -420,11 +421,17 @@ Index:
 
 ---
 
-## repeat(auto-fit, minmax(220px, 1fr))
+## repeat(auto-fit, minmax(230px, 1fr))
 
 Rules:
 
 - Cards consistent width.
+- Keep the hub capped at 980px so the established desktop layout presents four
+  columns. Its twelve cards form three rows in this source order: Multi-Clock,
+  Clock Colors, Task Planner Clock, Timer; Stopwatch, Time Calculator, Date
+  Calculator, Time Zone Converter; FocusLine, To Do Lists, Dashboard, About.
+- Narrower widths may use the existing auto-fit wrapping without changing
+  source order.
 - Asymmetric layouts are allowed when purpose-driven, such as Dashboard or
   productivity views.
 

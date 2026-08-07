@@ -60,29 +60,34 @@ Used by the index.html hub. Dashboard uses its own purpose-driven tile workspace
 Structure:
 
 <div class="grid">
-<a class="card" href="clock.html">...</a>
+<a class="card" href="multi-clock.html">...</a>
 <a class="card" href="clock_presets.html">...</a>
 ...
 </div>
 
 Rules:
 
-- repeat(auto-fit, minmax(220px, 1fr))
-- Gap around 1rem
+- `max-width: 980px`
+- `repeat(auto-fit, minmax(230px, 1fr))`
+- 16px gap
+- Four columns at the established desktop width, producing three rows for the
+  current twelve cards
 - Desktop-first layouts are the primary target; retain existing flexible CSS and
   avoid catastrophic horizontal overflow or unusable clipping.
 
 ## 2.2 `.card` (Feature Tile)
 
 Purpose:  
-Reusable UI tile for index and dashboard modules.
+Full-card tool link used by the index hub. Dashboard uses its separate `.tile`
+workspace; page-local result and content cards are not assumed to share this
+hub component.
 
 Structure:
 
-<div class="card">
-<h2>Title</h2>
-<p>Description</p>
-</div>
+<a class="card" href="tool.html">
+<div class="title">Tool</div>
+<div class="desc">Concise description.</div>
+</a>
 
 Token Requirements:
 
@@ -108,16 +113,17 @@ Top-level directory of tools.
 
 Structure:
 
-<ul class="lcl-app-links">
-<li><a href="clock.html">Clock</a></li>
+<div class="grid" aria-label="Linear Clock Lab Links">
+<a class="card" href="multi-clock.html">...</a>
 ...
-</ul>
+</div>
 
 Rules:
 
 - Listing only appears in index.html
 - Must not appear on tool pages
-- Accent underline on hover
+- The current hub contains twelve unique cards in the documented source order
+- Accent border/glow treatment on hover without layout movement
 
 ## 3.2 Back Navigation (`.lcl-back-link`)
 
@@ -558,7 +564,25 @@ Rules:
 - Reuse the existing `use24h` preference for result time formatting. Inputs are
   session-only and conversion remains entirely local.
 
-## 11.6 LocalStorage Compatibility
+## 11.6 Current Page Coverage
+
+The public suite maps its pages to the component patterns above as follows:
+
+- `index.html`: Main 24-Hour Linear Clock plus the twelve-card home hub.
+- `clock.html`: Minimal Clock rail, display switch, and compact settings panel.
+- `task-planner-lc.html`: Editable colored schedule zones and template controls.
+- `multi-clock.html`: Reorderable clock cards with the shared timezone selector.
+- `clock_presets.html`: Clock Colors rail and preset/custom theme controls.
+- `focus.html`: FocusLine timer, settings, local clock, and note cards.
+- `timer.html` and `stopwatch.html`: Reorderable line-based timing rows.
+- `time-calculator.html`: Four duration-calculation mode panels.
+- `date-calculator.html`: Five exact-calendar mode panels.
+- `time-zone-converter.html`: Dated From/To timezone form and result card.
+- `dashboard.html`: Movable/resizable tile workspace.
+- `todo.html`: Work, Home, and Event planner boards.
+- `about.html`: Concise feature status, support, and license sections.
+
+## 11.7 LocalStorage Compatibility
 
 - Existing production LocalStorage keys are compatibility contracts and must
   remain unchanged.

@@ -5,12 +5,28 @@ A suite of minimalist, client-side time tools that visualize your day as a singl
 Built by **[jm5k](https://linearclocklab.com/)** using pure HTML, CSS, and JavaScript — no frameworks, no dependencies, and no tracking.
 
 The project uses a small hybrid foundation: stable design tokens and reused components live in `lcl.css`, pure multi-page time formatting lives in `lcl-time.js`, deterministic duration and date logic lives in narrow shared utilities, timezone conversion lives in `lcl-timezone.js`, shared timezone selector data lives in `lcl-timezone-select.js`, and each tool keeps its own inline layout and controller logic.
+The suite is desktop-first while retaining its existing flexible layouts for narrower windows.
 
 ---
 
 ## 🔗 Live Demo
 ➡️ **Linear Clock Lab:** [https://linearclocklab.com/](https://linearclocklab.com/)
 Explore the full suite — all pages load locally, with instant switching and zero backend dependencies.
+
+---
+
+## Local Use
+
+No installation or build step is required. From the repository root, start a
+simple static server:
+
+```text
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000/`. Core calculations and saved preferences
+remain in the browser; the site does not require a backend, analytics service,
+or runtime network API.
 
 ---
 
@@ -200,6 +216,7 @@ also shows the ordinal Julian YYYY-DDD date.
 - `todo.css` / `todo.js` — To Do Lists page assets
 - `site.webmanifest` — Browser application metadata
 - `sitemap.xml` — Public-page sitemap
+- `robots.txt` — Minimal crawler policy and production sitemap location
 - `tests/time-utils.test.js` — Shared time-formatting regression test
 - `tests/duration-utils.test.js` — Duration calculation and validation regression test
 - `tests/date-utils.test.js` — Gregorian date arithmetic, weekday, pattern, and validation regression test
@@ -237,9 +254,10 @@ invalid-input handling. The timezone utility tests protect dated IANA offsets,
 date boundaries, fractional-hour zones, DST gap and overlap detection, and
 instant-preserving Swap behavior. The selector utility tests protect the shared
 supported list, pinned group, readable labels, offset sorting, deduplication,
-and winter/summer label changes used by Multi-Clock and the converter. The site audit protects public HTML
-publishing contracts: metadata, navigation, copyright, sitemap coverage,
-shared script ordering, and local assets. The documentation audit protects
+and winter/summer label changes used by Multi-Clock and the converter. The site
+audit protects public HTML publishing contracts: unique metadata, headings,
+navigation, copyright, sitemap and robots coverage, exact hub discovery, local
+links and assets, and shared script ordering. The documentation audit protects
 documented architecture, file coverage, naming, and known stale claims.
 
 ---

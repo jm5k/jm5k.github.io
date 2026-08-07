@@ -49,7 +49,7 @@
   main{ width:min(980px,94vw); margin:40px 0 60px }
 
   header{ margin-bottom:10px; position:relative; }
-  .brand{ font-weight:600; font-size:1.2em; letter-spacing:.2px; margin-bottom:4px; text-align:center; }
+  .brand{ font-weight:600; font-size:1.2em; letter-spacing:.2px; margin:0 0 4px; text-align:center; }
 
   /* Top-left return link */
   .returnlink{
@@ -162,7 +162,7 @@
         title="Back to Linear Clock Lab"
         >&larr;</a>
     </div>
-    <div class="brand">FocusLine Pomodoro</div>
+    <h1 class="brand">FocusLine Pomodoro</h1>
   </header>
 
   <!-- TIMER -->
@@ -275,8 +275,7 @@
     // notes
     noteBox: $('#noteBox'), addNote: $('#addNote'), addTimestamp: $('#addTimestamp'),
     noteList: $('#noteList'), noteEmpty: $('#noteEmpty'), noteSearch: $('#noteSearch'),
-    exportTxt: $('#exportTxt'), exportJson: $('#exportJson'), clearAll: $('#clearAll'), clearDone: $('#clearDone'),
-    notifyLink: $('#notifyLink') // (now unused in header; kept to avoid js errors if referenced)
+    exportTxt: $('#exportTxt'), exportJson: $('#exportJson'), clearAll: $('#clearAll'), clearDone: $('#clearDone')
   };
 
   // ------- Timer state
@@ -549,11 +548,6 @@
     const a=sorted[pos], b=sorted[swapPos]; const tmp=a.order; a.order=b.order; b.order=tmp;
     saveNotes(); renderNotes();
   }
-  function swapOrder(aId,bId){
-    const a=notes.find(n=>n.id===aId), b=notes.find(n=>n.id===bId);
-    if(!a||!b) return; const t=a.order; a.order=b.order; b.order=t;
-  }
-
   function addNote(){
     const txt=(els.noteBox.value||'').trim(); if(!txt) return;
     const id = crypto?.randomUUID ? crypto.randomUUID() : (Date.now()+Math.random()).toString(36);
@@ -603,5 +597,3 @@
 </script>
 </body>
 </html>
-
-

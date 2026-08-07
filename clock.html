@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#000000" />
     <link rel="stylesheet" href="lcl.css" />
 
-    <title>24-Hour Linear Clock | Minimal</title>
+    <title>Minimal Clock | Linear Clock Lab</title>
 
     <!-- 🔍 SEO -->
     <meta
@@ -26,7 +26,7 @@
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="24-Hour Linear Clock | Linear Clock Lab"
+      content="Minimal Clock | Linear Clock Lab"
     />
     <meta
       property="og:description"
@@ -41,7 +41,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="24-Hour Linear Clock | Linear Clock Lab"
+      content="Minimal Clock | Linear Clock Lab"
     />
     <meta
       name="twitter:description"
@@ -98,6 +98,12 @@
         color: var(--accent);
         font-size: 1.8rem;
         margin-bottom: 8px;
+      }
+      .page-title {
+        color: var(--fg);
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 8px;
       }
       /* Cluster holds rail + labels; switches layout by orientation */
       .railCluster {
@@ -314,6 +320,7 @@
   </head>
   <body>
     <div class="wrap">
+      <h1 class="page-title">Minimal Clock</h1>
       <div id="currentTimeTop">--:--</div>
       <div
         id="julianDate"

@@ -1,4 +1,107 @@
 Date: 2026-08-06
+Short Title: Audit Site Health and SEO
+Summary:
+
+Completed a repository-wide health, documentation, discovery, and static SEO
+audit after the Time Calculator, Date Calculator, and Time Zone Converter
+launches. Corrected supported stale content, improved semantic page structure,
+removed confirmed dead code, and expanded automated publishing contracts
+without redesigning tools or changing calculator/timezone behavior.
+
+LCL Technical Details:
+
+- About: Added concise implemented sections for Time Calculator, Date
+  Calculator, and Time Zone Converter; updated the suite inventory, metadata,
+  structured-data descriptions, and Clock Colors naming; and escaped the
+  support-image query separators as valid HTML entities.
+- Home Metadata: Updated index description, Open Graph description, and
+  Twitter description to represent clocks, calculators, timezone conversion,
+  and productivity tools. The twelve-card markup, text, links, four-column
+  desktop grid, and established card order were not changed.
+- Heading Structure: Added visible primary headings to Minimal Clock and Clock
+  Colors and converted the existing FocusLine and Dashboard brand labels to
+  H1 elements without changing their visual treatment.
+- Page Naming and Icons: Aligned Minimal Clock, Clock Colors, and To Do Lists
+  document/social titles with current tool names. Added the standard favicon
+  and apple-touch icon references that To Do Lists lacked.
+- Documentation: Added README local-server and desktop-first guidance plus
+  robots.txt coverage; corrected obsolete grid/card examples and the stale
+  future-Date-Calculator claim; documented actual storage ownership,
+  productivity-page architecture, current page/component coverage, the 230px
+  four-column home grid, and exact hub ordering.
+- SEO and Discovery Audit: site-audit.test.js now verifies robots.txt,
+  site.webmanifest, production sitemap URLs, the three new tool URLs, complete
+  root-HTML sitemap coverage with no obsolete entries, exact unique hub cards,
+  hub reachability, unique concise titles/descriptions, indexable robots meta,
+  one readable H1, standard icons, complete document structure, and valid
+  local anchor targets.
+- Documentation Audit: docs-audit.test.js now protects local-run and
+  desktop-first guidance, robots documentation, About/README tool coverage,
+  component coverage for every public page, implemented Date Calculator
+  wording, current-vs-dated timezone selector architecture, home-grid rules,
+  and the recent feature changelog records.
+- Code Health: Removed FocusLine's obsolete `notifyLink` lookup and unused
+  `swapOrder()` helper, plus To Do Lists' unused `updateTask()` helper. No
+  shared duration factors, date logic, or production timezone catalogs were
+  duplicated or moved.
+- Timezone Boundary: Confirmed Multi-Clock and Time Zone Converter continue to
+  consume LCLTimeZoneSelect as the single selector/catalog source while
+  LCLTimeZone retains dated wall-clock and DST conversion responsibilities.
+- Indexing Files: sitemap.xml, robots.txt, and site.webmanifest already matched
+  the deployment and required no content changes.
+- Navigation, Storage, Styling, and Behavior: No URLs, back-link behavior,
+  LocalStorage keys, shared CSS, calculator logic, Multi-Clock behavior, or
+  dark-mode contracts changed.
+
+Files Touched:
+
+- index.html
+- about.html
+- clock.html
+- clock_presets.html
+- dashboard.html
+- focus.html
+- todo.html
+- todo.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: All seven Node utility/audit suites passed. `node --check` passed
+  for every repository and test JavaScript file, all 12 inline classic
+  controllers parsed successfully, and `git diff --check` reported no errors.
+- SEO/Links: The source repository, LICENSE page, support page, production
+  profile image, and all three new production tool URLs returned HTTP 200.
+- Desktop: Manually confirm the four-column home grid and the compact headings
+  on Minimal Clock, Clock Colors, FocusLine, and Dashboard in Chrome, Firefox,
+  Edge, and Safari.
+- Behavior: Manually exercise calculator mode switching, timezone dropdowns,
+  DST overlap selection, Swap, timer/stopwatch state, Multi-Clock persistence,
+  and To Do editing/import/export.
+- Accessibility: Manually verify heading navigation, new H1 appearance, tab
+  keyboard behavior, focus indicators, and back-arrow labels.
+
+Risks & Edge Cases:
+
+- New visible H1 labels add a compact line above the two clock readouts; their
+  desktop rendering needs manual cross-browser confirmation.
+- Browser timezone results still depend on the installed IANA database, as
+  documented; deterministic tests cover representative DST and boundary cases.
+- The in-app browser automation runtime was unavailable for this audit, so
+  interactive rendering and console checks remain a documented manual step.
+- Stricter publishing audits intentionally fail when a root public HTML page is
+  omitted from the sitemap, a hub card is reordered, or an indexing contract
+  becomes inconsistent.
+
+---
+
+Date: 2026-08-06
 Short Title: Reorder Home Tool Grid
 Summary:
 

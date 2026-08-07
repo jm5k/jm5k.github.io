@@ -6,8 +6,29 @@ const { URL } = require("node:url");
 
 const projectRoot = path.resolve(__dirname, "..");
 const sitemapPath = path.join(projectRoot, "sitemap.xml");
+const robotsPath = path.join(projectRoot, "robots.txt");
+const manifestPath = path.join(projectRoot, "site.webmanifest");
 const siteOrigin = "https://linearclocklab.com";
 const siteRoot = `${siteOrigin}/`;
+const expectedHomepageCardHrefs = [
+    "multi-clock.html",
+    "clock_presets.html",
+    "task-planner-lc.html",
+    "timer.html",
+    "stopwatch.html",
+    "time-calculator.html",
+    "date-calculator.html",
+    "time-zone-converter.html",
+    "focus.html",
+    "todo.html",
+    "dashboard.html",
+    "about.html"
+];
+const requiredCalculatorLocations = [
+    `${siteRoot}time-calculator.html`,
+    `${siteRoot}date-calculator.html`,
+    `${siteRoot}time-zone-converter.html`
+];
 const migratedTimePages = new Set([
     "index.html",
     "clock.html",
@@ -152,6 +173,84 @@ function resolveLocalAsset(pageFile, reference) {
     return { path: resolved, relative };
 }
 
+check(
+    fs.existsSync(robotsPath) && fs.statSync(robotsPath).isFile(),
+    "robots.txt",
+    "must exist as a public crawler policy",
+    fs.existsSync(robotsPath) ? "not a file" : "missing"
+);
+if (fs.existsSync(robotsPath)) {
+    const robots = fs.readFileSync(robotsPath, "utf8");
+    check(
+        /^User-agent:\s*\*\s*$/im.test(robots),
+        "robots.txt",
+        "must define the default crawler group",
+        "User-agent: * missing"
+    );
+    check(
+        /^Allow:\s*\/\s*$/im.test(robots),
+        "robots.txt",
+        "must allow the public site root",
+        "Allow: / missing"
+    );
+    check(
+        !/^Disallow:\s*\/\s*$/im.test(robots),
+        "robots.txt",
+        "must not block the entire site",
+        "Disallow: / found"
+    );
+    check(
+        new RegExp(`^Sitemap:\\s*${escapeRegExp(siteRoot)}sitemap\\.xml\\s*$`, "im").test(robots),
+        "robots.txt",
+        "must advertise the production sitemap URL",
+        "production Sitemap directive missing"
+    );
+}
+
+check(
+    fs.existsSync(manifestPath) && fs.statSync(manifestPath).isFile(),
+    "site.webmanifest",
+    "must exist",
+    fs.existsSync(manifestPath) ? "not a file" : "missing"
+);
+if (fs.existsSync(manifestPath)) {
+    let manifest = null;
+    try {
+        manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    } catch (error) {
+        fail("site.webmanifest", "must contain valid JSON", error.message);
+    }
+    if (manifest) {
+        check(manifest.name === "Linear Clock Lab", "site.webmanifest", "name must match the site", manifest.name);
+        check(manifest.start_url === "/", "site.webmanifest", "start_url must target the site root", manifest.start_url);
+        check(manifest.scope === "/", "site.webmanifest", "scope must cover the site root", manifest.scope);
+        check(manifest.background_color === "#000000", "site.webmanifest", "background must match dark mode", manifest.background_color);
+        check(manifest.theme_color === "#000000", "site.webmanifest", "theme must match dark mode", manifest.theme_color);
+        check(
+            typeof manifest.description === "string" && manifest.description.trim().length > 0,
+            "site.webmanifest",
+            "must contain a human-readable description",
+            manifest.description
+        );
+        const manifestIcons = Array.isArray(manifest.icons) ? manifest.icons : [];
+        check(
+            manifestIcons.length > 0,
+            "site.webmanifest",
+            "must contain at least one icon",
+            `${manifestIcons.length} found`
+        );
+        for (const icon of manifestIcons) {
+            const asset = resolveLocalAsset("index.html", icon.src || "");
+            check(
+                Boolean(asset) && !asset.error && fs.existsSync(asset.path),
+                "site.webmanifest",
+                "icon target must exist locally",
+                icon.src
+            );
+        }
+    }
+}
+
 const sitemap = fs.readFileSync(sitemapPath, "utf8");
 check(
     /<urlset\b[^>]*>[\s\S]*<\/urlset\s*>/i.test(sitemap),
@@ -213,6 +312,35 @@ for (const location of sitemapLocations) {
     }
 }
 
+for (const location of requiredCalculatorLocations) {
+    check(
+        uniqueLocations.has(location),
+        "sitemap.xml",
+        "must include every current calculator/converter page",
+        `${location} missing`
+    );
+}
+
+const publicPageFiles = new Set(publicPages.map(({ pageFile }) => pageFile));
+const rootHtmlFiles = fs.readdirSync(projectRoot, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".html"))
+    .map((entry) => entry.name)
+    .sort();
+for (const pageFile of rootHtmlFiles) {
+    check(
+        publicPageFiles.has(pageFile),
+        "sitemap.xml",
+        "must include every root-level public HTML page",
+        `${pageFile} missing`
+    );
+}
+check(
+    publicPageFiles.size === rootHtmlFiles.length,
+    "sitemap.xml",
+    "must contain no obsolete or non-HTML page entries",
+    `${publicPageFiles.size} sitemap pages and ${rootHtmlFiles.length} root HTML files`
+);
+
 const homepage = fs.readFileSync(path.join(projectRoot, "index.html"), "utf8");
 const homepageCards = [
     ...homepage.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a\s*>/gi)
@@ -220,6 +348,25 @@ const homepageCards = [
     const classes = getAttribute(match[0], "class");
     return classes && classes.split(/\s+/).includes("card");
 });
+const homepageCardHrefs = homepageCards.map((card) => getAttribute(card[0], "href"));
+check(
+    homepageCardHrefs.length === expectedHomepageCardHrefs.length,
+    "index.html",
+    "must contain exactly twelve tool cards",
+    `${homepageCardHrefs.length} found`
+);
+check(
+    JSON.stringify(homepageCardHrefs) === JSON.stringify(expectedHomepageCardHrefs),
+    "index.html",
+    "tool cards must retain the documented source order",
+    homepageCardHrefs.join(", ")
+);
+check(
+    new Set(homepageCardHrefs).size === homepageCardHrefs.length,
+    "index.html",
+    "tool cards must not contain duplicate destinations",
+    homepageCardHrefs.join(", ")
+);
 for (const card of homepageCards) {
     const href = getAttribute(card[0], "href");
     if (!href || !staticLocalReference(href)) continue;
@@ -235,6 +382,29 @@ for (const card of homepageCards) {
         "index.html",
         "tool-card target must appear in sitemap.xml",
         `${href} resolves to ${cardLocation}`
+    );
+}
+
+const homepageLinkedLocations = new Set(
+    [...homepage.matchAll(/<a\b([^>]*)>/gi)]
+        .map((match) => getAttribute(match[0], "href"))
+        .filter((href) => href && staticLocalReference(href))
+        .map((href) => {
+            try {
+                return new URL(href, siteRoot).href;
+            } catch {
+                return null;
+            }
+        })
+        .filter(Boolean)
+);
+for (const { location, pageFile } of publicPages) {
+    if (pageFile === "index.html") continue;
+    check(
+        homepageLinkedLocations.has(location),
+        "index.html",
+        "must link every public spoke from the hub",
+        `${pageFile} is not discoverable from index.html`
     );
 }
 
@@ -283,8 +453,31 @@ check(
     "statistics-row Julian item missing or misplaced"
 );
 
+const pageTitles = new Map();
+const pageDescriptions = new Map();
+
 for (const { location, pageFile, pagePath } of publicPages) {
     const html = fs.readFileSync(pagePath, "utf8");
+    check(
+        /^\s*<!doctype\s+html\s*>/i.test(html),
+        pageFile,
+        "must start with an HTML5 doctype",
+        "doctype missing or malformed"
+    );
+    check(
+        getOpeningTags(html, "html").length === 1 &&
+            (html.match(/<\/html\s*>/gi) || []).length === 1,
+        pageFile,
+        "must contain one complete html element",
+        `${getOpeningTags(html, "html").length} opening and ${(html.match(/<\/html\s*>/gi) || []).length} closing tags`
+    );
+    check(
+        getOpeningTags(html, "body").length === 1 &&
+            (html.match(/<\/body\s*>/gi) || []).length === 1,
+        pageFile,
+        "must contain one complete body element",
+        `${getOpeningTags(html, "body").length} opening and ${(html.match(/<\/body\s*>/gi) || []).length} closing tags`
+    );
     const headMatches = [...html.matchAll(/<head\b[^>]*>([\s\S]*?)<\/head\s*>/gi)];
     check(
         headMatches.length === 1,
@@ -304,6 +497,8 @@ for (const { location, pageFile, pagePath } of publicPages) {
     const themeTags = getMetaTags(head, "name", "theme-color");
     const colorSchemeTags = getMetaTags(head, "name", "color-scheme");
     const canonicalTags = getLinkTags(head, "canonical");
+    const iconTags = getLinkTags(head, "icon");
+    const appleTouchIconTags = getLinkTags(head, "apple-touch-icon");
     const ogUrlTags = getMetaTags(head, "property", "og:url");
     const lclCssTags = getOpeningTags(head, "link").filter((tag) => {
         const href = getAttribute(tag, "href");
@@ -322,6 +517,8 @@ for (const { location, pageFile, pagePath } of publicPages) {
         ["author", authorTags],
         ["robots meta", robotsTags],
         ["canonical", canonicalTags],
+        ["favicon", iconTags],
+        ["apple-touch-icon", appleTouchIconTags],
         ["theme-color", themeTags],
         ["color-scheme", colorSchemeTags],
         ["lcl.css reference", lclCssTags],
@@ -342,6 +539,70 @@ for (const { location, pageFile, pagePath } of publicPages) {
             pageFile,
             `must contain exactly one ${attributeValue}`,
             `${tags.length} found`
+        );
+    }
+
+    const title = titleTags.length === 1
+        ? visibleText(titleTags[0])
+        : "";
+    const description = descriptionTags.length === 1
+        ? decodeEntities(getAttribute(descriptionTags[0], "content") || "").trim()
+        : "";
+    const robotsContent = robotsTags.length === 1
+        ? (getAttribute(robotsTags[0], "content") || "").toLowerCase()
+        : "";
+    check(title.length > 0, pageFile, "title must contain readable text", JSON.stringify(title));
+    check(
+        description.length >= 50 && description.length <= 200,
+        pageFile,
+        "description must be concise and human-readable",
+        `${description.length} characters`
+    );
+    check(
+        !/\bnoindex\b/.test(robotsContent) &&
+            /\bindex\b/.test(robotsContent) &&
+            /\bfollow\b/.test(robotsContent),
+        pageFile,
+        "robots meta must allow indexing and following",
+        robotsContent
+    );
+    if (title) {
+        const duplicate = pageTitles.get(title);
+        check(!duplicate, pageFile, "title must be unique", duplicate || title);
+        pageTitles.set(title, pageFile);
+    }
+    if (description) {
+        const duplicate = pageDescriptions.get(description);
+        check(!duplicate, pageFile, "description must be unique", duplicate || description);
+        pageDescriptions.set(description, pageFile);
+    }
+
+    const h1Tags = html.match(/<h1\b[^>]*>[\s\S]*?<\/h1\s*>/gi) || [];
+    check(
+        h1Tags.length === 1,
+        pageFile,
+        "must contain exactly one primary H1",
+        `${h1Tags.length} found`
+    );
+    if (h1Tags.length === 1) {
+        check(
+            visibleText(h1Tags[0]).length > 0,
+            pageFile,
+            "primary H1 must contain readable text",
+            JSON.stringify(visibleText(h1Tags[0]))
+        );
+    }
+
+    for (const [label, tags] of [
+        ["favicon", iconTags],
+        ["apple-touch-icon", appleTouchIconTags]
+    ]) {
+        if (tags.length !== 1) continue;
+        check(
+            getAttribute(tags[0], "href") === `${siteRoot}profile.png`,
+            pageFile,
+            `${label} must use the production profile image`,
+            getAttribute(tags[0], "href")
         );
     }
 
@@ -470,6 +731,23 @@ for (const { location, pageFile, pagePath } of publicPages) {
                 `${reference} resolves to ${asset.relative}`
             );
         }
+    }
+
+    for (const tag of getOpeningTags(html, "a")) {
+        const reference = getAttribute(tag, "href");
+        if (!reference) continue;
+        const target = resolveLocalAsset(pageFile, reference);
+        if (!target) continue;
+        if (target.error) {
+            fail(pageFile, "anchor href must be a valid local reference", target.error);
+            continue;
+        }
+        check(
+            fs.existsSync(target.path),
+            pageFile,
+            "local anchor target must exist",
+            `${reference} resolves to ${target.relative}`
+        );
     }
 
     if (migratedTimePages.has(pageFile)) {

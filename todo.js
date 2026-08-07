@@ -429,14 +429,6 @@
     renderAll();
   }
 
-  function updateTask(id, patch) {
-    const index = tasks.findIndex((t) => t.id === id);
-    if (index === -1) return;
-    tasks[index] = Object.assign({}, tasks[index], patch);
-    saveState();
-    renderAll();
-  }
-
   function deleteTask(id) {
     tasks = tasks.filter((t) => t.id !== id);
     saveState();
