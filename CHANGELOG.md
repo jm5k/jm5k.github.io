@@ -1,4 +1,60 @@
 Date: 2026-08-06
+Short Title: Reorder Home Tool Grid
+Summary:
+
+Reordered the existing home-page cards into three clearer desktop rows for
+clock and timing tools, calculation tools, and productivity/site tools. Card
+content, destinations, styling, behavior, and the established grid remain
+unchanged.
+
+LCL Technical Details:
+
+- HTML: Reordered the twelve existing card anchors in index.html to place
+  Multi-Clock, Clock Colors, Task Planner Clock, and Timer first; Stopwatch,
+  Time Calculator, Date Calculator, and Time Zone Converter second; and
+  FocusLine, To Do Lists, Dashboard, and About third.
+- CSS and Layout: No CSS changed. The existing responsive grid and its
+  four-column desktop presentation are preserved.
+- Card Contract: No card title, description, class, link, or interaction was
+  changed.
+- Navigation: Changed only the source and visual order of the existing home
+  hub links. Tool-page back navigation is unaffected.
+- JavaScript and Storage: No scripts, calculation behavior, or LocalStorage
+  contracts changed.
+- SEO, Accessibility, and Dark Mode: Metadata, semantic card markup, keyboard
+  behavior, design tokens, and dark-only styling are unchanged.
+
+Files Touched:
+
+- index.html
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: `node tests/time-utils.test.js`,
+  `node tests/duration-utils.test.js`, `node tests/date-utils.test.js`,
+  `node tests/timezone-utils.test.js`,
+  `node tests/timezone-select-utils.test.js`,
+  `node tests/site-audit.test.js`, and `node tests/docs-audit.test.js` all pass.
+- Source: Verified the exact twelve-link sequence and confirmed
+  `git diff --check` reports no errors.
+- Manual: Confirm the hub displays four cards per row at desktop width in
+  Chrome, Firefox, Edge, and Safari; narrower widths continue to use the
+  existing responsive wrapping behavior.
+- Accessibility: Confirm keyboard focus follows the new visual/source order;
+  accessible card text and behavior are unchanged.
+
+Risks & Edge Cases:
+
+- The intentional source-order change also changes sequential keyboard and
+  assistive-technology reading order to match the new visual grouping.
+- At widths below the four-column desktop layout, the unchanged auto-fit grid
+  may wrap into a different number of columns while preserving card order.
+- No shared styles, scripts, metadata, or tool-page behavior are affected.
+
+---
+
+Date: 2026-08-06
 Short Title: Share Timezone Selector Data
 Summary:
 
