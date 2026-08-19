@@ -1,3 +1,73 @@
+Date: 2026-08-19
+Short Title: Canonicalize Internal Home Links
+Summary:
+
+Updated browser-facing home navigation to point directly to the canonical `/`
+URL, reducing crawler discovery of the duplicate noncanonical `/index.html`
+homepage URL. `index.html` remains the physical GitHub Pages file; no page
+URLs, redirects, or tool functionality changed.
+
+LCL Technical Details:
+
+- Navigation: Changed all 13 public non-home `.lcl-back-link` destinations
+  from `index.html` to `/` while preserving their labels, titles, arrow-only
+  content, styling, and local HTTP server behavior.
+- SEO: Preserved the homepage canonical as `https://linearclocklab.com/`, all
+  tool-page self-canonicals, indexing directives, and existing sitemap URLs.
+- Audit: Updated the back-link contract to require `/` and added explicit
+  sitemap checks requiring the canonical root while rejecting `/index.html`.
+- Documentation: Updated maintained back-navigation rules and code examples to
+  use `/`; physical-file, fixture, and historical `index.html` references were
+  preserved.
+- HTML, CSS, JavaScript, Accessibility, and Responsive Behavior: No markup
+  other than back-link destinations changed; no styles, scripts, controls,
+  ARIA attributes, or layout behavior changed.
+
+Files Touched:
+
+- about.html
+- clock.html
+- clock_presets.html
+- dashboard.html
+- date-calculator.html
+- focus.html
+- multi-clock.html
+- stopwatch.html
+- task-planner-lc.html
+- time-calculator.html
+- time-zone-converter.html
+- timer.html
+- todo.html
+- tests/site-audit.test.js
+- AGENTS.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- Automated: All seven utility and audit suites passed. `node --check` passed
+  for all 13 repository/test JavaScript files, and all 12 inline classic
+  controllers parsed successfully; `git diff --check` passed.
+- Navigation: Serve the repository with `python -m http.server 8000` and
+  confirm each back arrow resolves to the local root. An equivalent temporary
+  Python-server smoke test passed for `/` and all 13 changed tool pages on an
+  available loopback port because port 8000 was already occupied locally.
+- Browser and Accessibility: Confirm unchanged back-link behavior, visible
+  focus, arrow-only presentation, labels, and titles in Chrome, Firefox, Edge,
+  and Safari on desktop.
+
+Risks & Edge Cases:
+
+- Root-relative `/` navigation assumes the documented root-domain deployment
+  and local server command; publishing under a path prefix would require a
+  different link strategy.
+- Documentation and tests that refer to the physical `index.html` file remain
+  intentionally unchanged unless they define the browser-facing link target.
+
+---
+
 Date: 2026-08-06
 Short Title: Audit Site Health and SEO
 Summary:

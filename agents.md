@@ -46,7 +46,8 @@ LCL conforms to these universal rules:
    - Inline `<style>` for page-specific layout and component styling.
    - Either an inline controller `<script>` at the bottom of `<body>` or a
      repository-local external controller loaded with `defer` in `<head>`.
-   - Exactly one `.lcl-back-link` icon-only left arrow back to `index.html`,
+   - Exactly one `.lcl-back-link` icon-only left arrow back to the canonical
+     homepage route `/`,
      with an accessible label and title in a page-specific container.
    - `index.html` as the only multi-link hub.
 
@@ -393,7 +394,7 @@ Every public non-index page includes exactly one dedicated home control:
 
 <nav class="lcl-back-nav" aria-label="Return">
     <a
-        href="index.html"
+        href="/"
         class="lcl-back-link"
         aria-label="Back to Linear Clock Lab"
         title="Back to Linear Clock Lab"

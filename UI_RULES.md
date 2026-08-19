@@ -463,7 +463,7 @@ Rules:
 
 <nav class="lcl-back-nav" aria-label="Return">
   <a
-    href="index.html"
+    href="/"
     class="lcl-back-link"
     aria-label="Back to Linear Clock Lab"
     title="Back to Linear Clock Lab"

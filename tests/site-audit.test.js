@@ -277,6 +277,18 @@ check(
     "must not contain duplicate loc values",
     `${sitemapLocations.length - uniqueLocations.size} duplicate(s)`
 );
+check(
+    uniqueLocations.has(siteRoot),
+    "sitemap.xml",
+    "must include the canonical homepage root URL",
+    `${siteRoot} missing`
+);
+check(
+    !uniqueLocations.has(`${siteRoot}index.html`),
+    "sitemap.xml",
+    "must not include the noncanonical index.html homepage URL",
+    `${siteRoot}index.html found`
+);
 
 const publicPages = [];
 for (const location of sitemapLocations) {
@@ -668,9 +680,9 @@ for (const { location, pageFile, pagePath } of publicPages) {
         const backLink = backLinks[0][0];
         const backText = visibleText(backLinks[0][2]);
         check(
-            getAttribute(backLink, "href") === "index.html",
+            getAttribute(backLink, "href") === "/",
             pageFile,
-            "back link href must be index.html",
+            "back link href must be the canonical homepage root",
             getAttribute(backLink, "href")
         );
         check(

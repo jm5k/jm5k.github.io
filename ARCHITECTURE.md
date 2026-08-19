@@ -54,7 +54,7 @@ LCL uses a deliberately simple navigation architecture:
 
         <nav class="lcl-back-nav" aria-label="Return">
             <a
-                href="index.html"
+                href="/"
                 class="lcl-back-link"
                 aria-label="Back to Linear Clock Lab"
                 title="Back to Linear Clock Lab"
@@ -220,7 +220,7 @@ Range inputs explicitly use:
 Standard pattern:
 
     <nav class="lcl-back-nav" aria-label="Return">
-        <a href="index.html" class="lcl-back-link"
+        <a href="/" class="lcl-back-link"
            aria-label="Back to Linear Clock Lab"
            title="Back to Linear Clock Lab">&larr;</a>
     </nav>
