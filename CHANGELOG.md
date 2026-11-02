@@ -1,3 +1,37 @@
+Date: 2026-11-01
+Short Title: Remove Donation Links
+Summary:
+
+Removed the donation button from the About page and the donation section from
+the README at the owner's request.
+
+LCL Technical Details:
+
+- HTML: Removed the donation anchor, remote button image, and enclosing CTA
+  container from about.html; preserved the contact email and source link.
+- Documentation: Removed the README donation section.
+- CSS, JavaScript, Tokens, Navigation, SEO, Accessibility, Responsive Layout,
+  and Dark Mode: No changes.
+
+Files Touched:
+
+- about.html
+- README.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- Passed node tests/site-audit.test.js and node tests/docs-audit.test.js.
+- Repository-wide search found no remaining donation-service links or widgets.
+- Optional desktop browser check: confirm the contact section displays normally.
+  Browser compatibility, tool behavior, and storage are unaffected by this removal.
+
+Risks & Edge Cases:
+
+- Low risk: only donation markup and documentation were removed.
+
+---
+
 Date: 2026-08-19
 Short Title: Canonicalize Internal Home Links
 Summary:

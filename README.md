@@ -262,12 +262,6 @@ documented architecture, file coverage, naming, and known stale claims.
 
 ---
 
-## ☕ Support
-If you enjoy the Linear Clock Lab and want to support future updates:
-**Buy Me a Coffee →** [https://www.buymeacoffee.com/jm5k](https://www.buymeacoffee.com/jm5k)
-
----
-
 ## 📬 Contact
 📧 **jm5k_dev@pm.me**
 
