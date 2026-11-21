@@ -1,4 +1,97 @@
 Date: 2026-11-21
+Short Title: Checkpoint Timer And FocusLine Repairs
+Summary:
+
+Recorded the owner's authorization to commit and push the completed Timer and
+FocusLine batch. Recommended F04 Multi-Clock correctness as the next separate
+repair; no additional implementation work was started.
+
+LCL Technical Details:
+
+- Updated current roadmap and verification status; no additional HTML, CSS,
+  JavaScript, tokens, navigation, metadata, accessibility, or layout changes.
+
+Files Touched:
+
+- ROADMAP.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: Twelve Node suites for the completed implementation.
+- Browser acceptance and deployment verification remain NOT RUN.
+
+Risks & Edge Cases:
+
+- Background alert limits remain documented; a push does not prove deployment.
+
+---
+
+Date: 2026-11-21
+Short Title: Repair Timer And FocusLine Completion
+Summary:
+
+Implemented the approved F03/F05/F09 repair batch: Timer and FocusLine completion
+no longer depend on screen redraws, finished focus work is credited once, and
+invalid countdown durations are rejected. FocusLine saves timer settings on
+control changes rather than every display update.
+
+LCL Technical Details:
+
+- JavaScript: Both inline controllers use runtime Date.now deadlines checked
+  every 250ms, plus visibilitychange/focus/pageshow catch-up. Pause reconciles
+  progress before clearing the deadline; resume creates a new deadline.
+- FocusLine: Explicit completed state guards history/chime handling. Manual
+  completion offers Start next; Auto-advance prepares one paused next phase.
+  Late work credit uses the scheduled completion time. Duration edits retain
+  progress ratio; Skip accounts for partial paused work without duplicate credit.
+- Timer: Completion stops the row and notifies once until Reset. Input checks
+  reject negative/fractional components, seconds outside 0-59, nonfinite or
+  unsafe totals, and zero durations. Invalid Add preserves its label.
+- HTML/Accessibility: Added inline timer-error status and described invalid
+  inputs; both pages explain background/sleep limits. About now distinguishes
+  paused reload restoration from hidden-tab catch-up.
+- Persistence: Existing keys and saved formats retained; deadlines/completion
+  state remain session-only. FocusLine checkbox settings save immediately on
+  change. Notes flow and Stopwatch are unchanged.
+- CSS, Tokens, Navigation, SEO, Responsive Layout, and Dark Mode: No changes.
+
+Files Touched:
+
+- timer.html
+- focus.html
+- about.html
+- tests/timer-focus.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- ROADMAP.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: Twelve Node suites and complete syntax for both modified controllers.
+- The new full-controller regression suite covers deadlines without animation,
+  suspension catch-up, once-only completion, partial pause/resume/Skip, reset,
+  reload, duration changes, invalid/valid Add, and settings-write counts.
+- NOT RUN: Browser visuals, cross-browser/keyboard/screen-reader acceptance,
+  real background throttling/sleep, sound/notification permissions, or deployment.
+  Manual procedures are recorded in VERIFICATION.md.
+
+Risks & Edge Cases:
+
+- Browser throttling and suspension can still delay alerts; closed/asleep-device
+  alarms are not guaranteed. Resumption catches up the current block only.
+- Device-clock changes affect runtime deadlines. No automatic focus-cycle
+  backfill, saved-key migration, dependency, app/server, or Git operation added.
+- This batch remains local; remaining review findings are not implicitly approved.
+
+---
+
+Date: 2026-11-21
 Short Title: Checkpoint Accepted Clock Display Updates
 Summary:
 

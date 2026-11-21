@@ -306,3 +306,56 @@ The owner accepted the larger Home/Minimal Clock time displays, Minimal Clock
 moon link, and removal of its visible heading, then authorized commit and push.
 The five relevant checks passed for these changes. Hosting deployment and
 independent cross-browser acceptance remain unverified.
+
+## Timer and FocusLine repair batch: 2026-11-21
+
+Owner-approved scope: F03 independent completion checks and catch-up, F05
+once-only FocusLine work credit, F09 Timer input validation, and reducing
+FocusLine settings writes. Implemented locally; no Git operation or publication
+was performed for this batch. F04/F06/F07/F08/F10 and the remaining F11 items
+remain open. About's Timer reload wording was corrected as part of this work.
+
+- PASS: all twelve Node suites, including tests/timer-focus.test.js, plus complete
+  inline-controller syntax for timer.html and focus.html.
+- PASS: actual complete Timer and FocusLine controllers executed in isolated
+  DOM/storage/clock doubles. No animation callback was allowed; performance.now
+  remained frozen while Date.now advanced, modeling a suspension gap.
+- PASS: Timer's independent 250ms interval, visibilitychange/focus/pageshow
+  registrations, hidden expiry, delayed-callback catch-up, once-only alerts,
+  pause-between-ticks accuracy, paused elapsed gaps, resume/reset, repeated
+  Resume All, saved-field compatibility, and paused reload restoration.
+- PASS: negative, zero, fractional, nonfinite, nonnumeric, out-of-range seconds,
+  and unsafe numeric totals are rejected before adding state; inline validation
+  marks the inputs, invalid Add preserves its label, and a valid 1m59s entry
+  creates the expected 119000ms timer.
+- PASS: FocusLine hidden completion credits 25 minutes once at the original
+  deadline; repeated checks, lifecycle events, and direct duplicate completion
+  attempts do not add credit. Start next advances to a new phase. Pause/resume,
+  reset, paused partial-work Skip, and running duration edits preserve expected
+  progress. Auto-advance prepares one paused next phase with no unattended
+  cycle backfill. Reload restores a paused Work phase and saved preferences.
+- PASS: 100 running checks produce no FocusLine timer-settings writes. Checkbox
+  preference changes each save once while paused. Notes persistence is unchanged.
+- NOT RUN: real-browser throttling/sleep, audio/notification permission and
+  autoplay behavior, live visual/accessibility/cross-browser acceptance, or
+  deployment. No app/server or dependency installation was used.
+
+Manual acceptance: start short timers, switch tabs, return after expiry, and
+confirm one alert and a stopped row. Try Pause All, Resume All, Reset, reload,
+negative/fractional inputs, and seconds above 59. In FocusLine, complete work
+with Auto-advance off, press Start next, and confirm the total does not double;
+also check normal auto-advance, Skip, paused/resumed progress, settings changes,
+and saved checkbox preferences after reload.
+
+Limits: intervals can still be throttled or suspended. Deadlines are runtime
+wall-clock values and react to device-clock corrections. No guaranteed alert
+is available while the page is closed or the device is asleep; resumption
+reconciles overdue state. FocusLine does not infer unattended completed cycles.
+These limits follow the browser behavior documented in the review's MDN links.
+
+## Timer/FocusLine checkpoint authorization: 2026-11-21
+
+The owner authorized committing and pushing the completed batch. All twelve
+Node suites passed for the implementation; no application code changed during
+checkpoint preparation. Browser acceptance and hosting deployment remain
+unverified. F04 Multi-Clock is the suggested next repair, not yet authorized.

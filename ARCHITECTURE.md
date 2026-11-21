@@ -344,12 +344,28 @@ LocalStorage for temporary session-only state.
 
 ## 6.7 Interval-Driven Tools
 
-Clock, stopwatch, timer, and dashboard rely on:
+Timer and FocusLine use independent 250ms interval checks against runtime
+Date.now() deadlines, with immediate reconciliation on visibilitychange, focus,
+and pageshow. Completion does not depend on requestAnimationFrame. Callbacks may
+be throttled or suspended; each check derives current progress from the deadline
+instead of assuming a fixed tick length. Wall-clock corrections affect these
+deadlines. No closed-page or asleep-device alarm service is provided.
 
-- Lightweight setInterval loops
-- Minimal DOM writes per tick
-- Graceful degradation if visibility state changes
-- No animation-frame dependencies unless explicitly needed
+Timer deadlines are session-only. Saved payloads keep the existing paused-reload
+schema and keys. Pause reconciles current remaining time before clearing the
+deadline; resume creates a new deadline. Completion stops the row and notifies
+once until Reset. Whole-minute/second inputs are validated before creating state.
+
+FocusLine tracks explicit running/completed state and a session-only deadline.
+Completion is guarded before chime/history writes. Work history uses the deadline
+timestamp, so a delayed callback does not move yesterday's work into today's
+total. Auto-advance prepares one paused next phase; Start next handles manual
+completion without replaying the finished phase. Duration edits preserve the
+current progress ratio and recompute a running deadline. Settings persist only
+on relevant control changes, not in updateUI. Notes retain their existing flow.
+
+Other clock pages keep their existing periodic display updates. Stopwatch retains
+its existing animation-frame loop; no controller migration was performed there.
 
 ---
 

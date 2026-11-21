@@ -137,9 +137,9 @@
 
     <div class="toolbar">
       <input id="labelInput" type="text" placeholder="Timer name (optional)" />
-      <input id="minInput" type="number" min="0" value="5" title="Minutes" />
+      <input id="minInput" type="number" min="0" step="1" value="5" title="Minutes" aria-describedby="timer-error" />
       <span style="color:var(--muted)">min</span>
-      <input id="secInput" type="number" min="0" max="59" value="0" title="Seconds" />
+      <input id="secInput" type="number" min="0" max="59" step="1" value="0" title="Seconds" aria-describedby="timer-error" />
       <span style="color:var(--muted)">sec</span>
       <button id="addBtn">+ Add Timer</button>
       <button id="pauseAllBtn">Pause All</button>
@@ -149,6 +149,8 @@
       <button id="soundBtn" title="Toggle completion beep">Sound: On</button>
     </div>
 
+    <p class="small" id="timer-error" role="status" aria-live="polite"></p>
+    <p class="small">Keep this page open. Background alerts may be delayed by your browser or device sleep; timers catch up when the page resumes. Reloaded timers stay paused.</p>
     <div class="list" id="timerList"></div>
 
     <hr class="navline" />
@@ -172,6 +174,7 @@
     const labelInput = document.getElementById('labelInput');
     const minInput = document.getElementById('minInput');
     const secInput = document.getElementById('secInput');
+    const durationError = document.getElementById('timer-error');
 
     let timers = [];
     let sortAsc = true;         // ascending first
@@ -184,7 +187,7 @@
       const fullDuration = LCLTime.formatDurationHMS(milliseconds / 1000);
       return fullDuration.startsWith('00:') ? fullDuration.slice(3) : fullDuration;
     }
-    const now = () => performance.now();
+    const now = () => Date.now();
 
     // ---------- Persistence ----------
     function saveState(){
@@ -224,7 +227,7 @@
           totalMs: +t.totalMs || 0,
           remainingMs: Math.max(0, +t.remainingMs || 0),
           running: false,                 // never auto-run after load
-          lastTick: now(),
+          deadlineAt: null,
           warnAt: Math.floor((+t.totalMs||0)*0.25),
           dangerAt: Math.floor((+t.totalMs||0)*0.10),
           colorHex: t.colorHex || '#00ffff',
@@ -290,9 +293,22 @@
     }
 
     // ---------- Timers ----------
+    function setDurationError(message){
+      durationError.textContent = message;
+      minInput.setAttribute('aria-invalid', String(Boolean(message)));
+      secInput.setAttribute('aria-invalid', String(Boolean(message)));
+    }
     function addTimer(label, minutes, seconds){
-      const totalMs = (Number(minutes||0)*60 + Number(seconds||0)) * 1000;
-      if (!totalMs) return;
+      const mins = Number(minutes), secs = Number(seconds);
+      const totalMs = (mins*60 + secs) * 1000;
+      if (!Number.isSafeInteger(mins) || mins < 0 ||
+          !Number.isSafeInteger(secs) || secs < 0 || secs > 59 ||
+          !Number.isSafeInteger(totalMs) || totalMs <= 0 ||
+          !Number.isSafeInteger(now() + totalMs)) {
+        setDurationError('Use whole minutes (0 or more) and seconds (0-59), with a positive duration within the supported numeric range.');
+        return false;
+      }
+      setDurationError('');
       const id = (crypto?.randomUUID?.() || String(Math.random())).toString();
       timers.push({
         id,
@@ -300,7 +316,7 @@
         totalMs,
         remainingMs: totalMs,
         running: false,
-        lastTick: now(),
+        deadlineAt: null,
         warnAt: Math.floor(totalMs*0.25),
         dangerAt: Math.floor(totalMs*0.10),
         colorHex: '#00ffff',
@@ -308,6 +324,7 @@
       });
       render();
       requestSave();
+      return true;
     }
 
     function move(id, dir){
@@ -322,16 +339,19 @@
 
     function removeTimer(id){ timers = timers.filter(t=>t.id!==id); render(); requestSave(); }
     function clearFinished(){ timers = timers.filter(t=>t.remainingMs>0); render(); requestSave(); }
-    function pauseAll(){ timers.forEach(t=>t.running=false); render(); requestSave(); }
-    function resumeAll(){ requestNotifPermission(); const tnow=now(); timers.forEach(t=>{ if(t.remainingMs>0){ t.running=true; t.lastTick=tnow; } }); render(); requestSave(); }
+    function pauseAll(){ tick(); timers.forEach(t=>{ t.running=false; t.deadlineAt=null; }); render(); requestSave(); }
+    function resumeAll(){ tick(); requestNotifPermission(); const tnow=now(); timers.forEach(t=>{ if(t.remainingMs>0 && !t.running){ t.running=true; t.deadlineAt=tnow+t.remainingMs; } }); render(); requestSave(); }
     function toggleRun(id){
+      tick();
       const t=timers.find(x=>x.id===id); if(!t)return;
       requestNotifPermission();
-      t.running=!t.running&&t.remainingMs>0; t.lastTick=now(); render(); requestSave();
+      t.running=!t.running&&t.remainingMs>0;
+      t.deadlineAt=t.running ? now()+t.remainingMs : null;
+      render(); requestSave();
     }
     function resetTimer(id){
       const t=timers.find(x=>x.id===id); if(!t)return;
-      t.remainingMs=t.totalMs; t.running=false; t.notified=false; render(); requestSave();
+      t.remainingMs=t.totalMs; t.running=false; t.deadlineAt=null; t.notified=false; render(); requestSave();
     }
 
     function mkBtn(text,cb,cls){ const b=document.createElement('button'); b.textContent=text; if(cls)b.classList.add(cls); b.onclick=cb; return b; }
@@ -464,30 +484,38 @@
     function tick(){
       const tnow=now();
       let anyUpdated = false;
+      let finished = false;
 
       for (const t of timers){
         if(!t.running || t.remainingMs<=0) continue;
-        const dt = tnow - t.lastTick;
-        t.lastTick = tnow;
         const prev = t.remainingMs;
-        t.remainingMs = Math.max(0, prev - dt);
-        if (prev > 0 && t.remainingMs === 0) { onTimerFinished(t); }
+        t.remainingMs = Math.max(0, Math.min(t.totalMs, t.deadlineAt - tnow));
+        if (prev > 0 && t.remainingMs === 0) {
+          t.running = false;
+          t.deadlineAt = null;
+          finished = true;
+          onTimerFinished(t);
+        }
         if (t.remainingMs !== prev) anyUpdated = true;
       }
 
       if (anyUpdated){
+        if (finished) render();
         document.querySelectorAll('.card').forEach(card=>{
           const t=timers.find(x=>x.id===card.dataset.id);
           if(t) updateVisuals(t,card);
         });
         requestSave();
       }
-      requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
+    setInterval(tick, 250);
+    document.addEventListener('visibilitychange', () => { tick(); saveState(); });
+    window.addEventListener('focus', tick);
+    window.addEventListener('pageshow', tick);
 
     // Handlers
-    addBtn.onclick=()=>{ addTimer(labelInput.value,minInput.value,secInput.value); labelInput.value=''; };
+    addBtn.onclick=()=>{ if(addTimer(labelInput.value,minInput.value,secInput.value)) labelInput.value=''; };
+    [minInput,secInput].forEach(input=>input.addEventListener('input',()=>setDurationError('')));
     pauseAllBtn.onclick=pauseAll;
     resumeAllBtn.onclick=resumeAll;
     clearFinishedBtn.onclick=clearFinished;
@@ -502,7 +530,7 @@
       if (soundOn) { try{ ensureAudio(); }catch{} }
       requestSave();
     };
-    [labelInput,secInput].forEach(e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')addBtn.click();}));
+    [labelInput,minInput,secInput].forEach(e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')addBtn.click();}));
 
     // Ask for notifications the first time user interacts
     document.addEventListener('click', ()=>{

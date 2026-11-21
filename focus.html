@@ -243,6 +243,7 @@
       <li><strong>Pick your lengths:</strong> Set <em>Work</em>, <em>Short Break</em>, <em>Long Break</em>, and cycles. Your choices auto-save.</li>
       <li><strong>Start the timer:</strong> Press <span class="kbd">Space</span> or click <em>Start</em>. Pause with <span class="kbd">Space</span>, <em>Reset</em> if you need a clean slate.</li>
       <li><strong>Auto-advance:</strong> When a block completes, it moves on automatically (toggle under settings). Enable chime if you want an audio cue.</li>
+      <li><strong>Background timing:</strong> Keep this page open. Background alerts may be delayed by your browser or device sleep. Returning to the page catches up the current block; it does not run through unattended cycles. Reloading starts a paused work block.</li>
       <li><strong>Today’s totals:</strong> Completed work minutes are tallied under “Today.” Skipping mid-block still credits full minutes worked so far.</li>
       <li><strong>Local time bar:</strong> The thin bar shows how far through the day you are, in real time. It’s there to keep perspective, not pressure.</li>
       <li><strong>Capture Notes fast:</strong> Hit <span class="kbd">N</span> to jump to the box. <span class="kbd">Ctrl/Cmd+Enter</span> to save. Insert a timestamp to anchor context.</li>
@@ -282,7 +283,7 @@
   const Phases = { Work:'Work', Short:'Short Break', Long:'Long Break' };
   const LS_TIMER = 'focusline:v1';
   const HISTORY_KEY = 'focusline:history';
-  let state = { phase:Phases.Work, cycle:1, running:false, startEpoch:0, durationMs:25*60*1000, elapsedMs:0 };
+  let state = { phase:Phases.Work, cycle:1, running:false, deadlineAt:null, completed:false, durationMs:25*60*1000, elapsedMs:0 };
 
   function msForPhase(p){
     if(p===Phases.Work) return +els.work.value*60000;
@@ -307,10 +308,10 @@
   }
 
   function saveTimer(){
-    localStorage.setItem(LS_TIMER, JSON.stringify({
+    try { localStorage.setItem(LS_TIMER, JSON.stringify({
       work:+els.work.value, short:+els.short.value, long:+els.long.value,
       cycles:+els.cycles.value, autoAdvance:els.autoAdvance.checked, soundOn:els.soundOn.checked
-    }));
+    })); } catch {}
   }
 
   function pruneHistory(hist){
@@ -324,10 +325,10 @@
     const t0 = +start;
     return Math.round(hist.filter(x=>x.t>=t0).reduce((a,b)=>a+b.m,0));
   }
-  function addHistory(minutes){
+  function addHistory(minutes, completedAt=Date.now()){
     if(!minutes || minutes<0) return;
     const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    hist.push({ t: Date.now(), m: minutes });
+    hist.push({ t: completedAt, m: minutes });
     pruneHistory(hist);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
     els.todayMin.textContent = minutesToday(hist);
@@ -335,7 +336,8 @@
 
   function setPhase(phase, announce=true){
     state.phase = phase; state.durationMs = msForPhase(phase);
-    state.elapsedMs = 0; state.startEpoch = 0;
+    state.running = false; state.completed = false;
+    state.elapsedMs = 0; state.deadlineAt = null;
     const color = phase===Phases.Work ? 'var(--work)' : (phase===Phases.Short ? 'var(--break)' : 'var(--long)');
     els.bar.style.background = `linear-gradient(90deg, rgba(255,255,255,.2), rgba(255,255,255,0) 30%), ${color}`;
     els.phaseLabel.textContent = phase;
@@ -358,29 +360,29 @@
     return `${String(totalMinutes).padStart(2,'0')}:${seconds}`;
   }
 
-  let rafId=0;
   function tick(){
     if(state.running){
-      const now = performance.now();
-      state.elapsedMs = now - state.startEpoch;
+      state.elapsedMs = Math.max(0, Math.min(state.durationMs,
+        state.durationMs - (state.deadlineAt - Date.now())));
       if(state.elapsedMs >= state.durationMs){ finishPhase(); }
       updateUI();
     }
-    rafId = requestAnimationFrame(tick);
   }
 
   function start(){
     if(state.running) return;
+    if(state.completed) nextPhase();
     state.running = true;
-    const now = performance.now();
-    state.startEpoch = state.startEpoch===0 ? now : (now - state.elapsedMs);
+    state.deadlineAt = Date.now() + Math.max(0, state.durationMs - state.elapsedMs);
     els.startPause.textContent = 'Pause'; els.startPause.classList.add('primary');
     speak('Timer started');
   }
 
   function pause(){
+    tick();
     if(!state.running) return;
     state.running = false;
+    state.deadlineAt = null;
     els.startPause.textContent = 'Start';
     speak('Paused');
   }
@@ -396,7 +398,10 @@
   }
 
   function skip(){
-    if(state.running && state.phase===Phases.Work){
+    const previousPhase = state.phase;
+    tick();
+    if(state.phase !== previousPhase) return;
+    if(!state.completed && state.phase===Phases.Work){
       const mins = Math.floor(state.elapsedMs/60000);
       if(mins>0) addHistory(mins);
     }
@@ -405,17 +410,22 @@
   }
 
   function finishPhase(){
+    if(!state.running || state.completed) return;
+    const completedAt = state.deadlineAt;
     state.running=false;
+    state.completed=true;
+    state.elapsedMs=state.durationMs;
+    state.deadlineAt=null;
     if(els.soundOn.checked){
       try{ els.ding.currentTime=0; els.ding.play().catch(()=>{}); }catch{}
     }
     if(state.phase===Phases.Work){
-      addHistory(Math.round(state.durationMs/60000));
+      addHistory(Math.round(state.durationMs/60000), completedAt);
     }
     speak(`${state.phase} complete`);
     if(els.autoAdvance.checked) nextPhase();
     else {
-      els.startPause.textContent = 'Start';
+      els.startPause.textContent = 'Start next';
       els.status.textContent = 'Complete · Ready for next';
     }
   }
@@ -438,7 +448,6 @@
     els.progressbar.setAttribute('aria-valuenow', Math.round(p*100));
     els.timeLabel.textContent = formatFocusDuration(state.durationMs - state.elapsedMs);
     els.cyclePill.textContent = `${state.phase===Phases.Work?'Cycle':'Break'} ${state.phase===Phases.Work?state.cycle:'·'} / ${els.cycles.value}`;
-    saveTimer();
   }
 
   // Inputs
@@ -448,16 +457,19 @@
 
   [els.work, els.short, els.long, els.cycles].forEach(inp=>{
     inp.addEventListener('change', ()=>{
+      tick();
       if((state.phase===Phases.Work && inp===els.work) ||
          (state.phase===Phases.Short && inp===els.short) ||
          (state.phase===Phases.Long && inp===els.long)){
         const pct = state.durationMs ? (state.elapsedMs/state.durationMs) : 0;
         state.durationMs = msForPhase(state.phase);
         state.elapsedMs = Math.min(state.durationMs, Math.max(0, state.durationMs * pct));
+        if(state.running) state.deadlineAt = Date.now() + state.durationMs - state.elapsedMs;
       }
       saveTimer(); updateUI();
     });
   });
+  [els.autoAdvance, els.soundOn].forEach(input=>input.addEventListener('change', saveTimer));
 
   // Keyboard shortcuts
   window.addEventListener('keydown', (e)=>{
@@ -587,7 +599,10 @@
   // Init
   loadTimer();
   loadNotes();
-  requestAnimationFrame(tick);
+  setInterval(tick, 250);
+  document.addEventListener('visibilitychange', tick);
+  window.addEventListener('focus', tick);
+  window.addEventListener('pageshow', tick);
 
   // Local time tick
   setInterval(updateLocalClock, 1000);

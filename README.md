@@ -149,6 +149,15 @@ All data stays local — close or reload safely.
 - Completion sound and optional desktop notifications
 - Browser-local persistence; timers are paused after reload
 
+Timer checks runtime deadlines independently of screen redraws and catches up
+when the page regains visibility or focus. Enter whole nonnegative minutes and
+seconds from 0 through 59, with a positive total duration. Invalid values show
+an inline message without adding a timer.
+
+Keep Timer and FocusLine open for alerts. Browsers can delay background checks
+or suspend pages during device sleep; overdue work is reconciled when execution
+resumes. These tools do not provide guaranteed alarms while asleep or closed.
+
 ---
 
 ## ⏳ Stopwatch Overview
@@ -204,6 +213,14 @@ system's installed IANA timezone database.
 **FocusLine** ties your focus blocks to the real passage of time — combining Pomodoro cycles and note capture.
 Privacy-first, backend-free, and client-side.
 
+FocusLine uses the same independent deadline-checking approach as Timer.
+Completed work is credited once, using its scheduled completion time for daily
+totals. With Auto-advance off, **Start next** advances and starts the next phase.
+With Auto-advance on, the next phase is prepared and remains paused until Start;
+delayed callbacks never create unattended work cycles. Pausing and duration
+changes preserve progress. Reload starts a paused Work block. Timer settings
+save on control changes, including the Auto-advance and Chime checkboxes.
+
 ---
 
 ## 🌍 Multi-Clock Overview
@@ -251,6 +268,7 @@ also shows the ordinal Julian YYYY-DDD date.
 - `tests/moon-calendar.test.js` — In-memory calendar controller checks for years, leap days, keyboard focus, and date rollover
 - `tests/dashboard-safety.test.js` — Dashboard literal rendering, URL/layout validation, editing, and import/storage boundaries
 - `tests/todo-dates.test.js` — To Do creation/editing and repeated backup date preservation across five time zones
+- `tests/timer-focus.test.js` — Full-controller fake-clock regression checks for deadlines, completion, pause/reload, duration validation, and settings writes
 - `tests/duration-utils.test.js` — Duration calculation and validation regression test
 - `tests/date-utils.test.js` — Gregorian date arithmetic, weekday, pattern, and validation regression test
 - `tests/timezone-utils.test.js` — IANA conversion, offset, DST transition, and Swap regression test
@@ -286,6 +304,7 @@ node tests/moon-utils.test.js
 node tests/moon-calendar.test.js
 node tests/dashboard-safety.test.js
 node tests/todo-dates.test.js
+node tests/timer-focus.test.js
 node tests/duration-utils.test.js
 node tests/date-utils.test.js
 node tests/timezone-utils.test.js

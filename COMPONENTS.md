@@ -573,8 +573,12 @@ The public suite maps its pages to the component patterns above as follows:
 - `task-planner-lc.html`: Editable colored schedule zones and template controls.
 - `multi-clock.html`: Reorderable clock cards with the shared timezone selector.
 - `clock_presets.html`: Clock Colors rail and preset/custom theme controls.
-- `focus.html`: FocusLine timer, settings, local clock, and note cards.
-- `timer.html` and `stopwatch.html`: Reorderable line-based timing rows.
+- `focus.html`: FocusLine deadline timer, once-only completion/history, settings,
+  local clock, and note cards. Completed manual phases offer Start next; settings
+  save on changes rather than display ticks.
+- `timer.html`: Reorderable countdown rows with independent deadline checks,
+  lifecycle catch-up, inline whole-duration validation, and paused reloads.
+- `stopwatch.html`: Existing reorderable line-based elapsed-time rows.
 - `time-calculator.html`: Four duration-calculation mode panels.
 - `date-calculator.html`: Five exact-calendar mode panels.
 - `time-zone-converter.html`: Dated From/To timezone form and result card.
