@@ -269,3 +269,40 @@ a normal layout; confirm an invalid URL/import shows an error without replacing
 the current layout. Add/edit a To Do due date and repeat export/import; confirm
 the selected date stays fixed. Existing potentially shifted dates require user
 review against their original intended dates, not an automatic correction.
+
+## Homepage time size: 2026-11-21
+
+- Changed only the homepage time display from 1.6rem to 2.4rem via the local
+  --home-time-size token, to balance the Julian date and moon row beneath it.
+- PASS: time-utils, site-audit (15 pages), moon-utils, and moon-calendar suites.
+- NOT RUN: visual browser acceptance; user should check the larger time above
+  the existing centered date/moon row in both 12-hour and 24-hour modes.
+- Local change only; no Git or deployment operation performed for this update.
+
+## Minimal Clock moon and time size: 2026-11-21
+
+- Matched the approved Home time size at 2.4rem using --clock-time-size.
+- Added a centered Julian-date/moon row above the existing rail cluster. The
+  moon links to the lunar calendar, uses LCLMoon SVG geometry, and refreshes
+  once per minute with matching title/accessible label and visible focus.
+- PASS: time-utils, site-audit (15 pages), moon-utils, moon-calendar, and
+  docs-audit suites; complete Minimal Clock inline controller syntax.
+- NOT RUN: rendered browser acceptance. Check horizontal/vertical rails,
+  forward/backward direction, 12/24-hour mode, tooltip, keyboard focus, lunar
+  calendar link, and Home return control. Clock calculations are unchanged.
+- Local change only; no commit, push, server, or deployment for this update.
+
+## Minimal Clock visible heading: 2026-11-21
+
+- Removed the visible page label above the time by making the existing H1
+  screen-reader only. It no longer occupies layout space above the readout.
+- PASS: time-utils, site-audit, moon-utils, moon-calendar, and docs-audit suites.
+- NOT RUN: visual and screen-reader browser acceptance. No Git or deployment
+  operation performed; this remains a local change.
+
+## Clock display checkpoint: 2026-11-21
+
+The owner accepted the larger Home/Minimal Clock time displays, Minimal Clock
+moon link, and removal of its visible heading, then authorized commit and push.
+The five relevant checks passed for these changes. Hosting deployment and
+independent cross-browser acceptance remain unverified.

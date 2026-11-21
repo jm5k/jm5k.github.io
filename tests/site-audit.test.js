@@ -432,7 +432,7 @@ const aboutMoonLinks = getOpeningTags(about, "a").filter(
 );
 check(aboutMoonLinks.length === 1 && /\bmoon-card\b/.test(getAttribute(aboutMoonLinks[0], "class") || ""),
     "about.html", "must include one Moon Phases card", `${aboutMoonLinks.length} links`);
-for (const file of ["index.html", "moon-phases.html"]) {
+for (const file of ["index.html", "clock.html", "moon-phases.html"]) {
     const html = fs.readFileSync(path.join(projectRoot, file), "utf8");
     const script = html.indexOf('<script src="lcl-moon.js"></script>');
     check(script !== -1 && script < html.indexOf("LCLMoon."), file,

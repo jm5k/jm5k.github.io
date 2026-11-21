@@ -1,4 +1,146 @@
 Date: 2026-11-21
+Short Title: Checkpoint Accepted Clock Display Updates
+Summary:
+
+Recorded owner acceptance and commit/push authorization for the larger clock
+readouts, Minimal Clock moon link, and time-first layout. The checkpoint includes
+the implementation and documentation entries immediately below.
+
+LCL Technical Details:
+
+- Documentation only during checkpoint preparation; no additional HTML, CSS,
+  JavaScript, token, navigation, metadata, accessibility, or layout changes.
+
+Files Touched:
+
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: Five relevant automated checks for the accepted implementation.
+- Hosting deployment and independent cross-browser acceptance remain NOT RUN.
+
+Risks & Edge Cases:
+
+- A successful push does not establish deployment completion.
+
+---
+
+Date: 2026-11-21
+Short Title: Remove Visible Minimal Clock Heading
+Summary:
+
+Removed the visible Minimal Clock label above the time at the owner's request.
+The time is now the first visible item; the semantic heading remains available
+to screen readers.
+
+LCL Technical Details:
+
+- HTML/CSS: Replaced clock.html's visible .page-title style with a local
+  .sr-only heading style that occupies no layout space.
+- Accessibility: Preserved the primary H1 for assistive navigation.
+- JavaScript, Tokens, Navigation, SEO Metadata, Responsive Rules, and Dark Mode:
+  Unchanged. Recorded the time-first visual convention in UI_RULES.md.
+
+Files Touched:
+
+- clock.html
+- UI_RULES.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: time-utils, site-audit, moon-utils, moon-calendar, and docs-audit suites.
+- NOT RUN: Visual and screen-reader browser acceptance.
+
+Risks & Edge Cases:
+
+- Only heading presentation changed; clock and moon behavior are preserved.
+- Local update only; no commit, push, or deployment performed.
+
+---
+
+Date: 2026-11-21
+Short Title: Match Minimal Clock Moon Display
+Summary:
+
+Matched Minimal Clock's time size to the approved 2.4rem homepage readout and
+added the current moon beside its Julian date, linking to the lunar calendar.
+
+LCL Technical Details:
+
+- HTML/CSS: clock.html adds a centered date/moon row above the rail cluster,
+  a 38px moon link, and local --clock-time-size token. Both orientations retain
+  their existing rail layout.
+- JavaScript: Loads existing lcl-moon.js before the controller and refreshes
+  the SVG path and descriptive title/label once per minute in the clock tick.
+- Navigation/Accessibility: Added the owner-approved lunar calendar link with
+  matching title/aria-label and cyan focus outline; preserved the Home arrow.
+- Tests/Docs: Extended lunar script-order coverage to Minimal Clock and recorded
+  the narrow navigation exception and three consumers of the pure lunar API.
+- SEO, Responsive Rules, Dark Mode, Storage, and Time Calculations: Unchanged.
+
+Files Touched:
+
+- clock.html
+- tests/site-audit.test.js
+- AGENTS.md
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: time-utils, site-audit, moon-utils, moon-calendar, docs-audit, and
+  Minimal Clock inline controller syntax.
+- NOT RUN: visual browser acceptance; check both orientations/directions,
+  12/24-hour modes, moon details, focus, lunar link, and Home return.
+
+Risks & Edge Cases:
+
+- Larger text uses more width in 12-hour mode. Lunar phases remain estimates.
+- Local changes only; no Git operation, server, or deployment performed.
+
+---
+
+Date: 2026-11-21
+Short Title: Enlarge Homepage Time Display
+Summary:
+
+Increased the homepage time from 1.6rem to 2.4rem to give the Julian date and
+moon row a more balanced position beneath it, as requested.
+
+LCL Technical Details:
+
+- HTML/CSS: index.html uses a new local --home-time-size token for
+  #currentTimeTop. The existing centered date/moon row is preserved.
+- JavaScript, Navigation, SEO, Accessibility, Responsive Layout, and Dark Mode:
+  No behavior or convention changes.
+
+Files Touched:
+
+- index.html
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: time-utils, site-audit, moon-utils, and moon-calendar Node suites.
+- NOT RUN: visual desktop/browser acceptance; check 12-hour and 24-hour modes.
+
+Risks & Edge Cases:
+
+- Larger text uses more width, especially with AM/PM. No other page is affected.
+- Local change only; no commit, push, or deployment performed.
+
+---
+
+Date: 2026-11-21
 Short Title: Checkpoint High Priority Repairs
 Summary:
 

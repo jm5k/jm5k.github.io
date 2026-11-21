@@ -684,8 +684,11 @@ ASCII and arrow rules for LCL
 - About may contain one Moon Phases card linking to that calendar. This is an
   explicit exception to the usual hub-only discovery rule; do not extend it to
   other tools. The calendar retains exactly one home back arrow.
+- The owner additionally approved the same clickable moon beside the Julian
+  date on Minimal Clock (clock.html), with its time readout matching Home at
+  2.4rem. This is a specific extension of the lunar navigation exception.
 - lcl-moon.js is a pure shared calculation and numeric SVG-path utility used by
-  the homepage and calendar. It owns no DOM, storage, timers, or events.
+  Home, Minimal Clock, and the calendar. It owns no DOM, storage, timers, or events.
 - Run node tests/moon-utils.test.js and node tests/moon-calendar.test.js for lunar utility or consumer changes, along
   with the applicable site, shared-time, and documentation audits.
 

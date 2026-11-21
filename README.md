@@ -42,7 +42,7 @@ or runtime network API.
 - **Time Calculator** — intervals, elapsed durations, time shifts, and unit conversions
 - **Date Calculator** — exact calendar shifts, date differences, weekdays, and patterns
 - **Time Zone Converter** — dated conversions across IANA zones and daylight-saving changes
-- **Moon Phases** — daily lunar calendar, reached through the moon beside the homepage Julian date or the About card
+- **Moon Phases** — daily lunar calendar, reached through the Home or Minimal Clock moon icon, or the About card
 - **Dashboard** — configurable tile workspace
 - **To Do Lists** — local planners and prioritized task boards
 
@@ -123,15 +123,16 @@ them. Explicit timestamp imports retain their previous local-date interpretation
 
 ## Moon Phases
 
-The homepage displays the current estimated phase beside its ordinal Julian
-date. Click the moon to open `moon-phases.html`, a January-December calendar
+Home and Minimal Clock display the current estimated phase beside their ordinal
+Julian dates, beneath matching 2.4rem time readouts. Click either moon to open
+`moon-phases.html`, a January-December calendar
 with previous/next year, direct year entry, and Current year controls (1900-2100).
 Each valid date has a monochrome moon; today has a cyan outline. Hover, focus,
 or select a date for its phase name and estimated illuminated percentage.
 Arrow keys navigate the calendar with one date in the tab order.
 
-Calendar icons represent noon in the device's local time zone; the homepage
-uses the current instant. Icons use a Northern Hemisphere orientation. These
+Calendar icons represent noon in the device's local time zone; Home and Minimal
+Clock use the current instant. Icons use a Northern Hemisphere orientation. These
 are daily visual estimates with broad eight-stage phase names, not exact event
 times or location-dependent sky views. Calculations stay local and need no
 location permission, external service, or saved input data.

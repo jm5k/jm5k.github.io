@@ -555,8 +555,9 @@ solar/lunar orbital positions with lunar perturbation corrections, derives
 elongation and approximate illuminated fraction, and returns numeric-only SVG
 path geometry. It has no DOM, storage, network, events, or timers.
 
-index.html updates its current-moon icon once per minute within the existing
-clock tick. moon-phases.html independently renders 12 month columns and 31 day
+index.html and clock.html update their current-moon icons once per minute within
+their existing clock ticks. Both display 2.4rem time readouts above the date/moon
+row. moon-phases.html independently renders 12 month columns and 31 day
 rows using local-noon Date values and skips dates that roll into another month.
 Year selection is session-only, limited to 1900-2100, and starts at the device's
 current year. Today markers refresh after a local-date change. Phase names are
@@ -564,8 +565,10 @@ eight broad cycle sectors; the page does not predict exact phase-event times,
 moonrise, eclipses, observer tilt, or location-dependent visibility.
 
 Navigation exception approved on 2026-11-21: Moon Phases has no homepage card;
-it is reached through the moon beside the homepage Julian date, or one card on
-About. It retains the normal home arrow. Other tools retain hub-only discovery.
+it is reached through the moon beside the Home or Minimal Clock Julian date,
+or one card on About. Minimal Clock's link is an owner-approved extension of
+the exception. The calendar retains the normal home arrow. Other tools retain
+hub-only discovery.
 Shared disc styles live in lcl.css; all calendar layout and controller logic is
 inline. See PROVENANCE.md for formula and independent verification sources.
 

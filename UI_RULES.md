@@ -658,7 +658,12 @@ Never allowed:
 The homepage's current-moon icon sits immediately right of its Julian date,
 with a 38px link target, matching accessible label/title, and cyan keyboard
 focus. It links to moon-phases.html without adding a hub card. An explicitly
-approved About-page Moon Phases card is the sole extra discovery exception.
+approved About-page Moon Phases card and the matching Minimal Clock moon link
+are the extra discovery exceptions. Home and Minimal Clock use 2.4rem time
+readouts above the centered Julian-date/moon row; this row remains above
+Minimal Clock's rail in both orientations.
+Minimal Clock starts visually with the time; its page heading is screen-reader
+only, without a visible title or reserved heading space above the readout.
 
 The lunar calendar uses twelve month columns and 31 day rows, empty invalid
 dates, pale monochrome SVG discs, dark token-based surfaces, and a cyan outline

@@ -594,7 +594,10 @@ The public suite maps its pages to the component patterns above as follows:
   supported years are 1900-2100. Nonexistent dates remain empty.
 - about.html: one approved Moon Phases discovery card, an exception to the usual
   hub-only link policy.
-- lcl-moon.js: pure LCLMoon estimate and SVG-path API shared by the two consumers.
+- clock.html: matching 2.4rem time readout and clickable current moon beside
+  its Julian date, above both horizontal and vertical rail layouts.
+- lcl-moon.js: pure LCLMoon estimate and SVG-path API shared by Home, Minimal
+  Clock, and the calendar.
 - lcl.css: .lcl-moon-icon, .lcl-moon-disc, and .lcl-moon-light presentation;
   calendar layouts remain page-specific.
 

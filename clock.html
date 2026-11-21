@@ -64,6 +64,8 @@
     />
 
     <style>
+      :root { --clock-time-size: 2.4rem; }
+
       html,
       body {
         min-height: 100%;
@@ -96,14 +98,38 @@
       /* Time readout */
       #currentTimeTop {
         color: var(--accent);
-        font-size: 1.8rem;
+        font-size: var(--clock-time-size);
         margin-bottom: 8px;
       }
-      .page-title {
-        color: var(--fg);
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0 0 8px;
+      .date-moon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .date-moon .lcl-julian-date { margin: 0; }
+      .moon-link {
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+      }
+      .moon-link:hover { border-color: var(--accent); }
+      .moon-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
       }
       /* Cluster holds rail + labels; switches layout by orientation */
       .railCluster {
@@ -320,14 +346,23 @@
   </head>
   <body>
     <div class="wrap">
-      <h1 class="page-title">Minimal Clock</h1>
+      <h1 class="sr-only">Minimal Clock</h1>
       <div id="currentTimeTop">--:--</div>
-      <div
-        id="julianDate"
-        class="lcl-julian-date"
-        aria-label="Julian date in ordinal YYYY-DDD format"
-      >
-        ----
+      <div class="date-moon">
+        <div
+          id="julianDate"
+          class="lcl-julian-date"
+          aria-label="Julian date in ordinal YYYY-DDD format"
+        >
+          ----
+        </div>
+        <a href="moon-phases.html" class="moon-link" id="moon-link"
+           aria-label="Moon phases calendar" title="Moon phases calendar">
+          <svg class="lcl-moon-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+            <circle class="lcl-moon-disc" cx="16" cy="16" r="14"></circle>
+            <path class="lcl-moon-light" id="current-moon-light" d=""></path>
+          </svg>
+        </a>
       </div>
 
       <!-- Rail + labels cluster -->
@@ -395,6 +430,7 @@
     </div>
 
     <script src="lcl-time.js"></script>
+    <script src="lcl-moon.js"></script>
     <script>
       /* ===== Persistence ===== */
       const LS = { use24h: "use24h", prefs: "clock.prefs.v3" };
@@ -485,8 +521,20 @@
       }
 
       /* ===== Clock Update ===== */
+      let moonMinute = null;
       function updateClock() {
         const now = new Date();
+        const minute = Math.floor(now.getTime() / 60000);
+        if (minute !== moonMinute) {
+          const moon = LCLMoon.phaseAt(now.getTime());
+          const description = `${moon.name}, approximately ${Math.round(moon.illumination * 100)}% illuminated. Open moon phases calendar`;
+          const link = document.getElementById("moon-link");
+          link.title = description;
+          link.setAttribute("aria-label", description);
+          document.getElementById("current-moon-light").setAttribute("d",
+            LCLMoon.illuminatedPath(moon.illumination, moon.waxing));
+          moonMinute = minute;
+        }
         const h = now.getHours(),
           m = now.getMinutes(),
           s = now.getSeconds();
