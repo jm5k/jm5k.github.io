@@ -359,3 +359,165 @@ The owner authorized committing and pushing the completed batch. All twelve
 Node suites passed for the implementation; no application code changed during
 checkpoint preparation. Browser acceptance and hosting deployment remain
 unverified. F04 Multi-Clock is the suggested next repair, not yet authorized.
+
+## F04 Multi-Clock repair: 2026-11-21
+
+The owner subsequently approved F04. The repair is implemented locally; no
+Git operation, server/application launch, dependency installation, or publication
+was performed for this batch. F06/F07/F08/F10 and remaining F11 items stay open.
+
+- PASS: all thirteen Node test suites, including tests/multi-clock.test.js,
+  shared time/timezone/selector regressions, publishing, and documentation audits.
+- PASS: Multi-Clock's complete inline-controller syntax.
+- PASS: Actual time/rendering, persistence, refresh, initialization, and reorder
+  functions run in isolated DOM/clock doubles. Four host zones (New York,
+  Los Angeles, UTC, Apia) produce the same expected foreign-zone fields for
+  spring-gap, repeated-hour, midnight, fractional-offset, date-boundary, and
+  historical skipped-day fixtures. The original UTC 02:30 -> local 03:30 error
+  now renders 02:30 correctly.
+- PASS: New York spring 01:59:59 -> 03:00 and fall 01:59:59 -> 01:00 update
+  both displayed time and card/dropdown UTC offsets. London spring offsets
+  update from +00:00 to +01:00. Lifecycle handlers reconcile immediately.
+- PASS: Dropdown groups are recalculated at most once per minute during normal
+  ticking. Unchanged groups do not replace option DOM. Changed groups preserve
+  the selected zone, include it explicitly through offset deduplication, and
+  retain shared pinned/order rules. Offset updates never recreate clock cards
+  or label editors. Clock labels and saved schema/order survive the checks.
+- PASS: Refresh/startup produce no persistence writes; explicit reorder/save
+  retains the existing jm5k_multi_clocks_v2 key and {tz,label} record format.
+- Site audit now requires the existing lcl-timezone.js utility before its
+  Multi-Clock consumer and rejects foreign wall-clock string Date constructors.
+- NOT RUN: Real-browser interaction, desktop/screen-reader/cross-browser
+  acceptance, native dropdown behavior while open, or deployment verification.
+
+Manual acceptance: compare UTC, New York, and a fractional-offset zone; switch
+tabs and return, keeping a dropdown selection. Confirm labels, reorder/drag,
+JSON import/export, and reload still work. Automated fixtures cover future DST
+boundaries without changing the user's system clock.
+
+Limits: Card ticks are one second and background callbacks can be throttled.
+Dropdown checks occur by minute or immediately on lifecycle return; unchanged
+options stay intact. The existing rail is a nominal 24-hour wall-clock scale,
+so its position follows skipped/repeated hours rather than actual 23/25-hour
+elapsed-day duration. Zone authority remains the browser/OS IANA database.
+
+## Clock Colors heading and statistics: 2026-11-21
+
+- Removed the visible Clock Colors heading by retaining its semantic H1 as
+  screen-reader-only content with no reserved heading space.
+- Centered the existing statistics row below the rail using flex justification
+  and text alignment. Julian date and existing wrapping remain intact.
+- PASS: time-utils, 15-page site audit, and docs-audit.
+- NOT RUN: browser visual/screen-reader acceptance. Check the desktop row and
+  centered wrapping in a narrow window. No clock calculations changed.
+- Local update only; no commit, push, app/server launch, or deployment.
+
+## Clock Colors time-format toggle: 2026-11-21
+
+- Added the shared-style 12/24-hour switch inside Preset and display settings.
+  It immediately updates the time readout (retaining seconds, with AM/PM in
+  12-hour mode) and the 24 hour labels. Existing label positions/offset, rail
+  scale, Julian date, percentages, and remaining duration stay unchanged.
+- Reuses boolean use24h storage, with guarded preference reads/writes and
+  default 24-hour mode for missing, malformed, or nonboolean values. Existing
+  theme/storage/backup keys are unchanged; no migration was performed.
+- PASS: tests/clock-presets-format.test.js executes actual preference, label,
+  formatter, update, and change-handler code with recording DOM/storage doubles.
+  Covers midnight/noon/late evening, persisted reload, two-way toggles, no label
+  duplication, unchanged positions/statistics, and new helper storage fallback.
+  It does not establish full-page behavior with all storage blocked; F06's other
+  legacy storage accesses remain open.
+- PASS: time-utils, site-audit (15 pages), docs-audit, and complete inline syntax.
+- NOT RUN: real browser/keyboard/screen-reader acceptance. Open settings, toggle
+  both ways, reload, and check the readout, labels, theme controls, and saved
+  preference. No server, Git operation, or deployment for this update.
+
+## Clock Colors readout precision: 2026-11-21
+
+- Main readout now shows HH:MM in 24-hour mode or hh:mm AM/PM in 12-hour mode.
+  Its loading placeholder also omits seconds. Time-left remains HH:MM:SS.
+- PASS: clock-presets-format, time-utils, site-audit, and docs-audit. Regression
+  assertions confirm 13:05 / 01:05 PM with a 10:54:51 countdown at 13:05:09.
+- NOT RUN: browser visual acceptance. Local change only; no commit or push.
+
+## Clock Colors palette review: 2026-11-21
+
+- PASS: Inspected all 16 preset token dictionaries and compared complete token
+  sets programmatically; no exact duplicate palette was found.
+- Source-based similarity findings: CyberCrimson/InfraVoid (red),
+  NeonMist/Ghostline (pale cyan), Terminal Green/AuroraPulse (green/mint),
+  and TechnoLust/IonStorm (bright cyan) have the closest dominant-color overlap.
+  Midnight Blue/DeepCircuit are another related cool-blue pair, with a more
+  visible saturation difference. ZenMint is a softer member of the mint family.
+- Secondary rail colors differentiate these pairs, but mostly near-black
+  backgrounds, identical layout, and low-opacity rail color overlays reduce
+  their visible distinction. Vaporwave's pink marker and VoidLux's purple
+  primary accent are stronger differentiators.
+- NOT RUN: Rendered side-by-side browser comparison or perceptual-distance
+  measurement. These are qualitative findings from palette/CSS inspection.
+- No theme changes requested or made; no consolidation/redesign is approved.
+
+## Clock Colors preset removal: 2026-11-21
+
+- Removed Mono Minimal, Ghostline, Solar-ish Dark, and Midnight Blue as requested;
+  twelve presets remain. Earlier palette review above describes the prior state.
+- Saved or imported retired/unknown names fall back to TechnoLust. Loading does
+  not rewrite saved theme data; custom colors and glow remain available.
+- PASS: clock-presets-format checks all twelve retained names and four removals,
+  saved-selection fallback, preserved stored custom colors/glow, and actual import
+  handling for retained/retired presets with custom colors/glow.
+- PASS: time-utils, site-audit (15 public pages), and docs-audit.
+- NOT RUN: browser acceptance. Check the settings list and an older saved theme.
+  No server, commit, push, or deployment performed.
+
+## Clock Colors theme ordering: 2026-11-21
+
+- TechnoLust's label no longer includes "(Neon)"; all twelve options are
+  alphabetical by display name. TechnoLust remains the default selected option.
+- PASS: Source review of the option labels/order; clock-presets-format,
+  time-utils, and site-audit (15 public pages).
+- NOT RUN: Browser visual acceptance of the settings dropdown.
+
+## Clock Colors time size: 2026-11-21
+
+- Increased #currentTimeTop from 1.6rem to the page-local --clock-time-size
+  value of 2.4rem, matching Home and Minimal Clock.
+- PASS: Source comparison of the three readout sizes; clock-presets-format,
+  time-utils, site-audit, and docs-audit.
+- NOT RUN: Browser visual acceptance in 12/24-hour modes.
+
+## Clock Colors digital visibility: 2026-11-21
+
+- Show digital clock switch in settings hides only currentTimeTop. Defaults to
+  shown and stores a boolean under lcl-clock-presets-show-digital.
+- PASS: clock-presets-format executes the actual visibility initialization and
+  change handler; covers both directions, persisted reload, missing/malformed
+  preference fallback, blocked preference reads/writes, and panel placement.
+  This does not establish whole-page operation with all storage blocked (F06).
+- PASS: time-utils, site-audit, and docs-audit.
+- NOT RUN: Browser visual and keyboard/screen-reader acceptance. Toggle off/on,
+  confirm rail/statistics remain, reload to verify persistence, and check time
+  is current when shown again.
+
+## Commit checkpoint validation: 2026-11-21
+
+- Owner approved the Clock Colors appearance and requested commit/push.
+  Checkpoint includes the previously approved Multi-Clock repair.
+- PASS: All 14 tests/*.test.js suites executed successfully before commit.
+- PASS: Whitespace review with core.whitespace=cr-at-eol.
+- NOT RUN: New browser session or deployment acceptance. Existing Multi-Clock
+  and other previously documented browser acceptance gaps remain.
+
+## Clock Colors current moon: 2026-11-21
+
+- Added the shared moon disc immediately right of the statistics-row Julian
+  date, linking to moon-phases.html. Existing update ticks refresh its geometry
+  and accessible phase/illumination description once per minute.
+- PASS: clock-presets-format executes the actual clock update with LCLMoon and
+  checks the phase description and SVG path; moon-utils and moon-calendar pass.
+- PASS: time-utils, site-audit, docs-audit, and complete inline script syntax.
+  Updated the site audit for the date/moon grouping, retained accessible date
+  label, calendar link position, and lunar utility load order.
+- NOT RUN: Browser visual, keyboard, and screen-reader acceptance. Check the
+  icon beside the date, hover description, calendar destination, theme colors,
+  and visibility with the digital clock hidden.

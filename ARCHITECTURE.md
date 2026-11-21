@@ -315,6 +315,19 @@ DOM elements or page state. Multi-Clock builds these groups for the current
 instant; Time Zone Converter rebuilds them from the resolved conversion instant
 so winter and summer labels remain date-aware.
 
+Multi-Clock additionally reuses LCLTimeZone.instantToZonedParts for numeric
+year/month/day/hour/minute/second fields. It never reconstructs a browser-local
+Date from another zone's wall-clock string. Time labels and nominal 24-hour
+rail percentages use those fields directly. Existing one-second card intervals
+refresh header offsets without rebuilding cards or label editors.
+
+The Multi-Clock dropdown checks current option groups once per minute from a
+lightweight one-second guard interval. A signature of group membership/order
+and offsets prevents unchanged options from replacing DOM. The selected zone
+is explicitly included during deduplication. Visibility, focus, and pageshow
+reconcile the dropdown and all clocks immediately. The existing clock-list
+storage key, labels, ordering, and backup format are unchanged.
+
 An arbitrary source wall time is never parsed as a browser-local `Date`.
 Instead, the utility validates its numeric calendar fields, samples the source
 zone's actual offsets around that date, derives candidate instants, and
@@ -414,6 +427,20 @@ controller that uses it.
 - Monospace typography.
 - Rail/tick/marker system with consistent placement logic.
 - `clock_presets` handles advanced token sets via HTML attributes.
+
+Clock Colors offers twelve presets. Saved or imported preset names absent from
+the selector fall back to TechnoLust; saved/imported custom colors and glow
+continue to apply. Existing storage keys and theme backup format are preserved.
+
+Clock Colors keeps its time-format controller local to clock_presets.html.
+The settings-panel checkbox reuses the existing boolean use24h storage key and
+LCLTime formatters. It rebuilds only hour-label text/positions and refreshes the
+readout immediately. The readout uses hours/minutes and optional AM/PM; the
+remaining-duration countdown retains seconds. Existing rail positions,
+Julian date, elapsed/remaining calculations, theme settings, and theme backup
+format remain unchanged. Missing/invalid time-format preferences default to 24h.
+The new preference accesses are guarded; broader legacy storage handling remains
+the separate F06 review item.
 
 ## 8.3 focus.html / timer.html / stopwatch.html
 
@@ -571,8 +598,9 @@ solar/lunar orbital positions with lunar perturbation corrections, derives
 elongation and approximate illuminated fraction, and returns numeric-only SVG
 path geometry. It has no DOM, storage, network, events, or timers.
 
-index.html and clock.html update their current-moon icons once per minute within
-their existing clock ticks. Both display 2.4rem time readouts above the date/moon
+index.html, clock.html, and clock_presets.html update their current-moon icons
+once per minute within their existing clock ticks. Home and Minimal Clock
+display 2.4rem time readouts above the date/moon
 row. moon-phases.html independently renders 12 month columns and 31 day
 rows using local-noon Date values and skips dates that roll into another month.
 Year selection is session-only, limited to 1900-2100, and starts at the device's
@@ -581,9 +609,9 @@ eight broad cycle sectors; the page does not predict exact phase-event times,
 moonrise, eclipses, observer tilt, or location-dependent visibility.
 
 Navigation exception approved on 2026-11-21: Moon Phases has no homepage card;
-it is reached through the moon beside the Home or Minimal Clock Julian date,
+it is reached through the moon beside the Home, Minimal Clock, or Clock Colors Julian date,
 or one card on About. Minimal Clock's link is an owner-approved extension of
-the exception. The calendar retains the normal home arrow. Other tools retain
+the exception; Clock Colors is also owner-approved. The calendar retains the normal home arrow. Other tools retain
 hub-only discovery.
 Shared disc styles live in lcl.css; all calendar layout and controller logic is
 inline. See PROVENANCE.md for formula and independent verification sources.

@@ -40,6 +40,8 @@ for (const testFile of [
     "tests/dashboard-safety.test.js",
     "tests/todo-dates.test.js",
     "tests/timer-focus.test.js",
+    "tests/multi-clock.test.js",
+    "tests/clock-presets-format.test.js",
     "tests/duration-utils.test.js",
     "tests/date-utils.test.js",
     "tests/timezone-utils.test.js",

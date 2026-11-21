@@ -37,22 +37,19 @@
     --accent:#00ffe6; --accent2:#ff2bd6; --accent3:#b4ff00;
     --tick:#1b1f28; --railA:#0b0f15; --railB:#121826; --marker:#00ffe6;
     --line-thin:1px; --glow:0.65;
+    --clock-time-size:2.4rem;
   }
 
   /* Presets */
   html[data-theme="technolust"]{ --bg:#000; --fg:#bfc7d5; --muted:#7a8393; --accent:#00ffe6; --accent2:#ff2bd6; --accent3:#b4ff00; --tick:#1b1f28; --railA:#0b0f15; --railB:#121826; --marker:#00ffe6; }
-  html[data-theme="midnight"]{ --bg:#060a12; --fg:#c6d8ff; --muted:#8ea0c6; --accent:#64a8ff; --accent2:#b987ff; --accent3:#66ffcc; --tick:#0e1a2b; --railA:#0a1220; --railB:#0d1730; --marker:#64a8ff; }
   html[data-theme="vaporwave"]{ --bg:#0b0014; --fg:#ffe6ff; --muted:#e6b8ff; --accent:#00ffd1; --accent2:#ff5ec9; --accent3:#ffd166; --tick:#250035; --railA:#150022; --railB:#220033; --marker:#ff5ec9; }
   html[data-theme="terminal"]{ --bg:#000; --fg:#b7ffb7; --muted:#6ddc6d; --accent:#00ff88; --accent2:#00ffa5; --accent3:#7bff00; --tick:#003300; --railA:#001600; --railB:#002100; --marker:#00ff88; }
   html[data-theme="amber"]{ --bg:#0a0600; --fg:#ffd7a1; --muted:#e0ab63; --accent:#ffb000; --accent2:#ff7a00; --accent3:#ffe066; --tick:#3a2500; --railA:#120a00; --railB:#1c0f00; --marker:#ffb000; }
-  html[data-theme="mono"]{ --bg:#000; --fg:#dcdcdc; --muted:#9c9c9c; --accent:#ffffff; --accent2:#c0c0c0; --accent3:#a0a0a0; --tick:#2a2a2a; --railA:#0c0c0c; --railB:#121212; --marker:#ffffff; }
-  html[data-theme="solar"]{ --bg:#002b36; --fg:#eee8d5; --muted:#93a1a1; --accent:#2aa198; --accent2:#b58900; --accent3:#cb4b16; --tick:#073642; --railA:#01303a; --railB:#023b47; --marker:#2aa198; }
   html[data-theme="cybercrimson"]{ --bg:#070000; --fg:#ffdddd; --muted:#b55; --accent:#ff0033; --accent2:#ff7700; --accent3:#ff2200; --tick:#250000; --railA:#100000; --railB:#1a0000; --marker:#ff0033; }
   html[data-theme="aurorapulse"]{ --bg:#01040a; --fg:#d6f7ff; --muted:#88a0b3; --accent:#00ffaa; --accent2:#a066ff; --accent3:#00e5ff; --tick:#08202a; --railA:#00151f; --railB:#091a27; --marker:#00ffaa; }
   html[data-theme="neonmist"]{ --bg:#0b0d10; --fg:#e0faff; --muted:#aab8c0; --accent:#9dfffa; --accent2:#f7a1ff; --accent3:#fff59e; --tick:#1c2329; --railA:#111417; --railB:#181b1f; --marker:#9dfffa; }
   html[data-theme="deepcircuit"]{ --bg:#01040a; --fg:#cde6ff; --muted:#7387a0; --accent:#00baff; --accent2:#d400ff; --accent3:#39ff9f; --tick:#0e1b2a; --railA:#05101a; --railB:#0a1825; --marker:#00baff; }
   html[data-theme="infravoid"]{ --bg:#050006; --fg:#ffdadf; --muted:#b86d7c; --accent:#ff0040; --accent2:#ff6a00; --accent3:#ff006e; --tick:#220010; --railA:#10000c; --railB:#1a0013; --marker:#ff0040; }
-  html[data-theme="ghostline"]{ --bg:#000; --fg:#d0d0d0; --muted:#808080; --accent:#b0ffff; --accent2:#90a0ff; --accent3:#ffffff; --tick:#222; --railA:#0a0a0a; --railB:#111111; --marker:#b0ffff; }
   html[data-theme="ionstorm"]{ --bg:#00051a; --fg:#d4f8ff; --muted:#7ea1c4; --accent:#00f6ff; --accent2:#ffea00; --accent3:#0095ff; --tick:#07102a; --railA:#000b20; --railB:#03123a; --marker:#00f6ff; }
   html[data-theme="zenmint"]{ --bg:#0a1112; --fg:#e6f4f3; --muted:#99b1ae; --accent:#6ef7c9; --accent2:#60d2ff; --accent3:#91ffd8; --tick:#122021; --railA:#0e191a; --railB:#142223; --marker:#6ef7c9; }
   html[data-theme="voidlux"]{ --bg:#040011; --fg:#d9daff; --muted:#8a8fc9; --accent:#9966ff; --accent2:#00ccff; --accent3:#6a00ff; --tick:#12002a; --railA:#0a0018; --railB:#13002a; --marker:#9966ff; }
@@ -68,6 +65,8 @@
 
   .settings-controls{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; color:var(--muted); }
   .settings-controls label{ display:flex; flex-direction:column; gap:6px; }
+  .settings-controls .time-format-control{ grid-column:1 / -1; }
+  .settings-controls .lcl-time-switch{ flex-direction:row; align-items:center; gap:.6rem; }
   .settings-controls select, .settings-controls input[type="range"], .settings-controls input[type="number"]{
     background:#111; color:var(--fg); border:1px solid rgba(255,255,255,.12);
     padding:6px 8px; border-radius:10px; outline:none;
@@ -80,8 +79,8 @@
   }
   .settings-controls input[type="range"]{ width:180px; accent-color:var(--accent); }
   .settings-controls input[type="number"]{ width:74px; text-align:center; }
-  #currentTimeTop{ font-size:1.6rem; color:var(--accent); filter:drop-shadow(0 0 calc(6px*var(--glow)) var(--accent)); }
-  .page-title{ color:var(--fg); font-size:1rem; font-weight:600; margin:0 0 8px; }
+  #currentTimeTop{ font-size:var(--clock-time-size); color:var(--accent); filter:drop-shadow(0 0 calc(6px*var(--glow)) var(--accent)); }
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
 
   .rail{
     position:relative; height:36px; border-radius:999px; overflow:hidden;
@@ -126,7 +125,11 @@
   }
   .hour-labels span:last-child{ transform:translateX(calc(-100% + var(--label-offset))); text-align:right; }
 
-  .stats{ display:flex; gap:18px; margin-top:12px; color:var(--muted); font-size:.95rem; flex-wrap:wrap; }
+  .stats{ display:flex; justify-content:center; align-items:center; text-align:center; gap:18px; margin-top:12px; color:var(--muted); font-size:.95rem; flex-wrap:wrap; }
+  .date-moon{ display:flex; align-items:center; gap:8px; }
+  .moon-link{ display:inline-grid; place-items:center; width:38px; height:38px; border:1px solid transparent; border-radius:6px; }
+  .moon-link:hover{ border-color:var(--accent); }
+  .moon-link:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .stats b{ color:var(--fg); }
 
   .utility-actions{ position:relative; display:flex; justify-content:center; align-items:flex-start; gap:.5rem; margin:18px auto 0; }
@@ -166,8 +169,8 @@
 </head>
 <body>
   <div class="wrap">
-    <h1 class="page-title">Clock Colors</h1>
-    <div id="currentTimeTop">--:--:--</div>
+    <h1 class="sr-only">Clock Colors</h1>
+    <div id="currentTimeTop">--:--</div>
 
     <div class="rail" aria-label="24-hour time rail">
       <div class="workband" aria-hidden="true"></div>
@@ -180,7 +183,16 @@
       <div>Day elapsed: <b id="pctElapsed">--%</b></div>
       <div>Remaining: <b id="pctRemain">--%</b></div>
       <div>Time left: <b id="timeLeft">--:--:--</b></div>
-      <div aria-label="Ordinal Julian date in YYYY-DDD format"><b id="julianDate">----</b></div>
+      <div class="date-moon">
+        <b id="julianDate" aria-label="Ordinal Julian date in YYYY-DDD format">----</b>
+        <a href="moon-phases.html" class="moon-link" id="moon-link"
+           aria-label="Moon phases calendar" title="Moon phases calendar">
+          <svg class="lcl-moon-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+            <circle class="lcl-moon-disc" cx="16" cy="16" r="14"></circle>
+            <path class="lcl-moon-light" id="current-moon-light" d=""></path>
+          </svg>
+        </a>
+      </div>
     </div>
 
     <div class="utility-actions">
@@ -192,22 +204,18 @@
             <div class="settings-controls">
               <label for="theme">Theme
                 <select id="theme">
-                  <option value="technolust">TechnoLust (Neon)</option>
-                  <option value="midnight">Midnight Blue</option>
-                  <option value="vaporwave">Vaporwave</option>
-                  <option value="terminal">Terminal Green</option>
                   <option value="amber">Amber Retro</option>
-                  <option value="mono">Mono Minimal</option>
-                  <option value="solar">Solar-ish Dark</option>
-                  <option value="cybercrimson">CyberCrimson</option>
                   <option value="aurorapulse">AuroraPulse</option>
-                  <option value="neonmist">NeonMist</option>
+                  <option value="cybercrimson">CyberCrimson</option>
                   <option value="deepcircuit">DeepCircuit</option>
                   <option value="infravoid">InfraVoid</option>
-                  <option value="ghostline">Ghostline</option>
                   <option value="ionstorm">IonStorm</option>
-                  <option value="zenmint">ZenMint</option>
+                  <option value="neonmist">NeonMist</option>
+                  <option value="technolust" selected>TechnoLust</option>
+                  <option value="terminal">Terminal Green</option>
+                  <option value="vaporwave">Vaporwave</option>
                   <option value="voidlux">VoidLux</option>
+                  <option value="zenmint">ZenMint</option>
                 </select>
               </label>
               <label for="glow">Glow
@@ -216,6 +224,20 @@
               <label for="labelOffset">Label offset
                 <input id="labelOffset" type="number" min="-1" max="3" step="0.05" value="0" />
               </label>
+              <div class="time-format-control">
+                <label class="lcl-time-switch" title="Show or hide the digital clock">
+                  <input id="digitalClockToggle" type="checkbox" checked aria-controls="currentTimeTop" />
+                  <span class="lcl-switch-track" aria-hidden="true"></span>
+                  <span class="lcl-switch-label">Show digital clock</span>
+                </label>
+              </div>
+              <div class="time-format-control">
+                <label class="lcl-time-switch" title="Switch between 12h and 24h">
+                  <input id="formatToggle" type="checkbox" aria-label="Toggle 24-hour time" />
+                  <span class="lcl-switch-track" aria-hidden="true"></span>
+                  <span id="formatLabel" class="lcl-switch-label">24-hour</span>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -264,6 +286,7 @@
   </div>
 
 <script src="lcl-time.js"></script>
+<script src="lcl-moon.js"></script>
 <script>
 (() => {
   /* Build ticks */
@@ -275,12 +298,17 @@
   const nowTop        = document.getElementById('currentTimeTop');
   const timeLeft      = document.getElementById('timeLeft');
   const julianDate    = document.getElementById('julianDate');
+  const moonLink     = document.getElementById('moon-link');
+  const moonLight    = document.getElementById('current-moon-light');
   const pctElapsed    = document.getElementById('pctElapsed');
   const pctRemain     = document.getElementById('pctRemain');
   const hourLabels    = document.getElementById('hourLabels');
   const labelOffsetIn = document.getElementById('labelOffset');
   const glow          = document.getElementById('glow');
   const themeSel      = document.getElementById('theme');
+  const formatToggle  = document.getElementById('formatToggle');
+  const formatLabel   = document.getElementById('formatLabel');
+  const digitalClockToggle = document.getElementById('digitalClockToggle');
   const root          = document.documentElement;
 
   /* Keys */
@@ -289,15 +317,23 @@
   const LABEL_OFFSET_KEY = 'clock_label_offset';
   const CUSTOM_VARS_KEY = 'clock_custom_vars_v1';
   const UI_KEY    = 'clock_theme_ui_v1';
+  const FORMAT_KEY = 'use24h';
+  const DIGITAL_CLOCK_KEY = 'lcl-clock-presets-show-digital';
 
   const css   = (k,v)=> root.style.setProperty(k,v);
   const getVar= k => getComputedStyle(root).getPropertyValue(k).trim();
   const clamp = (n,min,max)=> Math.min(max, Math.max(min, n));
 
+  function loadTimeFormat(){
+    try {
+      const saved = JSON.parse(localStorage.getItem(FORMAT_KEY) ?? 'true');
+      return typeof saved === 'boolean' ? saved : true;
+    } catch { return true; }
+  }
+  let use24h = loadTimeFormat();
+
   function formatCurrentTime(date){
-    const hoursAndMinutes = LCLTime.formatClockTime(date.getHours(), date.getMinutes(), true);
-    const seconds = String(date.getSeconds()).padStart(2,'0');
-    return `${hoursAndMinutes}:${seconds}`;
+    return LCLTime.formatClockTime(date.getHours(), date.getMinutes(), use24h);
   }
 
   const loadLabelOffset = () => {
@@ -308,21 +344,24 @@
   const saveLabelOffset = v => { try { localStorage.setItem(LABEL_OFFSET_KEY, String(v)); } catch {} };
   const applyLabelOffset = v => { if (hourLabels) hourLabels.style.setProperty('--label-offset', `${v}ch`); };
 
-  /* Hour labels (24h only) */
+  /* Hour labels retain the existing 24-hour rail positions in either format. */
   const initialLabelOffset = loadLabelOffset();
   applyLabelOffset(initialLabelOffset);
   if (labelOffsetIn) labelOffsetIn.value = String(initialLabelOffset);
 
-  if (hourLabels){
+  function renderHourLabels(){
+    if (!hourLabels) return;
+    hourLabels.replaceChildren();
     for (let h=1; h<=24; h++){
       const label = document.createElement('span');
-      label.textContent = LCLTime.formatHourLabel(h, true);
+      label.textContent = LCLTime.formatHourLabel(h, use24h);
       let frac = h/24;
       if (h < 24) frac = Math.max(0, frac - (1/48));
       label.style.left = (frac * 100).toFixed(6) + '%';
       hourLabels.appendChild(label);
     }
   }
+  renderHourLabels();
 
   /* Update loop: DST-safe percentages + countdown to midnight */
   function update(){
@@ -352,6 +391,15 @@
       // Countdown to midnight
       if (timeLeft) timeLeft.textContent = LCLTime.formatDurationHMS(Math.floor(msRemain / 1000));
       if (julianDate) julianDate.textContent = LCLTime.formatJulianDate(d);
+      const minute = String(Math.floor(d.getTime() / 60000));
+      if (moonLink.dataset.minute !== minute) {
+        const moon = LCLMoon.phaseAt(d.getTime());
+        const description = moon.name + ', approximately ' + Math.round(moon.illumination * 100) + '% illuminated. Open moon phases calendar';
+        moonLink.title = description;
+        moonLink.setAttribute('aria-label', description);
+        moonLight.setAttribute('d', LCLMoon.illuminatedPath(moon.illumination, moon.waxing));
+        moonLink.dataset.minute = minute;
+      }
     } catch(e){
       console.error('Clock update error:', e);
     }
@@ -359,10 +407,40 @@
   update();
   setInterval(update, 1000);
 
+  formatToggle.checked = use24h;
+  formatLabel.textContent = use24h ? '24-hour' : '12-hour';
+  formatToggle.addEventListener('change', () => {
+    use24h = formatToggle.checked;
+    formatLabel.textContent = use24h ? '24-hour' : '12-hour';
+    try { localStorage.setItem(FORMAT_KEY, JSON.stringify(use24h)); } catch {}
+    renderHourLabels();
+    update();
+  });
+
   /* Load persisted preset & glow */
+  function loadDigitalClock(){
+    try {
+      const saved = JSON.parse(localStorage.getItem(DIGITAL_CLOCK_KEY) ?? 'true');
+      return typeof saved === 'boolean' ? saved : true;
+    } catch { return true; }
+  }
+  digitalClockToggle.checked = loadDigitalClock();
+  nowTop.hidden = !digitalClockToggle.checked;
+  digitalClockToggle.addEventListener('change', () => {
+    nowTop.hidden = !digitalClockToggle.checked;
+    try { localStorage.setItem(DIGITAL_CLOCK_KEY, JSON.stringify(digitalClockToggle.checked)); } catch {}
+  });
+
+  function selectPreset(value){
+    const preset = Array.from(themeSel.options).some(option => option.value === value)
+      ? value : 'technolust';
+    root.setAttribute('data-theme', preset);
+    themeSel.value = preset;
+    return preset;
+  }
   const savedTheme = localStorage.getItem(THEME_KEY);
   const savedGlow  = localStorage.getItem(GLOW_KEY);
-  if (savedTheme) { root.setAttribute('data-theme', savedTheme); themeSel.value = savedTheme; }
+  selectPreset(savedTheme);
   if (savedGlow)  { glow.value = savedGlow; css('--glow', savedGlow); }
 
   /* Color pickers <-> CSS vars */
@@ -407,8 +485,7 @@
 
   // Preset change
   themeSel.addEventListener('change', () => {
-    const v = themeSel.value;
-    root.setAttribute('data-theme', v);
+    const v = selectPreset(themeSel.value);
     localStorage.setItem(THEME_KEY, v);
 
     // Clear custom color overrides so preset fully applies
@@ -482,7 +559,7 @@
     try{
       const text = await file.text();
       const data = JSON.parse(text);
-      if (data.preset){ root.setAttribute('data-theme', data.preset); themeSel.value = data.preset; localStorage.setItem(THEME_KEY, data.preset); }
+      if (data.preset){ const preset = selectPreset(data.preset); localStorage.setItem(THEME_KEY, preset); }
       if (typeof data.glow === 'number'){ glow.value = String(data.glow); css('--glow', String(data.glow)); localStorage.setItem(GLOW_KEY, String(data.glow)); }
       if (data.vars && typeof data.vars === 'object'){ applyCustomVars(data.vars); saveCustomVars(data.vars); } 
       else { localStorage.removeItem(CUSTOM_VARS_KEY); for (const [,cssVar] of fields) css(cssVar, null); }

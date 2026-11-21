@@ -688,7 +688,9 @@ ASCII and arrow rules for LCL
   date on Minimal Clock (clock.html), with its time readout matching Home at
   2.4rem. This is a specific extension of the lunar navigation exception.
 - lcl-moon.js is a pure shared calculation and numeric SVG-path utility used by
-  Home, Minimal Clock, and the calendar. It owns no DOM, storage, timers, or events.
+  Home, Minimal Clock, Clock Colors, and the calendar. It owns no DOM, storage, timers, or events.
+- The owner approved the same moon/calendar link beside the Clock Colors
+  Julian date. This extends only the lunar navigation exception.
 - Run node tests/moon-utils.test.js and node tests/moon-calendar.test.js for lunar utility or consumer changes, along
   with the applicable site, shared-time, and documentation audits.
 

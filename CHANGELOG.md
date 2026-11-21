@@ -1,4 +1,443 @@
 Date: 2026-11-21
+Short Title: Prepare Approved Clock Update Checkpoint
+Summary:
+
+Prepared the owner-authorized commit/push checkpoint for the pending Clock
+Colors changes and approved Multi-Clock repair. Recorded full-suite validation
+and updated the roadmap checkpoint status.
+
+LCL Technical Details:
+
+- Documentation only in this entry: no additional HTML, CSS, JavaScript,
+  tokens, navigation, metadata, accessibility, layout, or dark-mode changes.
+- Earlier entries describe each implementation included in the checkpoint.
+
+Files Touched:
+
+- ROADMAP.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: All 14 automated suites and whitespace review.
+- NOT RUN: New browser/deployment acceptance; earlier limitations remain.
+
+Risks & Edge Cases:
+
+- Push completion must be confirmed from the remote operation; preparation
+  does not establish deployment completion.
+
+---
+
+Date: 2026-11-21
+Short Title: Add Clock Colors Moon Phase
+Summary:
+
+Added a current-moon icon to the right of the Clock Colors Julian date.
+The icon opens the existing moon calendar, matching Home and Minimal Clock.
+
+LCL Technical Details:
+
+- HTML: Grouped Julian date and decorative SVG in a date-moon item, with a
+  named calendar link and phase/illumination description.
+- CSS: Added local date/moon alignment and 38px link styling with visible
+  keyboard focus; vertically centered statistics items. Reused shared disc
+  styles and existing theme tokens.
+- JavaScript: Loaded lcl-moon.js before the controller; existing clock ticks
+  update moon geometry and description once per minute without another timer.
+- Documentation: Recorded the owner's Clock Colors lunar navigation exception,
+  component ownership, behavior, and verification. No hub card was added.
+- Metadata, time calculations, storage keys, shared tokens, and dark-mode
+  enforcement are unchanged.
+
+Files Touched:
+
+- clock_presets.html
+- tests/clock-presets-format.test.js
+- tests/site-audit.test.js
+- AGENTS.md
+- README.md
+- UI_RULES.md
+- COMPONENTS.md
+- ARCHITECTURE.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: clock-presets-format, moon-utils, moon-calendar, time-utils,
+  site-audit, docs-audit, and inline script syntax.
+- NOT RUN: Browser visual, keyboard/screen-reader, and narrow-window acceptance.
+  Check date/moon alignment, calendar link, phase description, and themes.
+
+Risks & Edge Cases:
+
+- Phase remains an approximate Northern Hemisphere display using the existing
+  utility. Digital-clock visibility does not hide the statistics or moon.
+- No commit, push, or deployment performed.
+
+---
+
+Date: 2026-11-21
+Short Title: Toggle Clock Colors Digital Readout
+Summary:
+
+Added a Show digital clock switch to the Clock Colors settings panel. It
+remembers visibility locally and hides only the top time readout.
+
+LCL Technical Details:
+
+- HTML: Added labeled digitalClockToggle checkbox with shared switch styling
+  and aria-controls targeting currentTimeTop.
+- JavaScript: loadDigitalClock defaults to visible; the change handler updates
+  the hidden attribute and saves lcl-clock-presets-show-digital. Malformed or
+  inaccessible preference storage defaults to visible; writes are guarded.
+- CSS/tokens, navigation, metadata, rail/statistics calculations, responsive
+  layout rules, and dark-mode enforcement are unchanged.
+
+Files Touched:
+
+- clock_presets.html
+- tests/clock-presets-format.test.js
+- README.md
+- UI_RULES.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: clock-presets-format covers visibility defaults, both toggle directions,
+  reload persistence, malformed/blocked storage, and control placement.
+- PASS: time-utils, site-audit, and docs-audit.
+- NOT RUN: Browser appearance and keyboard/screen-reader acceptance.
+
+Risks & Edge Cases:
+
+- Existing broader legacy storage-access limitations remain tracked as F06.
+  Hidden readout text continues updating so restoring it shows current time.
+  No commit, push, or deployment performed.
+
+---
+
+Date: 2026-11-21
+Short Title: Match Clock Colors Time Size
+Summary:
+
+Increased the Clock Colors time readout from 1.6rem to 2.4rem to match the Home
+and Minimal Clock readouts.
+
+LCL Technical Details:
+
+- CSS: Added page-local --clock-time-size at 2.4rem and applied it to
+  #currentTimeTop in clock_presets.html.
+- Documented the matching readout size in UI_RULES.md.
+- JavaScript, palette tokens, navigation, metadata, accessibility, layout
+  rules, and dark-mode enforcement are unchanged.
+
+Files Touched:
+
+- clock_presets.html
+- UI_RULES.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: clock-presets-format, time-utils, site-audit, and docs-audit.
+- PASS: Source comparison confirms 2.4rem across all three readouts.
+- NOT RUN: Browser visual acceptance; check both 12/24-hour modes.
+
+Risks & Edge Cases:
+
+- Larger readout text uses more horizontal space, particularly with AM/PM.
+  No commit or push performed.
+
+---
+
+Date: 2026-11-21
+Short Title: Alphabetize Clock Colors Theme List
+Summary:
+
+Removed "(Neon)" from the TechnoLust option label and ordered all twelve theme
+options alphabetically by display name.
+
+LCL Technical Details:
+
+- HTML: Reordered clock_presets.html theme options; TechnoLust remains the
+  default selected option. Preset values and saved preferences are unchanged.
+- CSS, JavaScript, tokens, navigation, metadata, accessibility, responsive
+  layout, and dark-mode enforcement: No changes.
+
+Files Touched:
+
+- clock_presets.html
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: clock-presets-format, time-utils, and site-audit (15 public pages).
+- PASS: Source review confirms alphabetical option labels and the shorter name.
+- NOT RUN: Browser visual acceptance; check the settings dropdown.
+
+Risks & Edge Cases:
+
+- Theme identities and default selection are preserved. No commit or push.
+
+---
+
+Date: 2026-11-21
+Short Title: Remove Four Clock Colors Presets
+Summary:
+
+Removed Mono Minimal, Ghostline, Solar-ish Dark, and Midnight Blue at the
+owner's request. Clock Colors now offers twelve palettes.
+
+LCL Technical Details:
+
+- HTML/CSS: Removed four selector options and their palette token dictionaries
+  from clock_presets.html; updated the About page's theme count.
+- JavaScript: selectPreset validates against available options for saved
+  selections, live selection, and imports; unavailable names use TechnoLust.
+  Loading preserves stored data and existing custom color/glow overlays.
+- Documentation/tests: Updated current counts, compatibility behavior, and
+  regression coverage. No shared tokens, navigation, metadata, accessibility,
+  responsive layout, or dark-mode enforcement changes.
+
+Files Touched:
+
+- clock_presets.html
+- about.html
+- tests/clock-presets-format.test.js
+- README.md
+- ARCHITECTURE.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: clock-presets-format, time-utils, site-audit, and docs-audit.
+- NOT RUN: Browser appearance, keyboard/screen-reader checks, and hands-on
+  saved-theme reload/import acceptance; these remain user checks.
+
+Risks & Edge Cases:
+
+- Older retired-theme references now show TechnoLust with any custom overlays.
+  Existing broader storage-access limitations remain tracked separately as F06.
+- No commit, push, or deployment performed.
+
+---
+
+Date: 2026-11-21
+Short Title: Review Similar Clock Colors Palettes
+Summary:
+
+Reviewed the 16 Clock Colors presets at the owner's request and identified
+dominant-color overlaps. No changes required to application code for this
+identification task; no palettes were altered or removed.
+
+LCL Technical Details:
+
+- Documentation: Recorded similar pairs and the limits of source-only review
+  in VERIFICATION.md. HTML, CSS, JS, tokens, navigation, metadata, accessibility,
+  layout, and dark-mode behavior are unchanged.
+
+Files Touched:
+
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: Compared all 16 complete token dictionaries; no exact duplicates.
+- NOT RUN: Browser side-by-side comparison or numeric perceptual assessment.
+
+Risks & Edge Cases:
+
+- Similarity is qualitative and depends on display/glow settings. No theme
+  consolidation, redesign, commit, or push was authorized by this review.
+
+---
+
+Date: 2026-11-21
+Short Title: Simplify Clock Colors Time Precision
+Summary:
+
+Removed seconds from the main Clock Colors time readout in both display modes,
+while preserving seconds in the time-left countdown as requested.
+
+LCL Technical Details:
+
+- HTML/JavaScript: Main placeholder uses --:--; formatCurrentTime now returns
+  the existing shared hour/minute formatter directly. Countdown logic unchanged.
+- Tests/Docs: Updated 12/24-hour expectations and added explicit countdown-seconds
+  assertions; aligned current UI and architecture descriptions.
+- CSS, Tokens, Navigation, Metadata, Accessibility, Responsive Layout, and Dark
+  Mode: No changes.
+
+Files Touched:
+
+- clock_presets.html
+- tests/clock-presets-format.test.js
+- UI_RULES.md
+- ARCHITECTURE.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: clock-presets-format, time-utils, site-audit, and docs-audit.
+- NOT RUN: visual browser acceptance.
+
+Risks & Edge Cases:
+
+- Display-only change; one-second updates and countdown precision are retained.
+- Local update only; no commit, push, or deployment performed.
+
+---
+
+Date: 2026-11-21
+Short Title: Add Clock Colors Time Format Toggle
+Summary:
+
+Added a 12/24-hour switch inside Clock Colors settings. It immediately changes
+the time readout and rail labels and retains the choice through the existing
+shared time-format preference.
+
+LCL Technical Details:
+
+- HTML/CSS: Added the shared time-switch control to Preset and display settings
+  with a page-local alignment rule. No additional visible page header.
+- JavaScript: Guarded use24h load/save; renderHourLabels rebuilds label text at
+  existing positions; formatCurrentTime inserts seconds before AM/PM in 12h mode.
+  Toggle refreshes labels and readout immediately.
+- Compatibility: Existing theme keys, backup format, marker placement, time
+  calculations, Julian date, and centered statistics are unchanged.
+- Accessibility: Named checkbox with visible mode text and shared keyboard
+  focus styling; decorative switch track is hidden from assistive output.
+- Tokens, Navigation, SEO, and Dark Mode: No changes. Updated component,
+  architecture, UI, README, and verification records.
+
+Files Touched:
+
+- clock_presets.html
+- tests/clock-presets-format.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: New format regression suite, time-utils, site-audit, docs-audit, and
+  complete controller syntax. Covered midnight/noon, persistence, text changes,
+  stable rail positions/statistics, and new preference-helper fallback.
+- NOT RUN: Browser appearance, keyboard/screen-reader acceptance, and reload
+  interaction in the actual settings panel.
+
+Risks & Edge Cases:
+
+- use24h is shared with Home/Minimal Clock and affects their next load.
+- Broader legacy storage handling and the F07 DST scale issue remain open.
+- Local update only; no dependency, migration, commit, push, or deployment.
+
+---
+
+Date: 2026-11-21
+Short Title: Simplify Clock Colors Display Alignment
+Summary:
+
+Removed the visible Clock Colors header and centered its elapsed, remaining,
+time-left, and existing ordinal-date statistics below the rail.
+
+LCL Technical Details:
+
+- HTML/CSS: clock_presets.html uses a screen-reader-only H1 and centers the
+  existing flex statistics row, including wrapped rows.
+- Accessibility: Retained the primary heading for assistive navigation.
+- JavaScript, Tokens, Navigation, SEO Metadata, and Dark Mode: Unchanged.
+- Recorded the clock-first layout and centered statistics in UI_RULES.md.
+
+Files Touched:
+
+- clock_presets.html
+- UI_RULES.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: time-utils, site-audit, and docs-audit.
+- NOT RUN: desktop/narrow-window appearance and screen-reader acceptance.
+
+Risks & Edge Cases:
+
+- Existing statistics and responsive wrapping remain; only alignment changes.
+- No time calculations, commit/push, or deployment performed.
+
+---
+
+Date: 2026-11-21
+Short Title: Correct Multi-Clock Timezone And Offset Updates
+Summary:
+
+Repaired approved finding F04 by rendering foreign-zone fields directly instead
+of reinterpreting them as browser-local dates. Clock header and dropdown offsets
+now refresh across DST changes while preserving selection, labels, and ordering.
+
+LCL Technical Details:
+
+- HTML/JavaScript: multi-clock.html loads existing lcl-timezone.js before its
+  inline controller. getNowInTZ uses LCLTimeZone.instantToZonedParts; time text
+  and nominal 24-hour rail progress use numeric fields.
+- Refresh: Card offsets update on existing one-second ticks. A minute guard
+  refreshes shared dropdown groups, explicitly keeping the selected zone.
+  Group/offset signatures prevent unchanged option DOM replacement. Visibility,
+  focus, and pageshow refresh all current displays without recreating cards.
+- Compatibility: Kept jm5k_multi_clocks_v2, {tz,label} storage/backup records,
+  existing label editing, ordering, import/export, and per-card timer cleanup.
+- Tests/Docs: Added controller regression coverage, timezone script-order and
+  string-Date guards, and current architecture/component/roadmap records.
+- CSS, Tokens, Navigation, SEO, Accessibility Conventions, Responsive Layout,
+  and Dark Mode: No changes.
+
+Files Touched:
+
+- multi-clock.html
+- tests/multi-clock.test.js
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- ROADMAP.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: Thirteen Node suites and complete Multi-Clock controller syntax.
+- New tests cover four host zones, DST gaps/repeats, midnight, fractional
+  offsets, day boundaries, card/dropdown refresh, unchanged DOM preservation,
+  selected-zone retention, current ordering, lifecycle catch-up, and persistence.
+- NOT RUN: Hands-on browser/screen-reader/cross-browser acceptance or hosting
+  deployment. No system-clock change or development server was used.
+
+Risks & Edge Cases:
+
+- Browser throttling can delay ticks; lifecycle return catches up. Dropdown
+  offset changes are checked by minute rather than every second.
+- The rail retains nominal wall-clock positioning across DST gaps/repeats.
+  Timezone accuracy depends on installed browser/OS IANA data.
+- This repair remains local and uncommitted; other findings are not authorized.
+
+---
+
+Date: 2026-11-21
 Short Title: Checkpoint Timer And FocusLine Repairs
 Summary:
 

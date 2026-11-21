@@ -664,6 +664,21 @@ readouts above the centered Julian-date/moon row; this row remains above
 Minimal Clock's rail in both orientations.
 Minimal Clock starts visually with the time; its page heading is screen-reader
 only, without a visible title or reserved heading space above the readout.
+Clock Colors (clock_presets.html) likewise has a screen-reader-only heading.
+Its time readout uses --clock-time-size at 2.4rem, matching Home and Minimal Clock.
+The settings-panel Show digital clock switch defaults on and remembers its
+boolean value under lcl-clock-presets-show-digital. Turning it off hides only
+the top time readout using the hidden attribute; the rail and statistics remain.
+Its existing statistics row is centered below the rail, retaining the ordinal
+date and centered wrapping when space is narrow.
+Its 12/24-hour control lives inside the settings panel under Preset and display,
+using the shared time-switch appearance. It changes readout/rail-label text only;
+Clock Colors readouts show hours/minutes only, with AM/PM in 12-hour mode;
+the time-left countdown retains seconds and the rail retains its full-day scale.
+Clock Colors places the shared moon disc immediately right of the Julian date
+in a vertically centered statistics row. Its 38px calendar link has a visible
+focus ring and phase/illumination description; hiding digital time leaves it
+visible.
 
 The lunar calendar uses twelve month columns and 31 day rows, empty invalid
 dates, pale monochrome SVG discs, dark token-based surfaces, and a cyan outline

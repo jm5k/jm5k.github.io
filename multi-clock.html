@@ -147,6 +147,7 @@
 
 <script src="lcl-time.js"></script>
 <script src="lcl-timezone-select.js"></script>
+<script src="lcl-timezone.js"></script>
 <script>
 /* ---------- Constants & DOM ---------- */
 const LS_KEY = 'jm5k_multi_clocks_v2'; // persistent; includes label editing support
@@ -162,18 +163,13 @@ const extraClocks = document.getElementById('extraClocks');
 /* ---------- Utilities ---------- */
 const idSafe = (t)=> t.replace(/[^a-z0-9]/gi,'-').toLowerCase();
 
-function getNowInTZ(tz) {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit',
-    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
-  }).formatToParts(new Date());
-  const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
-  return new Date(`${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}:${map.second}`);
+function getNowInTZ(tz, referenceInstant = Date.now()) {
+  return LCLTimeZone.instantToZonedParts(referenceInstant, tz);
 }
-function dayPercent(dateObj){ const s=dateObj.getHours()*3600+dateObj.getMinutes()*60+dateObj.getSeconds(); return (s/86400)*100; }
-function formatZonedTime(date){
-  const hoursAndMinutes = LCLTime.formatClockTime(date.getHours(), date.getMinutes(), true);
-  const seconds = String(date.getSeconds()).padStart(2,'0');
+function dayPercent(parts){ const s=parts.hour*3600+parts.minute*60+parts.second; return (s/86400)*100; }
+function formatZonedTime(parts){
+  const hoursAndMinutes = LCLTime.formatClockTime(parts.hour, parts.minute, true);
+  const seconds = String(parts.second).padStart(2,'0');
   return `${hoursAndMinutes}:${seconds}`;
 }
 
@@ -191,9 +187,15 @@ function appendTimeZoneGroup(label, rows, markPinned = false){
   tzSelect.appendChild(group);
 }
 
-function buildDropdown(){
+let dropdownSignature = '';
+let dropdownMinute = null;
+
+function buildDropdown(referenceInstant = Date.now()){
   const previousValue = tzSelect.value;
-  const groups = LCLTimeZoneSelect.getZoneGroups(Date.now());
+  const groups = LCLTimeZoneSelect.getZoneGroups(referenceInstant, previousValue ? [previousValue] : []);
+  const signature = JSON.stringify([groups.pinned, groups.timeZones].map(rows =>
+    rows.map(row => [row.timeZone, row.offsetMinutes])));
+  if (signature === dropdownSignature) return;
   tzSelect.replaceChildren();
   appendTimeZoneGroup('\u2605 Pinned', groups.pinned, true);
   appendTimeZoneGroup('Time Zones', groups.timeZones);
@@ -202,6 +204,22 @@ function buildDropdown(){
   } else if (tzSelect.options.length > 0) {
     tzSelect.selectedIndex = 0;
   }
+  dropdownSignature = signature;
+}
+
+function refreshDropdown(){
+  const referenceInstant = Date.now();
+  const minute = Math.floor(referenceInstant / 60000);
+  if (minute === dropdownMinute) return;
+  buildDropdown(referenceInstant);
+  dropdownMinute = minute;
+}
+
+function refreshCurrentTimes(){
+  dropdownMinute = null;
+  refreshDropdown();
+  const referenceInstant = Date.now();
+  document.querySelectorAll('.clock').forEach(el => tickClock(el, el.dataset.tz, referenceInstant));
 }
 
 /* ---------- Persistence ---------- */
@@ -240,7 +258,7 @@ function createClockCard(entry){
   el.innerHTML = `
     <div class="head" title="Drag to reorder">
       <div class="title">
-        <span class="offset">${off}</span> — 
+        <span class="offset">${off}</span> —
         <span class="pretty">${pretty}</span>
         <span class="sep" style="margin:0 2px;">·</span>
         <small class="label-view">${label ? escapeHtml(label) : ''}</small>
@@ -340,13 +358,18 @@ function createClockCard(entry){
 function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
 
-function tickClock(el, tz){
-  const now = getNowInTZ(tz);
+function tickClock(el, tz, referenceInstant = Date.now()){
+  const now = getNowInTZ(tz, referenceInstant);
   const pct = dayPercent(now);
   el.querySelector('.fill').style.width = pct + '%';
   el.querySelector('.marker').style.left = pct + '%';
   el.querySelector('.pct').textContent = `${pct.toFixed(2)}%`;
   el.querySelector('.now').textContent = formatZonedTime(now);
+  const offset = LCLTimeZoneSelect.getOffsetMinutes(tz, referenceInstant);
+  if (el.dataset.offsetMinutes !== String(offset)) {
+    el.querySelector('.offset').textContent = LCLTimeZoneSelect.formatOffset(offset);
+    el.dataset.offsetMinutes = String(offset);
+  }
 }
 function startClock(entry){
   const el = createClockCard(entry);
@@ -509,7 +532,7 @@ filePicker.addEventListener('change', async (e) => {
 
 /* ---------- Init ---------- */
 function init(){
-  buildDropdown();
+  refreshDropdown();
   clocks = loadClocks();
   if (clocks.length) clocks.forEach(startClock);
   renderEmptyState();
@@ -518,6 +541,10 @@ function init(){
   // keep action buttons accurate as DOM changes
   const mo = new MutationObserver(setActionButtons);
   mo.observe(extraClocks, { childList:true, subtree:false });
+  setInterval(refreshDropdown, 1000);
+  document.addEventListener('visibilitychange', refreshCurrentTimes);
+  window.addEventListener('focus', refreshCurrentTimes);
+  window.addEventListener('pageshow', refreshCurrentTimes);
 }
 init();
 </script>

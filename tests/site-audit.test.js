@@ -432,7 +432,7 @@ const aboutMoonLinks = getOpeningTags(about, "a").filter(
 );
 check(aboutMoonLinks.length === 1 && /\bmoon-card\b/.test(getAttribute(aboutMoonLinks[0], "class") || ""),
     "about.html", "must include one Moon Phases card", `${aboutMoonLinks.length} links`);
-for (const file of ["index.html", "clock.html", "moon-phases.html"]) {
+for (const file of ["index.html", "clock.html", "clock_presets.html", "moon-phases.html"]) {
     const html = fs.readFileSync(path.join(projectRoot, file), "utf8");
     const script = html.indexOf('<script src="lcl-moon.js"></script>');
     check(script !== -1 && script < html.indexOf("LCLMoon."), file,
@@ -476,7 +476,7 @@ const presetThemesHtml = fs.readFileSync(
     "utf8"
 );
 check(
-    /<div class="stats"[^>]*>[\s\S]*?<div>Time left:[\s\S]*?<\/div>\s*<div\b[^>]*aria-label="Ordinal Julian date in YYYY-DDD format"[^>]*>[\s\S]*?<b id="julianDate"/i.test(
+    /<div class="stats"[^>]*>[\s\S]*?<div>Time left:[\s\S]*?<\/div>\s*<div class="date-moon">\s*<b id="julianDate" aria-label="Ordinal Julian date in YYYY-DDD format"[^>]*>[\s\S]*?<\/b>\s*<a href="moon-phases.html"/i.test(
         presetThemesHtml
     ),
     "clock_presets.html",
@@ -939,6 +939,11 @@ for (const { location, pageFile, pagePath } of publicPages) {
     }
 
     if (pageFile === "multi-clock.html") {
+        const zoneScript = '<script src="lcl-timezone.js"></script>';
+        check(html.includes(zoneScript) && html.indexOf(zoneScript) < html.indexOf("LCLTimeZone.instantToZonedParts"),
+            pageFile, "shared timezone API must load before direct zone-field rendering", html.indexOf(zoneScript));
+        check(!/new\s+Date\s*\(\s*[`"']/.test(html),
+            pageFile, "must not reparse foreign wall-clock strings as local Dates", "string Date constructor found");
         const scriptBlocks = [
             ...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)
         ];

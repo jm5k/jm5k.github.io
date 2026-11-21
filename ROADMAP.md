@@ -7,6 +7,12 @@ for implemented tools and [VERIFICATION.md](VERIFICATION.md) for current checks.
 
 ## Active work
 
+The owner approved F04 Multi-Clock. Direct numeric zone rendering and live
+offset/dropdown refresh are implemented locally, with regression coverage for
+DST gaps/repeats, host-zone independence, selection/order, and saved-list
+compatibility. Browser acceptance is pending. The owner authorized including
+this fix with the Clock Colors updates in the current commit/push checkpoint.
+
 The owner approved the next Timer/FocusLine batch: F03 deadline checks and
 lifecycle catch-up, F05 once-only focus completion, F09 timer input validation,
 and reducing FocusLine settings writes. These are implemented locally with a
@@ -36,8 +42,9 @@ the subsequent checkpoint push is recorded above.
 ## All-page review recommendations (2026-11-21)
 
 The review is complete. F01/F02 were repaired and pushed in 46adb19. F03/F05/F09
-and the FocusLine settings-write follow-up are now implemented locally after
-the owner's approval. Remaining findings are recommendations, not approved work.
+and the FocusLine settings-write follow-up were pushed in bece91e. F04 is now
+implemented locally after approval. Remaining findings are recommendations,
+not approved work.
 [VERIFICATION.md](VERIFICATION.md#all-page-maintenance-review-2026-11-21)
 records all 15 page outcomes, reproduced cases, priorities, and references.
 
@@ -48,18 +55,18 @@ records all 15 page outcomes, reproduced cases, priorities, and references.
   deadline checks and catch-up, once-only FocusLine completion, Timer duration
   validation, and settings writes on changes. Background alarm timing remains
   limited by browser throttling/suspension.
-- Further suggested repairs: F04 Multi-Clock zone handling/offset refresh,
-  F06 guarded storage, F07 Clock Colors' DST scale, and F08 Date Calculator's
+- Completed locally in the third repair batch: F04 Multi-Clock direct numeric
+  zone handling and refreshed clock/dropdown offsets with selection preserved.
+- Further suggested repairs: F06 guarded storage, F07 Clock Colors' DST scale, and F08 Date Calculator's
   Today reference.
 - Lower-priority follow-up: rare skipped-date handling in Moon Phases, older
   contributor/About wording, and optional Dashboard quick-add maintenance.
 - Regression coverage includes F01/F02 and the new Timer/FocusLine controller
   suite. See VERIFICATION.md for current executed results and limitations.
 
-Recommended next item: F04 Multi-Clock zone handling and offset refresh, because
-it can display the wrong time during DST transitions. This recommendation is
-not authorization to begin that repair. Timer/FocusLine browser acceptance is
-still pending.
+Next actionable step after the authorized checkpoint: owner checks Multi-Clock
+and chooses another remaining item. Timer/FocusLine browser
+acceptance is also still pending. No other repair item is authorized yet.
 
 ## Existing planned ideas
 

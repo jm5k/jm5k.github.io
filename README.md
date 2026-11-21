@@ -80,9 +80,12 @@ them. Explicit timestamp imports retain their previous local-date interpretation
   - Notes capture, export, and search
   - Persistent local stats and timers
 - **Clock Colors / Preset Themes**
-  - Sixteen preset themes, custom colors, glow, and label offset
+  - Twelve preset themes, custom colors, glow, and label offset
+  - Settings-panel 12/24-hour toggle updates the readout and rail labels, using the shared saved time-format preference
+  - Show digital clock toggle hides the time readout and remembers the choice locally
   - JSON import/export and instant theme switching
   - Top-oriented minimalist clock view with a settings gear and Julian YYYY-DDD statistic
+  - Current moon phase beside the Julian date links to the moon calendar
 - **Timer**
   - Multiple timers with editable labels and per-timer colors
   - Manual up/down ordering and sorting by time remaining
@@ -226,10 +229,17 @@ save on control changes, including the Auto-advance and Chime checkboxes.
 ## 🌍 Multi-Clock Overview
 View multiple timezones at a glance with synchronized linear progress bars.
 
+Clock times are read directly in each selected zone, so the computer's own
+daylight-saving transitions cannot reinterpret them. Card offsets refresh with
+each clock tick. Dropdown labels and offset ordering are checked once per minute
+and immediately when you return to the page, preserving the selected zone,
+labels, clock order, and saved clock-list format. The rail remains a nominal
+24-hour wall-clock scale, so it jumps forward/back with the zone's DST change.
+
 ---
 
 ## 🎨 Theme Editor Overview
-The **Clock Colors / Preset Themes** page provides sixteen preset themes,
+The **Clock Colors / Preset Themes** page provides twelve preset themes,
 custom colors, glow, label offset, JSON import/export, and a top-oriented
 clock-first view with all controls behind a settings gear. Its statistics row
 also shows the ordinal Julian YYYY-DDD date.
@@ -269,6 +279,8 @@ also shows the ordinal Julian YYYY-DDD date.
 - `tests/dashboard-safety.test.js` — Dashboard literal rendering, URL/layout validation, editing, and import/storage boundaries
 - `tests/todo-dates.test.js` — To Do creation/editing and repeated backup date preservation across five time zones
 - `tests/timer-focus.test.js` — Full-controller fake-clock regression checks for deadlines, completion, pause/reload, duration validation, and settings writes
+- `tests/multi-clock.test.js` — Host-independent zone rendering, DST offset refresh, dropdown selection/order, and saved-list compatibility
+- `tests/clock-presets-format.test.js` — Clock Colors 12/24-hour toggle, readout/rail labels, persistence, unchanged time calculations, preset availability, and retired-theme import fallback
 - `tests/duration-utils.test.js` — Duration calculation and validation regression test
 - `tests/date-utils.test.js` — Gregorian date arithmetic, weekday, pattern, and validation regression test
 - `tests/timezone-utils.test.js` — IANA conversion, offset, DST transition, and Swap regression test
@@ -305,6 +317,8 @@ node tests/moon-calendar.test.js
 node tests/dashboard-safety.test.js
 node tests/todo-dates.test.js
 node tests/timer-focus.test.js
+node tests/multi-clock.test.js
+node tests/clock-presets-format.test.js
 node tests/duration-utils.test.js
 node tests/date-utils.test.js
 node tests/timezone-utils.test.js

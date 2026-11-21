@@ -571,8 +571,13 @@ The public suite maps its pages to the component patterns above as follows:
 - `index.html`: Main 24-Hour Linear Clock plus the twelve-card home hub.
 - `clock.html`: Minimal Clock rail, display switch, and compact settings panel.
 - `task-planner-lc.html`: Editable colored schedule zones and template controls.
-- `multi-clock.html`: Reorderable clock cards with the shared timezone selector.
-- `clock_presets.html`: Clock Colors rail and preset/custom theme controls.
+- `multi-clock.html`: Reorderable clock cards with the shared timezone selector
+  and numeric LCLTimeZone zone fields. Card offsets update each tick; dropdown
+  offsets/order refresh by minute and on return without replacing unchanged
+  options or recreating clock cards. Current selection is preserved.
+- `clock_presets.html`: Clock Colors rail and preset/custom theme controls,
+  including a settings-panel 12/24-hour switch for readout and rail labels.
+  Reuses the shared use24h storage preference and LCLTime formatting API.
 - `focus.html`: FocusLine deadline timer, once-only completion/history, settings,
   local clock, and note cards. Completed manual phases offer Start next; settings
   save on changes rather than display ticks.
@@ -601,7 +606,9 @@ The public suite maps its pages to the component patterns above as follows:
 - clock.html: matching 2.4rem time readout and clickable current moon beside
   its Julian date, above both horizontal and vertical rail layouts.
 - lcl-moon.js: pure LCLMoon estimate and SVG-path API shared by Home, Minimal
-  Clock, and the calendar.
+  Clock, Clock Colors, and the calendar.
+- clock_presets.html: current-moon icon/calendar link beside the Julian date
+  in the statistics row, refreshed once per minute within its existing tick.
 - lcl.css: .lcl-moon-icon, .lcl-moon-disc, and .lcl-moon-light presentation;
   calendar layouts remain page-specific.
 
