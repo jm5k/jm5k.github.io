@@ -480,10 +480,23 @@ Contains only the frozen, pure `LCLTime` formatting API. Page controllers remain
   colors, and paused-on-reload state while reusing `LCLTime` formatting.
 - `dashboard.html` owns its movable/resizable tile layout and layout import or
   export; it does not share the home-page card grid.
+  Its inline validateTileUrl/validateTile/validateLayout boundary permits only
+  HTTP(S) or relative tile URLs, finite numeric geometry, and unique nonempty
+  IDs. Saved layouts and imports pass the same validation. Imports validate
+  and persist before replacing active state. Tile markup is a static skeleton;
+  title text, title attributes, and iframe src are assigned through DOM
+  properties. Add and Edit use the same URL boundary. Invalid stored layouts
+  fall back to defaults in memory without overwriting stored data during load.
 - `todo.html` and `todo.js` own the Work, Home, and Event planners, ordering,
   due dates, filtering, and JSON import or export.
+  todo.html loads the existing lcl-date.js with defer before todo.js. Due-date
+  normalization uses LCLDate.parseDateOnly/formatIsoDate for canonical calendar
+  values rather than timestamp conversion. Explicit ISO timestamp imports keep
+  their previous local-date interpretation after calendar validation. Existing
+  stored dates are not migrated or heuristically repaired; storage keys and
+  backup field names remain compatible.
 - `about.html` is a concise implemented/planned feature inventory and license
-  page. It does not introduce tool-to-tool navigation.
+  page. Its approved Moon Phases card is the sole exception to hub-only discovery.
 
 ---
 

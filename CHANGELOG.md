@@ -1,4 +1,103 @@
 Date: 2026-11-21
+Short Title: Checkpoint High Priority Repairs
+Summary:
+
+The owner authorized committing and pushing the completed Dashboard and To Do
+repairs as a separate checkpoint after 88af717. Updated current project memory
+to record that authorization; application behavior is unchanged from the repair.
+
+LCL Technical Details:
+
+- Documentation: Updated ROADMAP.md and VERIFICATION.md to replace the current
+  uncommitted hold status with checkpoint authorization and the remaining user
+  acceptance step. Historical change entries are preserved.
+- HTML, CSS, JavaScript, Tokens, Navigation, SEO, Accessibility, Responsive
+  Layout, and Dark Mode: No additional implementation changes.
+
+Files Touched:
+
+- ROADMAP.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- All eleven Node suites passed for the completed repair; no application or
+  test implementation changed during checkpoint preparation.
+- Browser acceptance and hosting deployment remain NOT RUN by the agent.
+
+Risks & Edge Cases:
+
+- P2/P3 findings and existing potentially shifted dates remain unresolved.
+- A successful repository push does not establish hosting deployment completion.
+
+---
+
+Date: 2026-11-21
+Short Title: Fix Dashboard Imports And Task Dates
+Summary:
+
+After committing and pushing the existing lunar feature and review as 88af717,
+repaired the two authorized P1 findings locally. Dashboard no longer interprets
+tile titles/URLs as imported markup, and To Do preserves date-only due dates
+through creation, editing, export, and import.
+
+LCL Technical Details:
+
+- HTML/JavaScript: Dashboard uses a static tile skeleton with DOM-assigned text
+  and attributes; inline validators guard saved/imported layouts, Add, and Edit.
+  Only HTTP(S)/relative URLs are accepted; layout fields and unique IDs are
+  checked before import persistence or active-state replacement.
+- To Do: Added deferred lcl-date.js ahead of todo.js. Due-date normalization
+  uses existing Gregorian parsing/formatting for date-only values; explicit
+  timestamp inputs retain the previous local-date interpretation.
+- Compatibility: Existing storage keys, backup names/shapes, and saved dates
+  remain; no guessed correction or automatic bulk migration of old due dates.
+- Accessibility: Dashboard iframe titles now identify their tiles, and title
+  tooltips remain synchronized after edits.
+- Tests: Added Dashboard safety and To Do date regression suites; publishing
+  audit now protects date utility ordering; docs audit covers the new suites.
+- CSS, Tokens, Navigation, SEO, Responsive Layout, and Dark Mode: No changes.
+
+Files Touched:
+
+- dashboard.html
+- todo.html
+- todo.js
+- tests/dashboard-safety.test.js
+- tests/todo-dates.test.js
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- ROADMAP.md
+- VERIFICATION.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: All eleven Node suites, including new Dashboard safety and To Do date
+  checks, 15-page site audit, shared utility regressions, and documentation audit.
+- PASS: Dashboard inline controller and todo.js syntax; diff whitespace check
+  with Windows CR-at-EOL accounted for.
+- Dashboard checks execute actual functions/handlers with recording DOM/storage
+  doubles. To Do checks exercise ten backup cycles in each of five time zones.
+- NOT RUN: Browser visuals, live iframe loading, interactive/cross-browser
+  acceptance, actual exploit execution, or publication of the new fixes.
+
+Risks & Edge Cases:
+
+- Previously shifted due dates cannot be repaired reliably without knowing the
+  user's intended dates; no automatic date correction is attempted.
+- Previously accepted non-HTTP(S) Dashboard URLs are now rejected. An invalid
+  saved layout falls back in memory without overwriting the stored record on load.
+- Other P2/P3 review findings remain open. These repairs are uncommitted and
+  separate from the pushed checkpoint.
+
+---
+
+Date: 2026-11-21
 Short Title: Review Every Public Tool Page
 Summary:
 

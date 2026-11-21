@@ -185,12 +185,22 @@
 
   function normalizeDateString(str) {
     if (!str) return null;
-    const d = new Date(str);
-    if (Number.isNaN(d.getTime())) return null;
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    try {
+      return LCLDate.formatIsoDate(LCLDate.parseDateOnly(str));
+    } catch {
+      // Retain the previous local-date interpretation for explicit legacy
+      // timestamp imports, while canonical date-only values never enter Date.
+      if (typeof str === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/i.test(str.trim())) {
+        try {
+          LCLDate.parseDateOnly(str.trim().slice(0, 10));
+          const timestamp = new Date(str.trim());
+          return LCLDate.formatIsoDate(LCLDate.createDate(
+            timestamp.getFullYear(), timestamp.getMonth() + 1, timestamp.getDate()
+          ));
+        } catch {}
+      }
+      return null;
+    }
   }
 
   function getTodayYMD() {

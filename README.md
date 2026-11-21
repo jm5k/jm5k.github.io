@@ -52,6 +52,14 @@ Each public tool page has one compact,
 accessible back-arrow control that returns to the hub. The suite shares a
 consistent dark design and privacy-first, browser-local behavior.
 
+Dashboard treats tile titles as plain text and accepts relative page URLs or
+HTTP(S) URLs. Saved layouts and imports are validated before rendering; invalid
+imports leave the current layout intact. External sites may refuse embedding.
+To Do due dates use validated Gregorian YYYY-MM-DD calendar values, preserving
+the selected day across time zones and repeated JSON backups. Existing saved
+dates are not automatically adjusted to guess whether an older version shifted
+them. Explicit timestamp imports retain their previous local-date interpretation.
+
 ---
 
 ## ✅ Completed Features
@@ -240,6 +248,8 @@ also shows the ordinal Julian YYYY-DDD date.
 - `tests/time-utils.test.js` — Shared time-formatting regression test
 - `tests/moon-utils.test.js` — Independent lunar fixtures, continuity, validation, and icon geometry
 - `tests/moon-calendar.test.js` — In-memory calendar controller checks for years, leap days, keyboard focus, and date rollover
+- `tests/dashboard-safety.test.js` — Dashboard literal rendering, URL/layout validation, editing, and import/storage boundaries
+- `tests/todo-dates.test.js` — To Do creation/editing and repeated backup date preservation across five time zones
 - `tests/duration-utils.test.js` — Duration calculation and validation regression test
 - `tests/date-utils.test.js` — Gregorian date arithmetic, weekday, pattern, and validation regression test
 - `tests/timezone-utils.test.js` — IANA conversion, offset, DST transition, and Swap regression test
@@ -273,6 +283,8 @@ Run the dependency-free Node checks directly:
 node tests/time-utils.test.js
 node tests/moon-utils.test.js
 node tests/moon-calendar.test.js
+node tests/dashboard-safety.test.js
+node tests/todo-dates.test.js
 node tests/duration-utils.test.js
 node tests/date-utils.test.js
 node tests/timezone-utils.test.js

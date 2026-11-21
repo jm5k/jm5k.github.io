@@ -578,8 +578,11 @@ The public suite maps its pages to the component patterns above as follows:
 - `time-calculator.html`: Four duration-calculation mode panels.
 - `date-calculator.html`: Five exact-calendar mode panels.
 - `time-zone-converter.html`: Dated From/To timezone form and result card.
-- `dashboard.html`: Movable/resizable tile workspace.
-- `todo.html`: Work, Home, and Event planner boards.
+- `dashboard.html`: Movable/resizable tile workspace with plain-text tile titles
+  and shared inline validation for saved/imported layouts, Add, and Edit.
+  Relative/HTTP(S) URLs remain supported; executable URL schemes are rejected.
+- `todo.html`: Work, Home, and Event planner boards. Loads lcl-date.js before
+  todo.js for date-only due-date validation and stable JSON backup round trips.
 - `about.html`: Concise feature status, support, and license sections.
 
 ## 11.7 Moon Phases Components

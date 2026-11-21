@@ -37,6 +37,8 @@ for (const testFile of [
     "tests/time-utils.test.js",
     "tests/moon-utils.test.js",
     "tests/moon-calendar.test.js",
+    "tests/dashboard-safety.test.js",
+    "tests/todo-dates.test.js",
     "tests/duration-utils.test.js",
     "tests/date-utils.test.js",
     "tests/timezone-utils.test.js",

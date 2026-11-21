@@ -227,3 +227,45 @@ These browser behaviors are longstanding; no verified recent browser change
 requires replacing the static architecture, adding frameworks, or installing
 dependencies. Existing date/timezone utilities provide useful patterns for
 repairing older page-local logic. Passing tests do not cover every listed case.
+
+## P1 repairs after checkpoint: 2026-11-21
+
+Checkpoint 88af717 was committed and pushed successfully to origin/main before
+these repairs. The owner authorized F01 and F02; other review findings remain
+open. The owner subsequently authorized committing and pushing these repairs
+as a separate checkpoint. Hosting deployment was not checked or claimed.
+
+- F01 RESOLVED LOCALLY: Dashboard uses static tile markup and DOM properties
+  for titles and iframe URLs. Inline validators cover load/import/Add/Edit,
+  HTTP(S)/relative URLs, finite tile geometry, and unique IDs. Invalid imports
+  are rejected before persistence or active-state changes. Storage failure on
+  import also preserves the prior active layout. Invalid saved layouts are not
+  rendered or automatically rewritten during load.
+- F02 RESOLVED LOCALLY: To Do loads the existing Gregorian utility before its
+  deferred controller. Canonical date-only values are validated and formatted
+  without conversion through a timestamp. Explicit ISO timestamp inputs retain
+  their earlier local-date interpretation; invalid dates return null. No bulk
+  saved-data correction, key rename, or export-format change is performed.
+- PASS: node tests/dashboard-safety.test.js. Actual inline validators, renderer,
+  Edit, saved-layout loader, and Import handler executed with recording DOM and
+  storage doubles. Covered literal malicious-looking titles, unsafe schemes,
+  relative/external HTTP(S) URLs, malformed/duplicate tile data, rejected edits,
+  invalid mixed imports, storage failure, valid import/reload, and no automatic
+  overwrite of invalid saved data. No browser payload was executed.
+- PASS: node tests/todo-dates.test.js. Actual normalization, creation, editing,
+  export, and import helpers checked in America/New_York, America/Los_Angeles,
+  UTC, Pacific/Kiritimati, and Pacific/Apia. Covered leap/invalid dates, DST dates,
+  year bounds, Samoa's skipped historical local date, legacy import shapes,
+  explicit timestamps, and ten repeated backups per zone without date drift.
+- Site audit now enforces a single deferred lcl-date.js before deferred todo.js.
+- PASS: all eleven Node test suites after implementation and documentation
+  updates. Dashboard's complete inline controller and todo.js syntax checks
+  passed. Diff whitespace check passed with Windows CR-at-EOL accounted for.
+- NOT RUN: browser visual/interactive acceptance, real iframe loading, malicious
+  script execution, deployment, or existing-user-data migration.
+
+Manual acceptance: create/edit Dashboard tiles with quoted names; export/reimport
+a normal layout; confirm an invalid URL/import shows an error without replacing
+the current layout. Add/edit a To Do due date and repeat export/import; confirm
+the selected date stays fixed. Existing potentially shifted dates require user
+review against their original intended dates, not an automatic correction.

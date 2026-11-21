@@ -7,32 +7,45 @@ for implemented tools and [VERIFICATION.md](VERIFICATION.md) for current checks.
 
 ## Active work
 
+Checkpoint 88af717 (Moon Phases plus all-page review) was committed and pushed
+to origin/main on 2026-11-21 at the owner's request. This confirms the push,
+not completion of any hosting deployment.
+
+The owner then authorized the two P1 fixes. F01 Dashboard input/rendering
+boundaries and F02 To Do date-only normalization are implemented locally with
+regression coverage; browser acceptance remains pending. The owner authorized
+committing and pushing these fixes as a separate checkpoint after 88af717.
+See current verification and Git history for the repair commit.
+
 Moon Phases implemented locally on 2026-11-21: current phase beside the homepage
 Julian date opens a daily current-calendar-year grid with year controls. The
 user approved an About card and explicitly excluded an additional homepage
 card. See [verification](VERIFICATION.md) for automated and pending acceptance.
 The user reported that the lunar result matched the requested appearance and
 behavior. Cross-browser acceptance and publication state remain unverified.
-No Git or deployment operation was performed.
+No Git or deployment operation was performed during the initial implementation;
+the subsequent checkpoint push is recorded above.
 
 ## All-page review recommendations (2026-11-21)
 
-The review is complete; application fixes have not been authorized by this
-review request. [VERIFICATION.md](VERIFICATION.md#all-page-maintenance-review-2026-11-21)
+The review is complete. F01 and F02 were subsequently authorized and repaired
+locally; the other findings remain recommendations, not approved repair work.
+[VERIFICATION.md](VERIFICATION.md#all-page-maintenance-review-2026-11-21)
 records all 15 page outcomes, reproduced cases, priorities, and references.
 
-- First suggested repair batch: F01 Dashboard imported-markup handling and
-  F02 To Do date-only normalization. Preserve saved data and existing keys;
-  do not guess corrections to dates that may already have shifted.
+- Completed locally: F01 Dashboard imported-markup handling and F02 To Do
+  date-only normalization. Existing storage keys and canonical saved dates are
+  preserved; no guessed correction of possibly shifted dates is performed.
 - Further suggested repairs: background timer completion, Multi-Clock zone
   handling/offset refresh, FocusLine completion accounting, guarded storage,
   Clock Colors' DST scale, Date Calculator's Today reference, and Timer inputs.
 - Lower-priority follow-up: rare skipped-date handling in Moon Phases, older
   contributor/About wording, and optional Dashboard quick-add maintenance.
-- Add regression coverage for approved fixes. Existing nine suites pass but
-  do not protect the newly discovered cases.
+- Eleven suites now pass, including the two new F01/F02 regression suites.
+  Add targeted coverage as remaining review findings are approved for repair.
 
-Next actionable step: owner chooses the scope of a separate repair task.
+Next actionable step: owner checks the two repaired tools and chooses whether
+to authorize another repair batch. No additional repair work is approved yet.
 
 ## Existing planned ideas
 

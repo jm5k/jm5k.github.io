@@ -818,6 +818,17 @@ for (const { location, pageFile, pagePath } of publicPages) {
         }
     }
 
+    if (pageFile === "todo.html") {
+        const scripts = getOpeningTags(html, "script");
+        const dateScripts = scripts.filter((tag) => getAttribute(tag, "src") === "lcl-date.js");
+        const todoScripts = scripts.filter((tag) => getAttribute(tag, "src") === "todo.js");
+        check(dateScripts.length === 1 && todoScripts.length === 1 &&
+            html.indexOf(dateScripts[0]) < html.indexOf(todoScripts[0]) &&
+            /\bdefer\b/.test(dateScripts[0]) && /\bdefer\b/.test(todoScripts[0]),
+            pageFile, "date API must load once with defer before the deferred To Do controller",
+            `${dateScripts.length} date scripts, ${todoScripts.length} controllers`);
+    }
+
     if (pageFile === "time-calculator.html") {
         const scriptBlocks = [
             ...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)

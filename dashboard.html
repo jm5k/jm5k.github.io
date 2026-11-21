@@ -462,9 +462,50 @@
         function saveState() {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         }
+
+        function validateTileUrl(value) {
+          if (typeof value !== "string" || !value.trim() || /[\u0000-\u001f\u007f]/.test(value)) {
+            throw new Error("Enter a valid HTTP(S) or relative tile URL.");
+          }
+          const url = value.trim();
+          const parsed = new URL(url, document.baseURI);
+          if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+            throw new Error("Tile URLs must use HTTP(S) or a relative page path.");
+          }
+          return url;
+        }
+
+        function validateTile(model) {
+          if (!model || typeof model !== "object" || Array.isArray(model) ||
+              typeof model.id !== "string" || !model.id.trim() ||
+              typeof model.title !== "string" || !model.title.trim()) {
+            throw new Error("Each tile needs an ID and title.");
+          }
+          for (const field of ["x", "y", "w", "h"]) {
+            if (typeof model[field] !== "number" || !Number.isFinite(model[field]) ||
+                (field === "x" || field === "y" ? model[field] < 0 : model[field] <= 0)) {
+              throw new Error("Tile positions and sizes must be valid numbers.");
+            }
+          }
+          return {
+            id: model.id, title: model.title, url: validateTileUrl(model.url),
+            x: model.x, y: model.y, w: model.w, h: model.h,
+          };
+        }
+
+        function validateLayout(data) {
+          if (!data || !Array.isArray(data.tiles)) throw new Error("Invalid layout");
+          const tiles = data.tiles.map(validateTile);
+          if (new Set(tiles.map((tile) => tile.id)).size !== tiles.length) {
+            throw new Error("Tile IDs must be unique.");
+          }
+          return { tiles };
+        }
+
         function loadState() {
           try {
-            return JSON.parse(localStorage.getItem(STORAGE_KEY));
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? validateLayout(JSON.parse(saved)) : null;
           } catch (e) {
             return null;
           }
@@ -503,7 +544,7 @@
 
           el.innerHTML = `
           <div class="tile-header">
-            <div class="tile-title" title="${model.title}">${model.title}</div>
+            <div class="tile-title"></div>
             <div class="tile-actions">
               <button data-action="edit">Edit</button>
               <button data-action="remove">Remove</button>
@@ -511,12 +552,19 @@
           </div>
           <div class="tile-content">
             <div class="shield"></div>
-            <iframe src="${model.url}" loading="lazy"></iframe>
+            <iframe loading="lazy"></iframe>
             <div class="resize-handle e"></div>
             <div class="resize-handle s"></div>
             <div class="resize-handle se"></div>
           </div>
         `;
+
+          const titleElement = el.querySelector(".tile-title");
+          titleElement.textContent = model.title;
+          titleElement.title = model.title;
+          const frame = el.querySelector("iframe");
+          frame.title = model.title;
+          frame.src = validateTileUrl(model.url);
 
           // Actions (always enabled)
           el.querySelector(".tile-actions").addEventListener("click", (e) => {
@@ -533,11 +581,20 @@
               if (!found) return;
               const title = prompt("Tile title:", found.title) ?? found.title;
               const url = prompt("Tile URL:", found.url) ?? found.url;
-              found.title = (title || found.title).trim();
-              found.url = (url || found.url).trim();
-              el.querySelector(".tile-title").textContent = found.title;
-              el.querySelector("iframe").src = found.url;
-              saveState();
+              try {
+                const validated = validateTile({
+                  ...found, title: (title || found.title).trim(), url: (url || found.url).trim(),
+                });
+                found.title = validated.title;
+                found.url = validated.url;
+                titleElement.textContent = found.title;
+                titleElement.title = found.title;
+                frame.title = found.title;
+                frame.src = found.url;
+                saveState();
+              } catch (err) {
+                alert("Could not update tile: " + err.message);
+              }
             }
           });
 
@@ -565,6 +622,7 @@
         }
 
         function addTile(model) {
+          model = validateTile(model);
           state.tiles.push(model);
           saveState();
           canvas.appendChild(buildTile(model));
@@ -756,15 +814,19 @@
             alert('Enter a URL like "clock.html"');
             return;
           }
-          addTile({
-            id: uid(),
-            title,
-            url,
-            x: maybeSnap(60 + Math.random() * 120),
-            y: maybeSnap(60 + Math.random() * 120),
-            w: 640,
-            h: 360,
-          });
+          try {
+            addTile({
+              id: uid(),
+              title,
+              url,
+              x: maybeSnap(60 + Math.random() * 120),
+              y: maybeSnap(60 + Math.random() * 120),
+              w: 640,
+              h: 360,
+            });
+          } catch (err) {
+            alert("Could not add tile: " + err.message);
+          }
         });
 
         document.getElementById("resetLayout").addEventListener("click", () => {
@@ -822,11 +884,10 @@
             if (!file) return;
             try {
               const txt = await file.text();
-              const data = JSON.parse(txt);
-              if (!data || !Array.isArray(data.tiles))
-                throw new Error("Invalid layout");
-              state = data;
-              saveState();
+              const validated = validateLayout(JSON.parse(txt));
+              // Reject the entire file before changing the current or saved layout.
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(validated));
+              state = validated;
               initialRender();
             } catch (err) {
               alert("Import failed: " + err.message);
