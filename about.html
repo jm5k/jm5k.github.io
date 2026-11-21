@@ -203,6 +203,10 @@
         color: var(--accent);
       }
 
+      .moon-card { display: block; }
+      .moon-card:hover { border-color: var(--accent); text-decoration: none; }
+      .moon-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
       .cta {
         display: flex;
         gap: 12px;
@@ -273,6 +277,14 @@
             >View Source on GitHub</a
           >
         </div>
+      </section>
+
+      <section class="section">
+        <h2>Moon Phases</h2>
+        <a class="card moon-card" href="moon-phases.html">
+          <h3>Explore the lunar year</h3>
+          <p>Daily moon icons, estimated illumination, and year controls. Open the calendar here or click the moon beside the homepage's Julian date.</p>
+        </a>
       </section>
 
       <!-- Support + Contact -->

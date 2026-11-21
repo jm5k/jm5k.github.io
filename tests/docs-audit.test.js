@@ -35,6 +35,8 @@ for (const page of publicPages) {
 
 for (const testFile of [
     "tests/time-utils.test.js",
+    "tests/moon-utils.test.js",
+    "tests/moon-calendar.test.js",
     "tests/duration-utils.test.js",
     "tests/date-utils.test.js",
     "tests/timezone-utils.test.js",
@@ -111,6 +113,7 @@ const currentToolNames = [
     "Time Calculator",
     "Date Calculator",
     "Time Zone Converter",
+    "Moon Phases",
     "Dashboard",
     "To Do Lists"
 ];

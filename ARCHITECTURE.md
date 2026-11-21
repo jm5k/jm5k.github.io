@@ -534,7 +534,30 @@ When adding new tools:
 
 ---
 
-# 12. Summary
+# 12. Lunar Calendar Addition
+
+lcl-moon.js exposes frozen LCLMoon.phaseAt(timestamp), illuminatedPath(fraction,
+waxing), and phaseNames, with CommonJS compatibility for Node tests. It estimates
+solar/lunar orbital positions with lunar perturbation corrections, derives
+elongation and approximate illuminated fraction, and returns numeric-only SVG
+path geometry. It has no DOM, storage, network, events, or timers.
+
+index.html updates its current-moon icon once per minute within the existing
+clock tick. moon-phases.html independently renders 12 month columns and 31 day
+rows using local-noon Date values and skips dates that roll into another month.
+Year selection is session-only, limited to 1900-2100, and starts at the device's
+current year. Today markers refresh after a local-date change. Phase names are
+eight broad cycle sectors; the page does not predict exact phase-event times,
+moonrise, eclipses, observer tilt, or location-dependent visibility.
+
+Navigation exception approved on 2026-11-21: Moon Phases has no homepage card;
+it is reached through the moon beside the homepage Julian date, or one card on
+About. It retains the normal home arrow. Other tools retain hub-only discovery.
+Shared disc styles live in lcl.css; all calendar layout and controller logic is
+inline. See PROVENANCE.md for formula and independent verification sources.
+
+
+# 13. Summary
 
 Linear Clock Lab operates as a collection of highly consistent, tightly scoped,
 static, client-side, backend-free, local-first tools held together by a shared

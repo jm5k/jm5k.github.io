@@ -164,11 +164,14 @@ Rules:
 
 - Default glow should be restrained and must not reduce readability or shift
   layout.
+
 - Theme-controlled glow may use established page tokens.
+
 - Intentional multi-layer glows are permitted for themed rails, markers, Timer,
   and Stopwatch effects.
-- Glow commonly appears on:
 
+- Glow commonly appears on:
+  
   - card hovers
   - markers
   - UI focus rings
@@ -241,9 +244,9 @@ Their values are defined in the root theme.
 
 Rules:
 
- - Codex must not create new zone tokens beyond the approved set (including `--zone-workend`).
- - Codex must not use raw hex values for zones except inside this definition.
- - Tokens must be applied directly to timeline segment fills.
+- Codex must not create new zone tokens beyond the approved set (including `--zone-workend`).
+- Codex must not use raw hex values for zones except inside this definition.
+- Tokens must be applied directly to timeline segment fills.
 
 ## 3.4.2 Token Usage Guidelines
 
@@ -650,7 +653,24 @@ Never allowed:
 
 ---
 
-# 13. Summary
+# 13. Moon Phases
+
+The homepage's current-moon icon sits immediately right of its Julian date,
+with a 38px link target, matching accessible label/title, and cyan keyboard
+focus. It links to moon-phases.html without adding a hub card. An explicitly
+approved About-page Moon Phases card is the sole extra discovery exception.
+
+The lunar calendar uses twelve month columns and 31 day rows, empty invalid
+dates, pale monochrome SVG discs, dark token-based surfaces, and a cyan outline
+for today. Year controls cover 1900-2100 and default to the current calendar
+year. Details are available by pointer, click, and keyboard; one date is in the
+tab order, arrows move among dates/months, and Home/End move within a month.
+The dense table scrolls within its own region in narrow windows. Daily icons
+represent local noon and Northern Hemisphere orientation; explain estimates
+and orientation visibly. Keep the calendar's only navigation link to Home.
+
+
+# 14. Summary
 
 These UI rules define the precise visual language of Linear Clock Lab.
 Following them ensures all pages remain:
@@ -667,4 +687,3 @@ Apply these rules with purpose-driven judgment while preserving each page's
 existing identity.
 
 ---
-

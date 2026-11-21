@@ -153,6 +153,25 @@
       }
 
       /* 12/24h toggle */
+      .date-moon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .date-moon .lcl-julian-date { margin: 0; }
+      .moon-link {
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+      }
+      .moon-link:hover { border-color: var(--accent); }
+      .moon-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
       #controls {
         margin: 12px 0 0;
       }
@@ -204,12 +223,21 @@
 
     <!-- Original Task Planner Clock -->
     <div id="currentTimeTop">--:--</div>
-    <div
-      id="julianDate"
-      class="lcl-julian-date"
-      aria-label="Julian date in ordinal YYYY-DDD format"
-    >
-      ----
+    <div class="date-moon">
+      <div
+        id="julianDate"
+        class="lcl-julian-date"
+        aria-label="Julian date in ordinal YYYY-DDD format"
+      >
+        ----
+      </div>
+      <a href="moon-phases.html" class="moon-link" id="moon-link"
+         aria-label="Moon phases calendar" title="Moon phases calendar">
+        <svg class="lcl-moon-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <circle class="lcl-moon-disc" cx="16" cy="16" r="14"></circle>
+          <path class="lcl-moon-light" id="current-moon-light" d=""></path>
+        </svg>
+      </a>
     </div>
     <div id="bar">
       <div id="ticks"></div>
@@ -329,6 +357,7 @@
     </footer>
 
     <script src="lcl-time.js"></script>
+    <script src="lcl-moon.js"></script>
     <script>
       /* ===== Original Task Planner Clock logic (kept tight) ===== */
       function createTicks() {
@@ -357,8 +386,20 @@
         }
       }
 
+      let moonMinute = null;
       function updateClock() {
         const now = new Date();
+        const minute = Math.floor(now.getTime() / 60000);
+        if (minute !== moonMinute) {
+          const moon = LCLMoon.phaseAt(now.getTime());
+          const description = `${moon.name}, approximately ${Math.round(moon.illumination * 100)}% illuminated. Open moon phases calendar`;
+          const link = document.getElementById("moon-link");
+          link.title = description;
+          link.setAttribute("aria-label", description);
+          document.getElementById("current-moon-light").setAttribute("d",
+            LCLMoon.illuminatedPath(moon.illumination, moon.waxing));
+          moonMinute = minute;
+        }
         const h = now.getHours(),
           m = now.getMinutes(),
           s = now.getSeconds();

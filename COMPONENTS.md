@@ -582,7 +582,20 @@ The public suite maps its pages to the component patterns above as follows:
 - `todo.html`: Work, Home, and Event planner boards.
 - `about.html`: Concise feature status, support, and license sections.
 
-## 11.7 LocalStorage Compatibility
+## 11.7 Moon Phases Components
+
+- index.html: current-moon icon beside the Julian date, with a named link to
+  moon-phases.html; no additional hub card.
+- moon-phases.html: daily 12-month table, year controls, today marker, eight-phase
+  legend, detail panel, and roving keyboard focus. Default year is current;
+  supported years are 1900-2100. Nonexistent dates remain empty.
+- about.html: one approved Moon Phases discovery card, an exception to the usual
+  hub-only link policy.
+- lcl-moon.js: pure LCLMoon estimate and SVG-path API shared by the two consumers.
+- lcl.css: .lcl-moon-icon, .lcl-moon-disc, and .lcl-moon-light presentation;
+  calendar layouts remain page-specific.
+
+## 11.8 LocalStorage Compatibility
 
 - Existing production LocalStorage keys are compatibility contracts and must
   remain unchanged.

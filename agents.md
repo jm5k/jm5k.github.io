@@ -21,18 +21,18 @@ All agents must adhere to this guide strictly.
 LCL conforms to these universal rules:
 
 1. **Dark-only design**
-
+   
    - No light mode.
    - No OS theme inheritance.
    - No `prefers-color-scheme: light`.
    - All pages enforce dark colors and must remain consistent across browsers.
 
 2. **Static HCJ only**
-
+   
    - No frameworks, build systems, bundlers, preprocessors, TypeScript, or external libraries.
 
 3. **Backend-free and local-first**
-
+   
    - Core tools are client-side and locally serveable.
    - No analytics or tracking.
    - No remote JavaScript or CSS libraries; external hyperlinks and decorative
@@ -40,7 +40,7 @@ LCL conforms to these universal rules:
 
 4. **Tool pages use a hybrid shared/page-specific architecture**
    Each page uses:
-
+   
    - `lcl.css` for stable design tokens, accessibility-safe foundations, and components shared by multiple pages.
    - Shared dependency-free utilities, such as `lcl-time.js`, only when multiple pages need the same pure logic.
    - Inline `<style>` for page-specific layout and component styling.
@@ -52,26 +52,26 @@ LCL conforms to these universal rules:
    - `index.html` as the only multi-link hub.
 
 5. **Design tokens rule everything**
-
+   
    - All new UI must use CSS variables.
    - Shared and theme-sensitive colors use CSS variables; deliberate
      page-specific colors may remain local when they are not reusable.
 
 6. **Neon accent identity**
-
+   
    - Accent is consistent across tools.
    - Glows, markers, ticks, focus rings, etc. must follow existing accent usage patterns.
 
 7. **SEO consistency**
    All pages follow a canonical head structure with:
-
+   
    - Core meta tags.
    - Color scheme locks.
    - Social previews.
    - Icons from `https://linearclocklab.com/profile.png`.
 
 8. **Responsiveness via CSS only**
-
+   
    - Percent widths.
    - `min()` patterns.
    - Flex/grid auto-fit layouts.
@@ -79,12 +79,12 @@ LCL conforms to these universal rules:
    - No JS for layout.
 
 9. **Index.html is the hub**
-
+   
    - Tool pages do not cross-link each other.
    - Each tool page only returns to Home.
 
 10. **User trust and clarity**
-
+    
     - Small scripts.
     - Small UIs.
     - Simple patterns.
@@ -147,9 +147,11 @@ Ensures design and UX integrity.
 ### Behavioral Rules
 
 - No color drift: new features must use existing tokens or extend them with aligned naming.
-- No layout innovations unless explicitly requested.
-- No nav bars except:
 
+- No layout innovations unless explicitly requested.
+
+- No nav bars except:
+  
   - Index hub grid.
   - Single “Home” link on all other pages.
 
@@ -332,12 +334,13 @@ Rules:
 ## 5.1 Layout Patterns
 
 - Use flex and grid.
-- Width constraints:
 
+- Width constraints:
+  
   - `width: min(1000px, 92vw);` for primary wrappers.
 
 - Common classes:
-
+  
   - `.wrap` — clocks and linear tools.
   - `.grid` + `.card` — index hub.
   - `.toolbar`, `.header` — dashboard & tool UIs.
@@ -539,7 +542,7 @@ Rules:
 For all clock-like tools (e.g., `clock.html`, `task-planner-lc.html`, future timeline tools):
 
 - Internal “time of day” must use one of:
-
+  
   - **Seconds since midnight** (`0–86399`) for pure display clocks.
   - **Minutes since midnight** (`0–1439`) for schedule/planner logic.
 
@@ -551,9 +554,11 @@ The Task Planner Clock must:
 Rules:
 
 - New tools must not introduce alternative encodings in storage.
-- Do not store `Date` objects or raw `"HH:MM"` strings in `localStorage`.
-- New time-visualization tools must clone layout + typography patterns from `clock.html`, including:
 
+- Do not store `Date` objects or raw `"HH:MM"` strings in `localStorage`.
+
+- New time-visualization tools must clone layout + typography patterns from `clock.html`, including:
+  
   - `.wrap` width and padding.
   - Monospace font stack.
   - 24h rail placement and tick behavior.
@@ -577,9 +582,9 @@ Each entry must contain:
 ## 12.2 Short Title
 
 - 3–8 word summary capturing the purpose of the update.
-
+  
   - Examples:
-
+    
     - “Remove Light-Mode Overrides”
     - “Standardize Head Blocks”
     - “Add Token Set for Clock Presets”
@@ -587,7 +592,7 @@ Each entry must contain:
 ## 12.3 Summary
 
 - 1–3 sentences describing:
-
+  
   - What changed.
   - Why it was changed.
   - What part of the system it affects.
@@ -672,6 +677,19 @@ ASCII and arrow rules for LCL
 
 ---
 
-# 13. Final Notes
+# 13. Approved Moon Phases Exception (2026-11-21)
+
+- The homepage links to moon-phases.html only through the current-moon icon to
+  the right of the Julian date. Preserve the twelve existing hub cards.
+- About may contain one Moon Phases card linking to that calendar. This is an
+  explicit exception to the usual hub-only discovery rule; do not extend it to
+  other tools. The calendar retains exactly one home back arrow.
+- lcl-moon.js is a pure shared calculation and numeric SVG-path utility used by
+  the homepage and calendar. It owns no DOM, storage, timers, or events.
+- Run node tests/moon-utils.test.js and node tests/moon-calendar.test.js for lunar utility or consumer changes, along
+  with the applicable site, shared-time, and documentation audits.
+
+# 14. Final Notes
+
 
 This `agents.md` document is the authoritative specification for all code, design, UX, JS, and documentation operations inside Linear Clock Lab. All future work must follow this guide to preserve the suite’s identity, consistency, performance, and maintainability.

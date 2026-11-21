@@ -1,3 +1,162 @@
+Date: 2026-11-21
+Short Title: Review Every Public Tool Page
+Summary:
+
+Reviewed all 15 repository pages and their shared assets against current code,
+project rules, and browser documentation. Recorded 11 prioritized findings,
+targeted reproductions, page coverage, and pending acceptance without changing
+application code or approving a repair batch.
+
+LCL Technical Details:
+
+- Documentation: Added the all-page review to VERIFICATION.md and linked
+  suggested repair priorities from ROADMAP.md. Recorded the owner's lunar
+  feature acceptance without claiming independent cross-browser verification.
+- HTML, CSS, JavaScript, Tokens, Navigation, SEO, Accessibility, Responsive
+  Layout, and Dark Mode: No implementation changes.
+
+Files Touched:
+
+- VERIFICATION.md
+- ROADMAP.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: All nine existing Node test suites, all 13 inline controller syntax
+  checks, and all seven standalone JS asset syntax checks.
+- FAIL: Targeted logic checks reproduced due-date shifts, foreign-time DST
+  reinterpretation, duplicate focus history, malformed-preference startup,
+  DST marker mismatch, negative timers, and historical skipped-date behavior.
+- Source/isolated checks confirmed raw imported Dashboard markup and stale
+  Today handling. Hidden-tab scheduling checked against current MDN guidance.
+- NOT RUN: Browser exploitation, desktop visuals, interactive/cross-browser,
+  screen-reader, or mobile acceptance. No server or application started.
+
+Risks & Edge Cases:
+
+- Existing test passes do not establish correctness of untested page logic.
+- Findings remain unresolved. Review covers local sources; deployment freshness
+  was not established by the cached live-page retrieval.
+- No dependencies, user-data changes, Git operations, or publication.
+
+---
+
+Date: 2026-11-21
+Short Title: Add Moon Phase Calendar
+Summary:
+
+Added the current moon beside the homepage Julian date, linking to a daily
+calendar for the current year with year controls. Added the requested About
+card while preserving all twelve homepage cards.
+
+LCL Technical Details:
+
+- HTML: Added moon-phases.html with 12 month columns, 31 day rows, invalid-date
+  blanks, today marker, daily details, eight-phase legend, and 1900-2100 year
+  controls; updated index.html and about.html entry points and sitemap.xml.
+- CSS: Shared SVG disc classes in lcl.css; page-specific date-row, lunar table,
+  scroll region, controls, and About-card styles remain inline.
+- JavaScript: Added pure LCLMoon orbital estimates and illuminatedPath SVG
+  geometry. Homepage refreshes the icon per minute; calendar uses local noon,
+  session-only year selection, and date/zone-offset rollover refresh.
+- Tokens: Added --moon-shadow, --moon-outline, --moon-panel, --moon-grid, and
+  --moon-selected. Existing tokens and storage keys preserved.
+- Navigation: Icon-only homepage discovery, no extra hub card, one approved
+  About card, and standard calendar home arrow. Documented this narrow exception.
+- SEO: New canonical/social metadata and sitemap coverage for the lunar page.
+- Accessibility: Matching homepage icon title/label, semantic table headers,
+  descriptive date buttons, details status, roving tab stop, arrow/Home/End
+  navigation, and visible focus. Focus survives date refresh.
+- Responsive: Table scrolls within its region on narrow windows; existing
+  flexible layouts remain. Dark-only palette preserved.
+- Documentation: Recorded scope, architecture, calculation references, test
+  results, and pending acceptance. Corrected literal-arrow examples to &larr;
+  in current agent/UI guidance; historical changelog entries preserved.
+
+Files Touched:
+
+- index.html
+- about.html
+- moon-phases.html
+- lcl.css
+- lcl-moon.js
+- sitemap.xml
+- tests/moon-utils.test.js
+- tests/moon-calendar.test.js
+- tests/site-audit.test.js
+- tests/docs-audit.test.js
+- AGENTS.md
+- README.md
+- ARCHITECTURE.md
+- COMPONENTS.md
+- UI_RULES.md
+- ROADMAP.md
+- VERIFICATION.md
+- PROVENANCE.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: Lunar reference/geometry suite, in-memory calendar controller suite,
+  shared-time suite, 15-page site audit, documentation audit, and inline syntax.
+  Calendar controller checks also passed in Pacific/Kiritimati and America/Los_Angeles.
+- NOT RUN: Hands-on desktop and narrow-window appearance, browser compatibility
+  in Chrome/Firefox/Edge/Safari, keyboard/screen-reader acceptance, and visual
+  phase comparison. User procedures are in VERIFICATION.md.
+- No dependencies, downloaded assets, storage migrations, server, or Git
+  operations. No publication performed.
+
+Risks & Edge Cases:
+
+- Daily estimates are not exact phase-event predictions. Calendar local noon
+  differs from the homepage instant; icons use Northern Hemisphere orientation.
+- Independent fixtures cover 2026, not all supported historical/future years.
+- Shared lunar styles are namespaced; existing time calculation is unchanged.
+- Browser acceptance remains pending, including horizontal table scrolling.
+
+---
+
+Date: 2026-11-21
+Short Title: Record Feature Readiness Review
+Summary:
+
+Reviewed repository documentation, shared foundations, representative controllers,
+and the live homepage before a future feature request. No changes required to
+application behavior; added the three missing required project memory files.
+
+LCL Technical Details:
+
+- Documentation: Added roadmap, verification, and provenance records and README
+  links. Recorded the existing documentation-audit failure and contributor-guide
+  conflicts without changing operating rules or historical entries.
+- HTML, CSS, JavaScript, Tokens, Navigation, SEO, Accessibility, Responsive
+  Layout, and Dark Mode: No changes.
+
+Files Touched:
+
+- ROADMAP.md
+- VERIFICATION.md
+- PROVENANCE.md
+- README.md
+- CHANGELOG.md
+
+Testing Notes:
+
+- PASS: Five utility test suites and the 14-page site audit.
+- FAIL: Documentation audit requires an &larr; example in agents.md.
+- Live homepage content retrieved; interactive, desktop visual, cross-browser,
+  accessibility, and storage acceptance NOT RUN and left to the user.
+- No server, dependency installation, or Git operation performed.
+
+Risks & Edge Cases:
+
+- Documentation-only changes do not alter tool behavior. Asset provenance is
+  incomplete; later documentation-audit assertions remain unverified.
+- Additional feature requirements have not yet been specified.
+
+---
+
 Date: 2026-11-01
 Short Title: Remove Donation Links
 Summary:

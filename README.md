@@ -42,10 +42,13 @@ or runtime network API.
 - **Time Calculator** — intervals, elapsed durations, time shifts, and unit conversions
 - **Date Calculator** — exact calendar shifts, date differences, weekdays, and patterns
 - **Time Zone Converter** — dated conversions across IANA zones and daylight-saving changes
+- **Moon Phases** — daily lunar calendar, reached through the moon beside the homepage Julian date or the About card
 - **Dashboard** — configurable tile workspace
 - **To Do Lists** — local planners and prioritized task boards
 
-`index.html` is the suite's tool hub. Each public tool page has one compact,
+`index.html` is the suite's tool hub; Moon Phases uses its date-row icon rather
+than an extra hub card. About also has an approved Moon Phases card.
+Each public tool page has one compact,
 accessible back-arrow control that returns to the hub. The suite shares a
 consistent dark design and privacy-first, browser-local behavior.
 
@@ -109,6 +112,21 @@ consistent dark design and privacy-first, browser-local behavior.
 - Saved multi-clock groups (Engineering / Family / Travel)
 - Global theme sync across all tools
 - Stopwatch export logs
+
+## Moon Phases
+
+The homepage displays the current estimated phase beside its ordinal Julian
+date. Click the moon to open `moon-phases.html`, a January-December calendar
+with previous/next year, direct year entry, and Current year controls (1900-2100).
+Each valid date has a monochrome moon; today has a cyan outline. Hover, focus,
+or select a date for its phase name and estimated illuminated percentage.
+Arrow keys navigate the calendar with one date in the tab order.
+
+Calendar icons represent noon in the device's local time zone; the homepage
+uses the current instant. Icons use a Northern Hemisphere orientation. These
+are daily visual estimates with broad eight-stage phase names, not exact event
+times or location-dependent sky views. Calculations stay local and need no
+location permission, external service, or saved input data.
 
 ---
 
@@ -209,6 +227,8 @@ also shows the ordinal Julian YYYY-DDD date.
 - `about.html` — Suite overview and license
 - `lcl.css` — Shared design tokens and reusable UI foundations
 - `lcl-time.js` — Pure shared clock-formatting utilities
+- `moon-phases.html` — Yearly lunar calendar, accessed by homepage icon and About card
+- `lcl-moon.js` — Pure lunar phase estimates and shared SVG-path geometry
 - `lcl-duration.js` — BigInt-backed duration units, calculation, precision metadata, and formatting utilities
 - `lcl-date.js` — Pure timezone-safe Gregorian date-only calculation and formatting utilities
 - `lcl-timezone.js` — Pure Intl-backed IANA timezone resolution and conversion utilities
@@ -218,6 +238,8 @@ also shows the ordinal Julian YYYY-DDD date.
 - `sitemap.xml` — Public-page sitemap
 - `robots.txt` — Minimal crawler policy and production sitemap location
 - `tests/time-utils.test.js` — Shared time-formatting regression test
+- `tests/moon-utils.test.js` — Independent lunar fixtures, continuity, validation, and icon geometry
+- `tests/moon-calendar.test.js` — In-memory calendar controller checks for years, leap days, keyboard focus, and date rollover
 - `tests/duration-utils.test.js` — Duration calculation and validation regression test
 - `tests/date-utils.test.js` — Gregorian date arithmetic, weekday, pattern, and validation regression test
 - `tests/timezone-utils.test.js` — IANA conversion, offset, DST transition, and Swap regression test
@@ -231,12 +253,26 @@ also shows the ordinal Julian YYYY-DDD date.
 
 ---
 
+## Project Memory
+
+- [Contributors and collaboration](!CONTRIBUTORS.md)
+- [Agent operating rules](agents.md)
+- [Architecture](ARCHITECTURE.md)
+- [Components](COMPONENTS.md)
+- [UI rules](UI_RULES.md)
+- [Changelog](CHANGELOG.md)
+- [Roadmap](ROADMAP.md)
+- [Verification results and procedures](VERIFICATION.md)
+- [Provenance and licensing](PROVENANCE.md)
+
 ## 🧪 Testing
 
 Run the dependency-free Node checks directly:
 
 ```text
 node tests/time-utils.test.js
+node tests/moon-utils.test.js
+node tests/moon-calendar.test.js
 node tests/duration-utils.test.js
 node tests/date-utils.test.js
 node tests/timezone-utils.test.js

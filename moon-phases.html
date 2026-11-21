@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="stylesheet" href="lcl.css" />
+  <title>Moon Phases | Linear Clock Lab</title>
+  <meta name="description" content="Explore a full year of daily moon phases in a minimalist lunar calendar, calculated locally in your browser." />
+  <meta name="author" content="jm5k" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://linearclocklab.com/moon-phases.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Moon Phases | Linear Clock Lab" />
+  <meta property="og:description" content="A daily moon phase calendar with year controls and estimated illumination." />
+  <meta property="og:url" content="https://linearclocklab.com/moon-phases.html" />
+  <meta property="og:image" content="https://linearclocklab.com/profile.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Moon Phases | Linear Clock Lab" />
+  <meta name="twitter:description" content="Explore a full calendar year of moon phases, calculated locally." />
+  <meta name="twitter:image" content="https://linearclocklab.com/profile.png" />
+  <link rel="icon" href="https://linearclocklab.com/profile.png" type="image/png" />
+  <link rel="apple-touch-icon" href="https://linearclocklab.com/profile.png" />
+  <style>
+    :root { --moon-panel: #080b0e; --moon-grid: #182027; --moon-selected: #10252a; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 24px 16px; background: var(--bg); color: var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    .wrap { width: min(1000px, 100%); margin: auto; }
+    header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    h1 { color: var(--accent); font-size: 1.6rem; margin: 0 0 4px; }
+    p { line-height: 1.5; }
+    .sub, .help, footer { color: var(--muted); font-size: 0.85rem; }
+    .sub { margin: 0; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    button, input {
+      font: inherit; color: var(--fg); background: var(--chip, #111);
+      border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;
+    }
+    button { cursor: pointer; }
+    button:hover:not(:disabled) { border-color: var(--accent); }
+    button:disabled { opacity: 0.4; cursor: default; }
+    button:focus-visible, input:focus-visible, .calendar-scroll:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 2px;
+    }
+    input { width: 6.5rem; }
+    #year-error { color: var(--accent); min-height: 1.3em; margin: 6px 0; font-size: 0.85rem; }
+    .detail { min-height: 3.5rem; margin: 0 0 12px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--moon-panel); }
+    #day-detail { margin: 0; font-size: 0.9rem; }
+    .calendar-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+    table { width: 100%; min-width: 620px; border-collapse: collapse; table-layout: fixed; }
+    caption { color: var(--accent); padding: 12px; font-size: 1.1rem; }
+    th { color: var(--muted); font-size: 0.85rem; font-weight: normal; }
+    thead th { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    th:first-child { width: 40px; }
+    td, tbody th { height: 28px; text-align: center; border-bottom: 1px solid var(--moon-grid); }
+    td { border-left: 1px solid var(--moon-grid); }
+    tbody tr:last-child > * { border-bottom: 0; }
+    .moon-day { display: inline-grid; place-items: center; width: 38px; height: 27px; padding: 0; border: 1px solid transparent; border-radius: 5px; background: transparent; }
+    .moon-day .lcl-moon-icon { width: 22px; height: 22px; }
+    .moon-day[aria-current="date"] { border-color: var(--accent); }
+    .moon-day[aria-pressed="true"] { background: var(--moon-selected); }
+    .moon-day:hover { background: var(--moon-selected); }
+    .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 20px; list-style: none; padding: 0; margin: 20px 0; }
+    .legend li { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
+    .help { margin: 10px 0; }
+    footer { text-align: center; margin-top: 22px; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <nav aria-label="Return"><a href="/" class="lcl-back-link" aria-label="Back to Linear Clock Lab" title="Back to Linear Clock Lab">&larr;</a></nav>
+      <div><h1>Moon Phases</h1><p class="sub">One year, one lunar rhythm.</p></div>
+    </header>
+    <form class="toolbar" id="year-form">
+      <button type="button" id="previous-year">Previous year</button>
+      <label for="calendar-year">Year</label>
+      <input id="calendar-year" type="number" min="1900" max="2100" step="1" required aria-describedby="year-error" />
+      <button type="submit">Show year</button>
+      <button type="button" id="next-year">Next year</button>
+      <button type="button" id="current-year">Current year</button>
+    </form>
+    <p id="year-error" role="status"></p>
+    <div class="detail"><p id="day-detail" role="status" aria-live="polite" aria-atomic="true">Select a date to explore its moon phase.</p></div>
+    <div class="calendar-scroll" role="region" aria-label="Moon phase calendar" tabindex="0">
+      <table aria-describedby="calendar-help calendar-method">
+        <caption id="calendar-caption">Daily moon phases</caption>
+        <thead><tr><th scope="col">Day</th><th scope="col">Jan</th><th scope="col">Feb</th><th scope="col">Mar</th><th scope="col">Apr</th><th scope="col">May</th><th scope="col">Jun</th><th scope="col">Jul</th><th scope="col">Aug</th><th scope="col">Sep</th><th scope="col">Oct</th><th scope="col">Nov</th><th scope="col">Dec</th></tr></thead>
+        <tbody id="moon-calendar"></tbody>
+      </table>
+    </div>
+    <p class="help" id="calendar-help">Cyan outline marks today. Hover, focus, or click a moon for details. Tab into the calendar; use Up/Down for days and Left/Right for months.</p>
+    <ul class="legend" id="moon-legend" aria-label="Eight moon phases"></ul>
+    <p class="help" id="calendar-method">Daily estimates at noon in your device's local time zone. Icons use a Northern Hemisphere orientation (waxing lit on the right); the sky's apparent tilt varies by location. Phase names group the cycle into eight stages, rather than marking exact event times. Years 1900&ndash;2100. Calculated locally, with no location access.</p>
+    <noscript><p>Enable JavaScript to calculate and display the moon calendar.</p></noscript>
+    <footer>&copy; 2025&ndash;2026 jm5k</footer>
+  </main>
+  <script src="lcl-moon.js"></script>
+  <script>
+    (() => {
+      "use strict";
+      const calendar = document.getElementById("moon-calendar");
+      const yearInput = document.getElementById("calendar-year");
+      const detail = document.getElementById("day-detail");
+      const previous = document.getElementById("previous-year");
+      const next = document.getElementById("next-year");
+      const error = document.getElementById("year-error");
+      const formatter = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "long", day: "numeric" });
+      let displayedYear = new Date().getFullYear();
+      let selected = null;
+      const dateKey = () => `${new Date().toDateString()}/${new Date().getTimezoneOffset()}`;
+      let todayKey = dateKey();
+
+      function icon(illumination, waxing) {
+        return `<svg class="lcl-moon-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle class="lcl-moon-disc" cx="16" cy="16" r="14"></circle><path class="lcl-moon-light" d="${LCLMoon.illuminatedPath(illumination, waxing)}"></path></svg>`;
+      }
+
+      function describe(button, select = false) {
+        if (detail.textContent !== button.title) detail.textContent = button.title;
+        if (select) {
+          if (selected) { selected.setAttribute("aria-pressed", "false"); selected.tabIndex = -1; }
+          selected = button;
+          selected.tabIndex = 0;
+          selected.setAttribute("aria-pressed", "true");
+        }
+      }
+
+      function render(year, preserveSelection = false) {
+        if (!Number.isInteger(year) || year < 1900 || year > 2100) {
+          error.textContent = "Choose a whole year from 1900 to 2100.";
+          yearInput.setAttribute("aria-invalid", "true");
+          return;
+        }
+        const selectedMonth = preserveSelection && selected ? selected.dataset.month : null;
+        const selectedDay = preserveSelection && selected ? selected.dataset.day : null;
+        const restoreFocus = preserveSelection && calendar.contains(document.activeElement);
+        displayedYear = year;
+        yearInput.value = year;
+        yearInput.removeAttribute("aria-invalid");
+        error.textContent = "";
+        previous.disabled = year === 1900;
+        next.disabled = year === 2100;
+        document.getElementById("calendar-caption").textContent = `${year} / Daily moon phases`;
+        const today = new Date();
+        const fragment = document.createDocumentFragment();
+        selected = null;
+        for (let day = 1; day <= 31; day++) {
+          const row = document.createElement("tr");
+          const heading = document.createElement("th");
+          heading.scope = "row";
+          heading.textContent = day;
+          row.appendChild(heading);
+          for (let month = 0; month < 12; month++) {
+            const cell = document.createElement("td");
+            const date = new Date(year, month, day, 12);
+            if (date.getMonth() === month) {
+              const moon = LCLMoon.phaseAt(date.getTime());
+              const button = document.createElement("button");
+              button.type = "button";
+              button.className = "moon-day";
+              button.dataset.month = month;
+              button.dataset.day = day;
+              button.title = `${formatter.format(date)}: ${moon.name}, approximately ${Math.round(moon.illumination * 100)}% illuminated`;
+              button.setAttribute("aria-label", button.title);
+              button.setAttribute("aria-pressed", "false");
+              button.tabIndex = -1;
+              button.innerHTML = icon(moon.illumination, moon.waxing);
+              if (today.getFullYear() === year && today.getMonth() === month && today.getDate() === day) {
+                button.setAttribute("aria-current", "date");
+                selected = button;
+              }
+              cell.appendChild(button);
+            }
+            row.appendChild(cell);
+          }
+          fragment.appendChild(row);
+        }
+        calendar.replaceChildren(fragment);
+        const preserved = selectedMonth === null ? null : calendar.querySelector(
+          `[data-month="${selectedMonth}"][data-day="${selectedDay}"]`);
+        const initial = preserved || selected || calendar.querySelector("button");
+        selected = null;
+        describe(initial, true);
+        if (restoreFocus) initial.focus();
+      }
+
+      document.getElementById("year-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        render(yearInput.valueAsNumber);
+      });
+      previous.addEventListener("click", () => render(displayedYear - 1));
+      next.addEventListener("click", () => render(displayedYear + 1));
+      document.getElementById("current-year").addEventListener("click", () => render(new Date().getFullYear()));
+      calendar.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (button) describe(button, true);
+      });
+      calendar.addEventListener("focusin", (event) => {
+        if (event.target.matches("button")) describe(event.target, true);
+      });
+      calendar.addEventListener("pointerover", (event) => {
+        const button = event.target.closest("button");
+        if (button) describe(button);
+      });
+      calendar.addEventListener("pointerleave", () => { if (selected) describe(selected); });
+      calendar.addEventListener("keydown", (event) => {
+        const button = event.target.closest("button");
+        if (!button || !["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        let month = Number(button.dataset.month);
+        let day = Number(button.dataset.day);
+        if (event.key === "ArrowLeft") month = Math.max(0, month - 1);
+        if (event.key === "ArrowRight") month = Math.min(11, month + 1);
+        const lastDay = new Date(displayedYear, month + 1, 0).getDate();
+        if (event.key === "ArrowUp") day--;
+        if (event.key === "ArrowDown") day++;
+        if (event.key === "Home") day = 1;
+        if (event.key === "End") day = lastDay;
+        day = Math.max(1, Math.min(lastDay, day));
+        calendar.querySelector(`[data-month="${month}"][data-day="${day}"]`).focus();
+      });
+
+      const legend = document.getElementById("moon-legend");
+      LCLMoon.phaseNames.forEach((name, index) => {
+        const item = document.createElement("li");
+        item.innerHTML = icon((1 - Math.cos(index * Math.PI / 4)) / 2, index < 4);
+        item.appendChild(document.createTextNode(name));
+        legend.appendChild(item);
+      });
+      render(displayedYear);
+      setInterval(() => {
+        const key = dateKey();
+        if (key !== todayKey) { todayKey = key; render(displayedYear, true); }
+      }, 60000);
+    })();
+  </script>
+</body>
+</html>

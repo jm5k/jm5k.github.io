@@ -420,6 +420,25 @@ for (const { location, pageFile } of publicPages) {
     );
 }
 
+// Moon Phases is reached through an icon, never a thirteenth hub card.
+const moonLinks = getOpeningTags(homepage, "a").filter(
+    (tag) => getAttribute(tag, "href") === "moon-phases.html"
+);
+check(moonLinks.length === 1 && getAttribute(moonLinks[0], "id") === "moon-link",
+    "index.html", "Moon Phases must have exactly one icon entry", `${moonLinks.length} links`);
+const about = fs.readFileSync(path.join(projectRoot, "about.html"), "utf8");
+const aboutMoonLinks = getOpeningTags(about, "a").filter(
+    (tag) => getAttribute(tag, "href") === "moon-phases.html"
+);
+check(aboutMoonLinks.length === 1 && /\bmoon-card\b/.test(getAttribute(aboutMoonLinks[0], "class") || ""),
+    "about.html", "must include one Moon Phases card", `${aboutMoonLinks.length} links`);
+for (const file of ["index.html", "moon-phases.html"]) {
+    const html = fs.readFileSync(path.join(projectRoot, file), "utf8");
+    const script = html.indexOf('<script src="lcl-moon.js"></script>');
+    check(script !== -1 && script < html.indexOf("LCLMoon."), file,
+        "shared moon utility must load before its controller", script);
+}
+
 const julianDatePages = ["index.html", "clock.html", "clock_presets.html"];
 for (const pageFile of julianDatePages) {
     const html = fs.readFileSync(path.join(projectRoot, pageFile), "utf8");
